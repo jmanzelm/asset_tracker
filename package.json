@@ -1,0 +1,24 @@
+{
+  "name": "asset_tracker",
+  "version": "1.0.0",
+  "description": "A website for tracking your assets accross a variety of investments.",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jmanzelm/asset_tracker.git"
+  },
+  "author": "Jacob Manzelmann, James Murphy, Taylor He, Thommas Osterman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jmanzelm/asset_tracker/issues"
+  },
+  "homepage": "https://github.com/jmanzelm/asset_tracker#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "mongodb": "^3.0.7",
+    "uuid": "^3.2.1"
+  }
+}
