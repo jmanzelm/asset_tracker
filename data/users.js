@@ -1,143 +1,217 @@
-/**
- *  @file data/users.js
- *  @author: Taylor He
- *
- *  Handles user login functions and data
- */
-const bcrypt = require("bcrypt");
-const path = require("path");
+const mongoCollections = require("../config/mongoCollections");
+const users = mongoCollections.users;
+const uuidv4 = require("uuid/v4");
+const cash = require("./cash");
+const investments = require("./investments");
+const debts = require("./debts");
 
-const saltRounds = 16;
-
-// Users is a map of username: {userdetails}
-const users = {
-  "masterdetective123": {  
-    hashedPassword: "$2a$16$7JKSiEmoP3GNDSalogqgPu0sUbwder7CAN/5wnvCWe6xCKAKwlTD.", // elementarymydearwatson
-    firstName: "Sherlock", 
-    lastName: "Holmes",
-    profession: "Detective",
-  },
-
-  "lemon": {  
-    hashedPassword: "$2a$16$SsR2TGPD24nfBpyRlBzINeGU61AH0Yo/CbgfOlU1ajpjnPuiQaiDm", // damnyoujackdonaghy
-    firstName: "Elizabeth", 
-    lastName: "Lemon",
-    profession: "Writer",
-  }, 
-
-  "theboywholived": {
-    hashedPassword: "$2a$16$4o0WWtrq.ZefEmEbijNCGukCezqWTqz1VWlPm/xnaLM8d3WlS5pnK", // quidditch
-    firstName: "Harry",
-    lastName: "Potter",
-    profession: "Student",
+function getAllUsers() {
+  if (arguments.length !== 0) {
+    throw "No arguments are needed.";
   }
-};
-
-/**
- *  Compares plaintext input with stored hashed password
- *
- *  @param  {Object}  username
- *  @param  {Object}  password
- *  @return {boolean} if username/password matches
- */
-async function bcryptCompare(username, password) {
-  console.log("Logging in...");
-  if (users[username]) {
-    // console.log("Comparing", password, "to", users[username].hashedPassword);
-    return await bcrypt.compare(password, users[username].hashedPassword);
-  }
-  return false;
-}
-/**
- *  Gets info about a user
- *
- *  @param  {Object}  username
- *  @return {Object}  user details
- */
-async function getUserDetails(username) {
-  return users[username] ? users[username] : {};
-}
-
-/**
- *  Tries to login with the username and password provided
- *  If authentication is successful, it sets an auth cookie
- *  else re-renders the login page
- *
- *  @param {Object} request
- *  @param {Object} response 
- */
-async function login(request, response) {
   try {
-    // Try to log in
-    const {username, password} = request.body;
-    const success = await bcryptCompare(username, password);
-    console.log(`Login was ${success ? "" : "un"}successful`);
-    // If login was successful, set a cookie to the value of username
-    if (success) {
-      console.log("Setting AuthCookie...")
-      response.cookie("AuthCookie", username);
-      // redirect to / to go to home page
-      response.redirect("/");
-      return;
-    }
-    // Render handlebars file with parameter failedAttempt=true
-    response.render(path.join(__dirname + '/../views/layouts/login.handlebars'), { failedAttempt:true });
-  } catch (e) {
-    response.status(500).json({error: e});
+    return users().then(userCollection => {
+      return userCollection.find({}).toArray();
+    });
+  }
+  catch(error) {
+    throw error;
   }
 }
 
-/**
- *  Mainly a redirect function when a user tries to access /
- *  Checks if a user is logged in, redirects to login page
- *  or home page as needed
- *  
- *  @param {Object} request
- *  @param {Object} response 
- */
-async function redirectAuth(request, response) {
+function getUserById(id) {
+  if (arguments.length !== 1) {
+    throw "Please provide a single ID.";
+  }
+  if (typeof id !== "string") {
+    throw "The ID must be a string.";
+  }
   try {
-    // Check cookies for login info
-    // and render handlebars file with parameter failedAttempt=false
-    if (!(request.cookies && request.cookies.AuthCookie)) {
-      response.render(
-        path.join(__dirname + '/../views/layouts/login.handlebars'), 
-        { failedAttempt: false }
-      );
-      return;
-    }
-    // Else they are logged in, so render the home page
-    response.render(path.join(__dirname + '/../views/layouts/index.handlebars'), {});
-  } catch (e) {
-    response.status(500).json({error: e});
+    return users().then(userCollection => {
+      return userCollection.findOne({_id: id}).then(user => {
+        if (!user) throw "User not found";
+        return user;
+      });
+    });
+  }
+  catch(error) {
+    throw error;
   }
 }
 
-/**
- *  User logout function. Clears Auth cookie, if there is one.
- *  
- *  @param {Object} request
- *  @param {Object} response 
- */
-async function logout(req, res) {
+function addUser(username, hashedPassword, startingCash) {
+  if (arguments.length !== 3) {
+    throw "Please provide a username, hashed password, and starting cash amount.";
+  }
+  if (typeof username !== "string" || typeof hashedPassword !== "string" || typeof startingCash !== "number"){
+    "The username and hashed password must be strings and the starting cash amount must be a number."
+  }
+  try{
+    return users().then(userCollection => {
+      let newUser = {
+        _id: uuidv4(),
+        username: username,
+        hashedPassword: hashedPassword,
+        investments: [],
+        cash: (await cash.addCash(startingCash))._id, // add a new cash object
+        debts: []
+      };
+      return userCollection
+        .insertOne(newUser)
+        .then(insInfo => {
+          return insInfo.insertedId;
+        })
+        .then(newId => {
+          return this.getUserById(newId);
+        });
+    });
+  }
+  catch(error) {
+    throw error;
+  }
+}
+
+function deleteUser(id) {
+  if (arguments.length !== 1) {
+    throw "Please provide a single ID";
+  }
+  if (typeof id !== "string") {
+    throw "The ID must be a string.";
+  }
   try {
-    console.log("Attempting to log out...")
-    let success = false;
-    if(req && req.cookies && req.cookies.AuthCookie) {
-      res.clearCookie("AuthCookie");
-      success = true;
-    }
-    res.status(200).render(
-      path.join(__dirname + "/../views/layouts/logout.handlebars"), 
-      {success: success}
-    );
-  } catch (e) {
-    res.json({message:e})
+    return users().then(userCollection => {
+      const user = await this.getUserById(id);
+      await cash.deleteCash(user.cash);
+      ilen = user.investments.length;
+      dlen = user.debts.length;
+      for (i = 0; i < ilen; i++) {
+        await investments.deleteInvestment(user.investments[i]);
+      }
+      for (i = 0; i < dlen; i++) {
+        await investments.deleteDebt(user.debts[i]);
+      }
+      return userCollection.removeOne({_id: id}).then(delInfo => {
+        if (delInfo.deletedCount === 0) {
+          throw `Could not remove user with id of ${id}.`;
+        } else {
+        }
+      });
+    });
+  }
+  catch(error) {
+    throw error;
+  }
+}
+
+// called when a new investment is created
+function extendInvestmentList(id, investmentId) {
+  if (arguments.length !== 2) {
+    throw "Please provide a user ID and investment ID.";
+  }
+  if (typeof id !== "string" || typeof investmentId !== "string"){
+    throw "The user ID and investment ID must be strings.";
+  }
+  try {
+    return users().then(userCollection => {
+      let updatedUser = {
+        investments: (await this.getUserById(id)).investments.push(investmentId)
+      }
+      return userCollection
+        .updateOne({_id: id}, {$set: updatedUser})
+        .then(result => {
+          return this.getUserById(id);
+        });
+    });
+  }
+  catch(error) {
+    throw error;
+  }
+}
+
+// called when a investment is deleted
+function shortenInvestmentList(id, investmentId) {
+  if (arguments.length !== 2) {
+    throw "Please provide a user ID and investment ID.";
+  }
+  if (typeof id !== "string" || typeof investmentId !== "string"){
+    throw "The user ID and investment ID must be strings.";
+  }
+  try {
+    return users().then(userCollection => {
+      const user = await this.getUserById(id);
+      let updatedUser = {
+        investments: user.investments.splice(user.investments.findIndex(function(element) {return element === investmentId}), 1)
+      }
+      return userCollection
+        .updateOne({_id: id}, {$set: updatedUser})
+        .then(result => {
+          return this.getUserById(id);
+        });
+    });
+  }
+  catch(error) {
+    throw error;
+  }
+}
+
+// called when a new debt is created
+function extendDebtList(id, debtId) {
+  if (arguments.length !== 2) {
+    throw "Please provide a user ID and debt ID.";
+  }
+  if (typeof id !== "string" || typeof debtId !== "string"){
+    throw "The user ID and debt ID must be strings.";
+  }
+  try {
+    return users().then(userCollection => {
+      let updatedUser = {
+        debts: (await getUserById(id)).debts.push(debtId)
+      }
+      return userCollection
+        .updateOne({_id: id}, {$set: updatedUser})
+        .then(result => {
+          return this.getUserById(id);
+        });
+    });
+  }
+  catch(error) {
+    throw error;
+  }
+}
+
+// called when a debt is deleted
+function shortenDebtList(id, debtId) {
+  if (arguments.length !== 2) {
+    throw "Please provide a user ID and debt ID.";
+  }
+  if (typeof id !== "string" || typeof debtId !== "string"){
+    throw "The user ID and debt ID must be strings.";
+  }
+  try {
+    return users().then(userCollection => {
+      const user = await getUserById(id);
+      let updatedUser = {
+        debts: user.debts.splice(user.debt.findIndex(function(element) {return element === debtId}), 1)
+      }
+      return userCollection
+        .updateOne({_id: id}, {$set: updatedUser})
+        .then(result => {
+          return this.getUserById(id);
+        });
+    });
+  }
+  catch(error) {
+    throw error;
   }
 }
 
 module.exports = {
-  login: login,
-  logout: logout,
-  redirectAuth: redirectAuth
-};
+  getAllUsers,
+  getUserById,
+  addUser,
+  deleteUser,
+  extendInvestmentList,
+  shortenInvestmentList,
+  extendDebtList,
+  shortenDebtList
+}
