@@ -37,12 +37,12 @@ function getCashById(id) {
 	}
 }
 
-function addCash(userId, startingAmount) {
+function addCash(startingAmount) {
 	if (arguments.length !== 2) {
 		throw "Please provide a user ID and starting amount.";
 	}
-	if (typeof userId !== "string" || typeof startingAmount !== "number"){
-		"The user ID be a string and starting amount must be a number."
+	if (typeof startingAmount !== "number"){
+		"The starting amount must be a number."
 	}
 	try{
 		return cash().then(cashCollection => {
@@ -70,12 +70,13 @@ function addCash(userId, startingAmount) {
 	}
 }
 
-function deleteCash(id, userId) {
+// should only be used by the user delete
+function deleteCash(id) {
 	if (arguments.length !== 2) {
-		throw "Please provide an cash ID and a user ID.";
+		throw "Please provide an cash ID.";
 	}
 	if (typeof id !== "string") {
-		throw "Both IDs must be strings.";
+		throw "The ID must be a string.";
 	}
 	try {
 		return cash().then(cashCollection => {
@@ -93,12 +94,12 @@ function deleteCash(id, userId) {
 }
 
 // type is true if addition, false if reduction
-function addCashTransaction(id, userId, quantity, type) {
+function addCashTransaction(id, quantity, type) {
 	if (arguments.length !== 4) {
 		throw "Please provide an cash ID, user ID, quantity, and type.";
 	}
-	if (typeof id !== "string" || typeof userId !== "string" || typeof quantity !== "number" || typeof type !== "boolean"){
-		throw "The cash ID and user ID must be strings, quantity must be a number, and type must be a boolean.";
+	if (typeof id !== "string" || typeof quantity !== "number" || typeof type !== "boolean"){
+		throw "The cash ID must be a string, quantity must be a number, and type must be a boolean.";
 	}
 	try {
 		return cash().then(cashCollection => {
@@ -116,7 +117,7 @@ function addCashTransaction(id, userId, quantity, type) {
 				date: Math.round((new Date()).getTime() / 1000)
 			};
 			let updatedCash = {
-				transactions: (await this.getCashById(id)).transactions.push(newTransaction),
+				transactions: (this.getCashById(id)).transactions.push(newTransaction),
 				currentAmount: newAmount
 			}
 			return cashCollection

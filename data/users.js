@@ -53,7 +53,7 @@ function addUser(username, hashedPassword, startingCash) {
         username: username,
         hashedPassword: hashedPassword,
         investments: [],
-        cash: (await cash.addCash(startingCash))._id, // add a new cash object
+        cash: (cash.addCash(startingCash))._id, // add a new cash object
         debts: []
       };
       return userCollection
@@ -80,15 +80,15 @@ function deleteUser(id) {
   }
   try {
     return users().then(userCollection => {
-      const user = await this.getUserById(id);
-      await cash.deleteCash(user.cash);
+      const user = this.getUserById(id);
+      cash.deleteCash(user.cash);
       ilen = user.investments.length;
       dlen = user.debts.length;
       for (i = 0; i < ilen; i++) {
-        await investments.deleteInvestment(user.investments[i]);
+        investments.deleteInvestment(user.investments[i]);
       }
       for (i = 0; i < dlen; i++) {
-        await investments.deleteDebt(user.debts[i]);
+        investments.deleteDebt(user.debts[i]);
       }
       return userCollection.removeOne({_id: id}).then(delInfo => {
         if (delInfo.deletedCount === 0) {
@@ -114,7 +114,7 @@ function extendInvestmentList(id, investmentId) {
   try {
     return users().then(userCollection => {
       let updatedUser = {
-        investments: (await this.getUserById(id)).investments.push(investmentId)
+        investments: (this.getUserById(id)).investments.push(investmentId)
       }
       return userCollection
         .updateOne({_id: id}, {$set: updatedUser})
@@ -138,7 +138,7 @@ function shortenInvestmentList(id, investmentId) {
   }
   try {
     return users().then(userCollection => {
-      const user = await this.getUserById(id);
+      const user = this.getUserById(id);
       let updatedUser = {
         investments: user.investments.splice(user.investments.findIndex(function(element) {return element === investmentId}), 1)
       }
@@ -165,7 +165,7 @@ function extendDebtList(id, debtId) {
   try {
     return users().then(userCollection => {
       let updatedUser = {
-        debts: (await getUserById(id)).debts.push(debtId)
+        debts: (this.getUserById(id)).debts.push(debtId)
       }
       return userCollection
         .updateOne({_id: id}, {$set: updatedUser})
@@ -189,7 +189,7 @@ function shortenDebtList(id, debtId) {
   }
   try {
     return users().then(userCollection => {
-      const user = await getUserById(id);
+      const user = this.getUserById(id);
       let updatedUser = {
         debts: user.debts.splice(user.debt.findIndex(function(element) {return element === debtId}), 1)
       }

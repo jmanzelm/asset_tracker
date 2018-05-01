@@ -59,7 +59,7 @@ function addDebt(userId, creditor, startingAmount) {
 			return debtCollection
 				.insertOne(newDebt)
 				.then(insInfo => {
-					await users.extendDebtList(userId, insInfo.insertedId);
+					users.extendDebtList(userId, insInfo.insertedId);
 					return insInfo.insertedId;
 				})
 				.then(newId => {
@@ -85,7 +85,7 @@ function deleteDebt(id, userId) {
 				if (delInfo.deletedCount === 0) {
 					throw `Could not remove debt with id of ${id}.`;
 				} else {
-					await users.shortenDebtList(userId, id);
+					users.shortenDebtList(userId, id);
 				}
 			});
 		});
@@ -107,7 +107,7 @@ function addDebtTransaction(id, userId, quantity, type) {
 		return debts().then(debtCollection => {
 			debt = this.getDebtById(id);
 			if (!type && debt.currentAmount <= quantity) {
-				await this.deleteDebt(id, userId);
+				this.deleteDebt(id, userId);
 				return {};
 			}
 			newTransaction = {
@@ -116,7 +116,7 @@ function addDebtTransaction(id, userId, quantity, type) {
 				date: Math.round((new Date()).getTime() / 1000)
 			};
 			let updatedDebt = {
-				transactions: (await this.getDebtById(id)).transactions.push(newTransaction),
+				transactions: (this.getDebtById(id)).transactions.push(newTransaction),
 				currentAmount: (type ? debt.currentAmount + quantity : debt.currentAmount - quantity)
 			}
 			return debtCollection

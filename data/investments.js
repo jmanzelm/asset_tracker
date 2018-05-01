@@ -61,7 +61,7 @@ function addInvestment(userId, symbol, type, startingAmount) {
 			return investmentCollection
 				.insertOne(newInvestment)
 				.then(insInfo => {
-					await users.extendInvestmentList(userId, insInfo.insertedId);
+					users.extendInvestmentList(userId, insInfo.insertedId);
 					return insInfo.insertedId;
 				})
 				.then(newId => {
@@ -87,7 +87,7 @@ function deleteInvestment(id, userId) {
 				if (delInfo.deletedCount === 0) {
 					throw `Could not remove investment with id of ${id}.`;
 				} else {
-					await users.shortenInvestmentList(userId, id);
+					users.shortenInvestmentList(userId, id);
 				}
 			});
 		});
@@ -109,7 +109,7 @@ function addInvestmentTransaction(id, userId, quantity, type) {
 		return investments().then(investmentCollection => {
 			investment = this.getInvestmentById(id);
 			if (!type && investment.currentAmount <= quantity) {
-				await this.deleteInvestment(id, userId);
+				this.deleteInvestment(id, userId);
 				return {};
 			}
 			newTransaction = {
@@ -118,7 +118,7 @@ function addInvestmentTransaction(id, userId, quantity, type) {
 				date: Math.round((new Date()).getTime() / 1000)
 			};
 			let updatedInvestment = {
-				transactions: (await this.getInvestmentById(id)).transactions.push(newTransaction),
+				transactions: (this.getInvestmentById(id)).transactions.push(newTransaction),
 				currentAmount: (type ? investment.currentAmount + quantity : investment.currentAmount - quantity)
 			}
 			return investmentCollection
