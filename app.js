@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const app = express();
 const exphbs = require("express-handlebars");
 
-const users = require("./data/users");
+const users = require("./src/data/users");
 
 app.use(cookieParser());
 app.use(bodyParser.json()); // for parsing application/json
