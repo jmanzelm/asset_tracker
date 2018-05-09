@@ -7,7 +7,7 @@ const exphbs = require("express-handlebars");
 const configRoutes = require("./routes");
 const cash = require("../data/cash");
 
-const users = require("./data/users");
+const users = require("./src/data/users");
 
 app.use(cookieParser());
 app.use(bodyParser.json()); // for parsing application/json

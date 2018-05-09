@@ -4,7 +4,11 @@
   "description": "A website for tracking your assets accross a variety of investments.",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "startr": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   },
   "repository": {
     "type": "git",
@@ -17,6 +21,7 @@
   },
   "homepage": "https://github.com/jmanzelm/asset_tracker#readme",
   "dependencies": {
+    "ajv": "^6.5.0",
     "bcrypt": "^2.0.1",
     "body-parser": "^1.18.2",
     "cookie-parser": "^1.4.3",
@@ -28,7 +33,15 @@
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
+<<<<<<< HEAD
     "request": "^2.85.0",
+=======
+    "react": "^16.3.2",
+    "react-bootstrap": "^0.32.1",
+    "react-dom": "^16.3.2",
+    "react-scripts": "1.1.4",
+    "react-select": "^1.2.1",
+>>>>>>> d6b4da8b0fbfcb227a82ce12b55d317e7c42f7c4
     "uuid": "^3.2.1"
   }
 }
