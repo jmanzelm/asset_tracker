@@ -107,12 +107,12 @@ function addInvestmentTransaction(id, userId, quantity, type) {
 	}
 	try {
 		return investments().then(investmentCollection => {
-			investment = this.getInvestmentById(id);
+			let investment = this.getInvestmentById(id);
 			if (!type && investment.currentAmount <= quantity) {
 				this.deleteInvestment(id, userId);
 				return {};
 			}
-			newTransaction = {
+			let newTransaction = {
 				type: type,
 				qty: quantity,
 				date: Math.round((new Date()).getTime() / 1000)

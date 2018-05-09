@@ -82,12 +82,12 @@ function deleteUser(id) {
     return users().then(userCollection => {
       const user = this.getUserById(id);
       cash.deleteCash(user.cash);
-      ilen = user.investments.length;
-      dlen = user.debts.length;
-      for (i = 0; i < ilen; i++) {
+      let ilen = user.investments.length;
+      let dlen = user.debts.length;
+      for (let i = 0; i < ilen; i++) {
         investments.deleteInvestment(user.investments[i]);
       }
-      for (i = 0; i < dlen; i++) {
+      for (let i = 0; i < dlen; i++) {
         investments.deleteDebt(user.debts[i]);
       }
       return userCollection.removeOne({_id: id}).then(delInfo => {

@@ -103,15 +103,15 @@ function addCashTransaction(id, quantity, type) {
 	}
 	try {
 		return cash().then(cashCollection => {
-			cash = this.getCashById(id);
-			newAmount = 0;
-			if (!type && cash.currentAmount <= quantity) {
+			let c = this.getCashById(id);
+			let newAmount = 0;
+			if (!type && c.currentAmount <= quantity) {
 				newAmount = 0;
 			}
 			else {
-				newAmount = (type ? cash.currentAmount + quantity : cash.currentAmount - quantity);
+				newAmount = (type ? c.currentAmount + quantity : c.currentAmount - quantity);
 			}
-			newTransaction = {
+			let newTransaction = {
 				type: type,
 				qty: quantity,
 				date: Math.round((new Date()).getTime() / 1000)

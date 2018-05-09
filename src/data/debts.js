@@ -105,12 +105,12 @@ function addDebtTransaction(id, userId, quantity, type) {
 	}
 	try {
 		return debts().then(debtCollection => {
-			debt = this.getDebtById(id);
+			let debt = this.getDebtById(id);
 			if (!type && debt.currentAmount <= quantity) {
 				this.deleteDebt(id, userId);
 				return {};
 			}
-			newTransaction = {
+			let newTransaction = {
 				type: type,
 				qty: quantity,
 				date: Math.round((new Date()).getTime() / 1000)
