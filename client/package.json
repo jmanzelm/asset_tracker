@@ -33,15 +33,11 @@
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
-<<<<<<< HEAD
-    "request": "^2.85.0",
-=======
     "react": "^16.3.2",
     "react-bootstrap": "^0.32.1",
     "react-dom": "^16.3.2",
     "react-scripts": "1.1.4",
     "react-select": "^1.2.1",
->>>>>>> d6b4da8b0fbfcb227a82ce12b55d317e7c42f7c4
     "uuid": "^3.2.1"
   }
 }
