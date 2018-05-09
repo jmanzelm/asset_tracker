@@ -4,6 +4,8 @@ const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
 const app = express();
 const exphbs = require("express-handlebars");
+const configRoutes = require("./routes");
+const cash = require("../data/cash");
 
 const users = require("./src/data/users");
 
@@ -17,17 +19,7 @@ app.set("view engine", "handlebars");
 
 const saltRounds = 16;
 
-app.post("/login", (req, res) => {
-  users.login(req, res);
-});
-
-app.get("/", (req, res) => {
-  users.redirectAuth(req, res);
-});
-
-app.get("/logout", (req, res) => {
-  users.logout(req, res);  
-});
+configRoutes(app);
 
 // We can now navigate to localhost:3000
 app.listen(3000, function() {
