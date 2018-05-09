@@ -4,7 +4,9 @@ import { Nav,
         NavDropdown, 
         MenuItem, 
         FormControl,
-        Table } from 'react-bootstrap';
+        Table,
+        OverlayTrigger,
+        Popover } from 'react-bootstrap';
 import Select from 'react-select';
 import "react-select/dist/react-select.css";
 import './App.css';
@@ -151,6 +153,9 @@ class FilterTextBox extends Component {
     // Props needed: the assets to filter
     constructor(props, context){
         super(props, context);
+        this.detailsPopover = <Popover id="popover-positioned-right" title="Popover right">
+            <strong>Holy guacamole!</strong> Check this info.
+        </Popover>
     }
 
     makeAssetRows() {
@@ -159,6 +164,7 @@ class FilterTextBox extends Component {
 
         return <tr>{values}</tr>
     }
+    l
 
     makeAssetTable() {
         return <Table className="table asset-table" bordered hover> 
@@ -173,6 +179,7 @@ class FilterTextBox extends Component {
             </tr>
             </thead>
             <tbody>
+                <OverlayTrigger trigger="click" placement="right" overlay={this.detailsPopover}>
                 <tr>
                     <td> Item 1 </td>
                     <td> Item 1 </td>
@@ -180,6 +187,7 @@ class FilterTextBox extends Component {
                     <td> Item 1 </td>
                     <td> Item 1 </td>
                 </tr>
+                </OverlayTrigger>
                 <tr>
                     <td> Item 2 </td>
                     <td> Item 2 </td>
