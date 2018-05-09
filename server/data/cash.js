@@ -1,141 +1,89 @@
 const mongoCollections = require("../config/mongoCollections");
 const cash = mongoCollections.cash;
-const uuidv4 = require("uuid/v4");
-const users = require("./users");
+const uuid = require("node-uuid");
 
-function getAllCash() {
-	if (arguments.length !== 0) {
-		throw "No arguments are needed.";
-	}
-	try {
-		return cash().then(cashCollection => {
-			return cashCollection.find({}).toArray();
-		});
-	}
-	catch(error) {
-		throw error;
-	}
-}
+let exportedMethods = {
+   getAllCashHoldings() {
+    return cash().then(cashCollection => {
+      return cashCollection.find({}).toArray();
+    });
+  },
+  getCashHoldingsByUserId(id) {
+    return cash().then(cashCollection => {
+      return cashCollection.findOne({ user_id: id }).then(holdings => {
+        if (!holdings) throw "this holding does not exist";
+        return holdings;
+      });
+    });
+  },
+  addCashDeposit(amount, user_id) {
+    let ts = Math.round((new Date()).getTime() / 1000);
+    return cash().then(cashCollection => {
+        let deposit = {
+          type: "deposit",
+          amount: amount,
+          date: ts,
+          _id: uuid.v4()
+        };
+        //console.log("getting here?")
+        return cashCollection
+          .updateOne({user_id:user_id}, {$push:{ transactions: deposit}}, {upsert:true})
+          .then(results => {
+            //console.log(results);
+            return cashCollection.findOne({ user_id: user_id }).then(holding => {
+             // console.log(holding);
+                if (!holding) throw "this holding does not exist";
+                return holding;
+              });
+          });
+    });
+  },
+  addCashWithdrawal(amount, user_id){
+    let ts = Math.round((new Date()).getTime() / 1000);
+    return cash().then(cashCollection => {
+        let withdrawal = {
+          type: "withdrawal",
+          amount: amount,
+          date: ts,
+          _id: uuid.v4()
+        };
 
-function getCashById(id) {
-	if (arguments.length !== 1) {
-		throw "Please provide a single ID.";
-	}
-	if (typeof id !== "string") {
-		throw "The ID must be a string.";
-	}
-	try {
-		return cash().then(cashCollection => {
-			return cashCollection.findOne({_id: id}).then(cash => {
-				if (!cash) throw "Cash not found";
-				return cash;
-			});
-		});
-	}
-	catch(error) {
-		throw error;
-	}
-}
+        return cashCollection
+          .findOne({"user_id":user_id})
+          .then(holding=>{
+            let total = 0;
+            holding.transactions.forEach(function(element, index, array){
+              if (element.type=="deposit"){
+                total+=element.amount;
+              }
+              else if (element.type=="withdrawal"){
+                total-=element.amount;
+              }
+            });
+            if (total-withdrawal.amount<0){
+              throw "You cannot withdraw more money than you have"
+            }
+            cashCollection.updateOne({user_id:user_id}, {$push:{ transactions: withdrawal}})
+              .then(result => {
+                return cashCollection.findOne({ user_id: user_id }).then(holding => {
+                    if (!holding) throw "this holding does not exist";
+                    return holding;
+                  });
+              });
+          });
+    });
+  },
+  removeCash(id) {
+    return cash().then(cashCollection => {
+      return cashCollection.removeOne({ _id: id }).then(deletionInfo => {
+        if (deletionInfo.deletedCount === 0) {
+          throw `Could not delete cash holding with id of ${id}`;
+        } else {
+            return "Delete successful";
+        }
+      });
+    });
+  }
+};
 
-function addCash(startingAmount) {
-	if (arguments.length !== 2) {
-		throw "Please provide a user ID and starting amount.";
-	}
-	if (typeof startingAmount !== "number"){
-		"The starting amount must be a number."
-	}
-	try{
-		return cash().then(cashCollection => {
-			if (startingAmount <= 0) {
-				return {};
-			}
-			let newCash = {
-				_id: uuidv4(),
-				transactions: [],
-				startingAmount: startingAmount,
-				currentAmount: startingAmount
-			};
-			return cashCollection
-				.insertOne(newCash)
-				.then(insInfo => {
-					return insInfo.insertedId;
-				})
-				.then(newId => {
-					return this.getCashById(newId);
-				});
-		});
-	}
-	catch(error) {
-		throw error;
-	}
-}
-
-// should only be used by the user delete
-function deleteCash(id) {
-	if (arguments.length !== 2) {
-		throw "Please provide an cash ID.";
-	}
-	if (typeof id !== "string") {
-		throw "The ID must be a string.";
-	}
-	try {
-		return cash().then(cashCollection => {
-			return cashCollection.removeOne({_id: id}).then(delInfo => {
-				if (delInfo.deletedCount === 0) {
-					throw `Could not remove cash with id of ${id}.`;
-				} else {
-				}
-			});
-		});
-	}
-	catch(error) {
-		throw error;
-	}
-}
-
-// type is true if addition, false if reduction
-function addCashTransaction(id, quantity, type) {
-	if (arguments.length !== 4) {
-		throw "Please provide an cash ID, user ID, quantity, and type.";
-	}
-	if (typeof id !== "string" || typeof quantity !== "number" || typeof type !== "boolean"){
-		throw "The cash ID must be a string, quantity must be a number, and type must be a boolean.";
-	}
-	try {
-		return cash().then(cashCollection => {
-			let c = this.getCashById(id);
-			let newAmount = 0;
-			if (!type && c.currentAmount <= quantity) {
-				newAmount = 0;
-			}
-			else {
-				newAmount = (type ? c.currentAmount + quantity : c.currentAmount - quantity);
-			}
-			let newTransaction = {
-				type: type,
-				qty: quantity,
-				date: Math.round((new Date()).getTime() / 1000)
-			};
-			let updatedCash = {
-				transactions: (this.getCashById(id)).transactions.push(newTransaction),
-				currentAmount: newAmount
-			}
-			return cashCollection
-				.updateOne({_id: id}, {$set: updatedCash})
-				.then(result => {
-					return this.getCashById(id);
-				});
-		});
-	}
-	catch(error) {
-		throw error;
-	}
-}
-
-module.exports = {
-	getAllCash,
-	getCashById,
-	addCash,
-	deleteCash,
-	addCashTransaction
-}
+module.exports = exportedMethods;
