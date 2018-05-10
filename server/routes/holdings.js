@@ -39,6 +39,7 @@ const cashData = require("../data/cash");
   });
 
   app.post("/cash/deposit/:user_id/", (req, res)=>{
+    console.log("234");
   	let amount = req.body.amount;
   	let cashHoldings = cashData.addCashDeposit(amount, req.params.user_id).then(function(holdings){
         res.json(holdings);

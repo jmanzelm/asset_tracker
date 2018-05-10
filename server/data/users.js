@@ -11,7 +11,7 @@ const saltRounds = 16;
 
 // Users is a map of username: {userdetails}
 const users = {
-  "GenericUsername": {
+  "masterdetective123": {
     hashedPassword: "$2a$16$7JKSiEmoP3GNDSalogqgPu0sUbwder7CAN/5wnvCWe6xCKAKwlTD.", // elementarymydearwatson
     firstName: "Sherlock",
     lastName: "Holmes",
@@ -69,8 +69,10 @@ async function getUserDetails(username) {
  */
 async function login(request, response) {
   try {
+    console.log("I got a request")
     // Try to log in
     const {username, password} = request.body;
+    console.log(username, password);
     const success = await bcryptCompare(username, password);
     console.log(`Login was ${success ? "" : "un"}successful`);
     // If login was successful, set a cookie to the value of username
@@ -79,6 +81,7 @@ async function login(request, response) {
       response.cookie("AuthCookie", username);
       // redirect to / to go to home page
      // response.redirect("/");
+
      response.status(200).json({a:1});
       return;
     }
