@@ -24,16 +24,23 @@ export default class ModalLogin extends Component {
         this.doLogin = this.doLogin.bind(this);
         this.state = {
             username: "",
-            password: ""
+            password: "",
+            show: true
         }
     }
 
     doLogin() {
-        console.log("hey");
+        // console.log("hey");
         let a = post("http://localhost:3001/login/", {
             username: this.state.username,
             password: this.state.password
+        }).then( (response) => {
+            // console.log(response);
+            if (response.data.a === 1) {
+                this.setState({show: false});
+            }
         })
+        
         
     }
 
@@ -47,7 +54,7 @@ export default class ModalLogin extends Component {
     render() {
         return (
             <div className="login">
-                <Modal show={true} onHide={this.doLogin}>
+                <Modal show={this.state.show}>
                 <Modal.Header> Login </Modal.Header>
                 <Modal.Body>
                 <form onSubmit={this.handleSubmit}>
