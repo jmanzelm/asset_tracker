@@ -1,7 +1,7 @@
 /**
  *  Provides post functionality
  *  @author: Taylor He
- * 
+ *
  */
 import fetch from 'isomorphic-fetch';
 // require("es6-promise").polyfill();
@@ -24,4 +24,12 @@ export function post(path, body) {
         console.log(response);
     })
    .catch((e) => {console.log(e)})
+}
+
+export function get(path){
+    fetch(path)
+    .then((response) => {
+        return response;
+    })
+    .catch((e) => {console.log(e)})
 }
