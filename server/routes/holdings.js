@@ -12,9 +12,9 @@ const cashData = require("../data/cash");
 
   app.get("/cash/:user_id", (req, res)=>{
     try{
-      
+
     	cashData.getCashHoldingsByUserId(req.params.user_id).then(function(holdings){
-        
+
     	 res.json(holdings);
       });
 
@@ -36,7 +36,7 @@ const cashData = require("../data/cash");
 
   app.post("/stock/:user_id", (req, res)=>{
 
-  });  
+  });
 
   app.post("/cash/deposit/:user_id/", (req, res)=>{
   	let amount = req.body.amount;
@@ -52,7 +52,7 @@ const cashData = require("../data/cash");
   	let amount = req.body.amount;
   	let cashHoldings = cashData.addCashWithdrawal(amount, req.params.user_id).then(function(holdings){
       res.json(holdings);
-      
+
     });
 
   });
