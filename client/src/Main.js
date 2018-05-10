@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
-import { Nav, 
-        NavItem, 
-        NavDropdown, 
-        MenuItem, 
-        FormControl,
-        Table,
-        OverlayTrigger,
-        Popover } from 'react-bootstrap';
+import {
+    Nav,
+    NavItem,
+    NavDropdown,
+    MenuItem,
+    FormControl,
+    Table,
+    OverlayTrigger,
+    Popover
+} from 'react-bootstrap';
 import Select from 'react-select';
+import axios from 'axios';
 import "react-select/dist/react-select.css";
 import './App.css';
 // import getUserById from './data/users'
@@ -21,7 +24,7 @@ export default class Main extends Component {
         this.handleNavSelect = this.handleNavSelect.bind(this);
         this.makeNavbar = this.makeNavbar.bind(this);
         this.state = {
-            input : ""
+            input: ""
         }
         // console.log(getUserById('3'))
     }
@@ -39,18 +42,18 @@ export default class Main extends Component {
     makeNavbar() {
         return <Nav bsStyle="pills" stacked activeKey={1} >
             <NavItem eventKey={1} href="/home">
-              Stocks
+                Stocks
             </NavItem>
             <NavItem eventKey={2} href="/crypto">
-              Cryptocurrencies
+                Cryptocurrencies
             </NavItem>
             <NavItem eventKey={3} href="/cash">
-              Cash
+                Cash
             </NavItem>
             <NavItem eventKey={4} href="/debts">
-              Debts
+                Debts
             </NavItem>
-          </Nav>;
+        </Nav>;
     }
     render() {
         return (
@@ -59,7 +62,7 @@ export default class Main extends Component {
                     <h3 id="asset-tracker-name">Asset Tracker</h3>
                 </div>
                 <div class="search">
-                    <FilterTextBox applyFilter={t => this.setState({ filter: t })}/>
+                    <FilterTextBox applyFilter={t => this.setState({ filter: t })} />
                 </div>
                 <div>
                     <div class="navbar">
@@ -75,34 +78,34 @@ export default class Main extends Component {
 }
 
 class FilterTextBox extends Component {
-     constructor(props, context) {
+    constructor(props, context) {
         super(props, context);
         this.handleChange = this.handleChange.bind(this);
- 
+
         let init_val = "";
         // Initialize the filter text box based on the query string
-        this.state = { 
+        this.state = {
             current_text: init_val
         };
         this.last_run_filter = init_val;
- 
+
         props.applyFilter(this.last_run_filter);
     }
     handleChange(val) {
-        this.setState({current_text: val.value})
+        this.setState({ current_text: val.value })
     }
- 
+
     onFilterChange = evt => {
         this.setState({ current_text: evt.target.value });
     };
- 
+
     onFilterKey = evt => {
         if (evt.charCode === 13) {
             this.last_run_filter = this.state.current_text;
             this.props.applyFilter(this.last_run_filter);
         }
     };
- 
+
     onFilterDown = evt => {
         if (evt.keyCode === 27) {
             this.setState({ current_text: this.last_run_filter });
@@ -121,17 +124,17 @@ class FilterTextBox extends Component {
             })
         }
         return [{ value: 'one', label: 'APPL' },
-              { value: 'two', label: 'GOOG' }];
+        { value: 'two', label: 'GOOG' }];
     }
- 
+
     render() {
-        return (<Select 
+        return (<Select
             clearable={false}
             name="form-field-name"
             value={this.state.current_text}
             onChange={this.handleChange}
             options={this.getTickerOptions()}
-            />)
+        />)
         return (
             <FormControl
                 autoFocus
@@ -143,69 +146,69 @@ class FilterTextBox extends Component {
                 onKeyPress={this.onFilterKey}
                 onKeyDown={this.onFilterDown}
 
-             />
-         );
-     }
- }
+            />
+        );
+    }
+}
 
 
- class AssetTable extends Component {
+class AssetTable extends Component {
     // Props needed: the assets to filter
-    constructor(props, context){
+    constructor(props, context) {
         super(props, context);
-        this.detailsPopover = <Popover id="popover-positioned-right" title="Popover right">
-            <strong>Holy guacamole!</strong> Check this info.
+        this.detailsPopover = <Popover id="popover-positioned-right">
+            Apple (AAPL)
+            Shares: <br/>
+            Price: <br/>
+            Value: <br/>
+            Total Gain: <br/>
+            Add Shares: <br/>
+            <FormControl
+                autoFocus
+                type="text"
+                placeholder="amount of shares"
+            />
         </Popover>
     }
 
     makeAssetRows() {
         let values = [];
-        
+
 
         return <tr>{values}</tr>
     }
     l
 
     makeAssetTable() {
-        return <Table className="table asset-table" bordered hover> 
+        let tableRows = [];
+        for (let i = 0; i < 10; i++) {
+            tableRows.push(<OverlayTrigger rootClose trigger="click" placement="right" overlay={this.detailsPopover}>
+                <tr>
+                    <td> {i} </td>
+                    <td> {i} shares </td>
+                    <td> $ {i} </td>
+                    <td> $ {i*i} </td>
+                    <td> +/- {i} % </td>
+                </tr>
+            </OverlayTrigger>)
+        }
+        return <Table className="table asset-table" bordered hover>
             <thead>
-            <tr>
-                <th> Symbol </th>
-                <th> Quantity </th>
-                <th> Price </th>
-                <th> Value </th>
-                <th> +/- </th>
+                <tr>
+                    <th> Symbol </th>
+                    <th> Quantity </th>
+                    <th> Price </th>
+                    <th> Value </th>
+                    <th> + / - </th>
 
-            </tr>
+                </tr>
             </thead>
             <tbody>
-                <OverlayTrigger trigger="click" placement="right" overlay={this.detailsPopover}>
-                <tr>
-                    <td> Item 1 </td>
-                    <td> Item 1 </td>
-                    <td> Item 1 </td>
-                    <td> Item 1 </td>
-                    <td> Item 1 </td>
-                </tr>
-                </OverlayTrigger>
-                <tr>
-                    <td> Item 2 </td>
-                    <td> Item 2 </td>
-                    <td> Item 2 </td>
-                    <td> Item 2 </td>
-                    <td> Item 2 </td>
-                </tr>
-                <tr>
-                    <td> Item 3 </td>
-                    <td> Item 3 </td>
-                    <td> Item 3 </td>
-                    <td> Item 3 </td>
-                    <td> Item 3 </td>
-                </tr>
+                {tableRows}
             </tbody>
         </Table>
     }
     render() {
         return <div> {this.makeAssetTable()} </div>
     }
- }
+}
