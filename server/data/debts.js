@@ -8,39 +8,52 @@ let exportedMethods = {
       return debtsCollection.find({}).toArray();
     });
   },
-  getCashHoldingsByUserId(id) {
+  getDebtsByUserId(id) {
     return debts().then(debtsCollection => {
-      return cashCollection.findOne({ user_id: id }).then(holdings => {
-        if (!holdings) throw "this recipe does not exist";
-        return holdings;
+      return debtCollection.find({ user_id: id }).then(debt => {
+        if (!debt) throw "this debt does not exist";
+        return debt;
       });
     });
   },
-  addCash(amount, user_id) {
+  addToDebt(creditor, amount, user_id) {
     let ts = Math.round((new Date()).getTime() / 1000);
-    return cash().then(cashCollection => {
-        let deposit = {
-          type: "deposit",
+    return cash().then(debtCollection => {
+        let debt = {
+          creditor: creditor,
           amount: amount,
           date: ts,
           _id: uuid.v4()
         };
 
-        return cashCollection
-          .updateOne({"user_id":user_id}, {$push:{ transactions: deposit}}, {upsert:true})
-          .then(newId => {
-            return cashCollection.findOne({ _id: newId }).then(recipe => {
-                if (!recipe) throw "this holding does not exist";
-                return recipe;
+        return debtCollection
+          .findOne({user_id: user_id, "creditors.creditor":creditor})
+          .then(existingDebt=>{
+            let newAmount = amount;
+            if (!existingDebt)
+            {
+              newAmount+=amount;
+            }
+            else{
+              existingDebt.creditors.forEach(element => {
+                newAmount+=element.amount;
               });
+            }
+            return debtCollection.updateOne({"user_id":user_id}, {$push:{ "creditors.creditor": debt}}, {upsert:true})
+                    .then(newId => {
+                      return debtCollection.findOne({ _id: newId }).then(newDebt => {
+                          if (!newDebt) throw "this debt does not exist";
+                          return newDebt;
+                        });
+                    });
           });
     });
   },
-  removeCash(id) {
-    return cash().then(cashCollection => {
-      return cashCollection.removeOne({ _id: id }).then(deletionInfo => {
+  removeDebt(user_id, creditor) {
+    return cash().then(debtCollection => {
+      return debtCollection.removeOne({ user_id: user_id, "creditors.creditor": creditor }).then(deletionInfo => {
         if (deletionInfo.deletedCount === 0) {
-          throw `Could not delete cash holding with id of ${id}`;
+          throw `Could not delete debt with id of ${id}`;
         } else {
             return "Delete successful";
         }
