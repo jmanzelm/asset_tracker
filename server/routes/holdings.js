@@ -11,17 +11,13 @@ const cashData = require("../data/cash");
   });
 
   app.get("/cash/:user_id", (req, res)=>{
-    try{
-
-    	cashData.getCashHoldingsByUserId(req.params.user_id).then(function(holdings){
-
-    	 res.json(holdings);
-      });
-
-    }catch(e){
+    cashData.getCashHoldingsByUserId(req.params.user_id).then( function(holdings) {
+     res.json(holdings);
+    }).catch(e => {
       res.status(500).json(e);
-    }
-  });
+    });
+  }
+);
 
   app.get("/debt/:user_id", (req, res)=>{
 
@@ -40,18 +36,18 @@ const cashData = require("../data/cash");
 
   app.post("/cash/deposit/:user_id/", (req, res)=>{
     console.log("234");
-  	let amount = req.body.amount;
-  	let cashHoldings = cashData.addCashDeposit(amount, req.params.user_id).then(function(holdings){
+    let amount = req.body.amount;
+    let cashHoldings = cashData.addCashDeposit(amount, req.params.user_id).then(function(holdings){
         res.json(holdings);
     });
     /*console.log(cashHoldings);
-  	res.json(cashHoldings);
+    res.json(cashHoldings);
 */
   });
 
   app.post("/cash/withdraw/:user_id", (req, res)=>{
-  	let amount = req.body.amount;
-  	let cashHoldings = cashData.addCashWithdrawal(amount, req.params.user_id).then(function(holdings){
+    let amount = req.body.amount;
+    let cashHoldings = cashData.addCashWithdrawal(amount, req.params.user_id).then(function(holdings){
       res.json(holdings);
 
     });

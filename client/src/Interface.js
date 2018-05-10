@@ -12,30 +12,19 @@ export function post(path, body) {
     return axios({
       method: 'post',
       url: path,
-      data: body
+      data: body,
+      headers: {
+        "Access-Control-Allow-Origin": "*"
+      }
     });
-   //  fetch(path, {
-   //    method: 'POST',
-   //    mode:'no-cors',
-   //    headers: {
-   //      "Cache-Control": "no-cache",
-   //      'Content-Type': 'application/json'
-   //    },
-   //    body: JSON.stringify({
-   //          username: "masterdetective123",
-   //          password: "elementarymydearwatson"
-   //    })
-   //  })
-   // .then((response) => {
-   //      console.log(response);
-   //  })
-   // .catch((e) => {console.log(e)})
 }
 
-// export function get(path){
-//     fetch(path)
-//     .then((response) => {
-//         return response;
-//     })
-//     .catch((e) => {console.log(e)})
-// }
+export function get(path){
+    fetch(path)
+    .then((response) => {
+        return response;
+    })
+    .catch((e) => {
+      console.log(e)
+    });
+}

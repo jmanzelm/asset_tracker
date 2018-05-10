@@ -19,8 +19,8 @@
 }
 
 .asset-table th {
-  background-color: black;
-  color: white;
+  /*background-color: black;
+  color: white;*/
   font-size: 2em;
 }
 
@@ -32,8 +32,17 @@
 
 
 
-
-
+.connecting-spinner {
+  border: 2px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: solid blue;
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  margin-right: 10px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
 
 .App {
   text-align: center;

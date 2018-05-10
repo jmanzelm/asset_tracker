@@ -21,40 +21,20 @@ import ModalLogin from './ModalLogin';
 export default class Main extends Component {
     constructor(props, context) {
         super(props, context);
-        this.handleNavSelect = this.handleNavSelect.bind(this);
-        this.makeNavbar = this.makeNavbar.bind(this);
+        this.toggleNavKey = this.toggleNavKey.bind(this);
         this.state = {
-            input: ""
+            input: "",
+            activeKey: "Stocks"
         }
-        // console.log(getUserById('3'))
     }
 
-    componentWillMount() {
-
+    toggleNavKey(eventKey, event) {
+    	event.preventDefault();
+    	this.setState({
+    		activeKey: eventKey
+    	})
     }
 
-    handleNavSelect() {
-        this.setState({
-            tab: ""
-        });
-    }
-
-    makeNavbar() {
-        return <Nav bsStyle="pills" stacked activeKey={1} >
-            <NavItem eventKey={1} href="/home">
-                Stocks
-            </NavItem>
-            <NavItem eventKey={2} href="/crypto">
-                Cryptocurrencies
-            </NavItem>
-            <NavItem eventKey={3} href="/cash">
-                Cash
-            </NavItem>
-            <NavItem eventKey={4} href="/debts">
-                Debts
-            </NavItem>
-        </Nav>;
-    }
     render() {
         return (
             <div>
@@ -62,15 +42,13 @@ export default class Main extends Component {
                 <div>
                     <h3 id="asset-tracker-name">Asset Tracker</h3>
                 </div>
-                <div class="search">
+                <div className="search">
                     <FilterTextBox applyFilter={t => this.setState({ filter: t })} />
                 </div>
                 <div>
-                    <div class="navbar">
-                        {this.makeNavbar()}
-                    </div>
+                    <AssetNavbar activeKey={this.state.activeKey} toggleNavKey={this.toggleNavKey}/>
                     <div>
-                        <AssetTable />
+                        <AssetTable activeKey={this.state.activeKey}/>
                     </div>
                 </div>
             </div>
@@ -78,6 +56,47 @@ export default class Main extends Component {
     }
 }
 
+/**
+ *	Handles table view select
+ */
+class AssetNavbar extends Component {
+	constructor(props, context) {
+        super(props, context);
+        this.handleNavSelect = this.handleNavSelect.bind(this);
+        this.makeNavbar = this.makeNavbar.bind(this);
+        this.navItems = [
+        	"Stocks",
+        	"Cryptocurrencies",
+        	"Cash",
+        	"Debt"
+        ];
+    }
+
+    handleNavSelect(eventKey, event) {
+    	this.props.toggleNavKey(eventKey, event);
+    	return;
+    }
+
+	makeNavbar() {
+        return <Nav bsStyle="pills" stacked activeKey={this.props.activeKey} >
+        	{this.navItems.map((itemName) => {
+        		return <NavItem eventKey={itemName} onSelect={this.handleNavSelect} >
+        			{itemName}
+        		</NavItem>
+        	})}
+        </Nav>;
+    }
+    render() {
+    	return <div class="navbar">
+                        {this.makeNavbar()}
+                    </div>
+    }
+
+}
+
+/**
+ *	Handles Filter
+ */
 class FilterTextBox extends Component {
     constructor(props, context) {
         super(props, context);
@@ -124,8 +143,10 @@ class FilterTextBox extends Component {
                 value: s.Value
             })
         }
-        return [{ value: 'one', label: 'APPL' },
-        { value: 'two', label: 'GOOG' }];
+        return [
+        { value: 'one', label: 'APPL' },
+        { value: 'two', label: 'GOOG' }
+        ];
     }
 
     render() {
@@ -136,19 +157,6 @@ class FilterTextBox extends Component {
             onChange={this.handleChange}
             options={this.getTickerOptions()}
         />)
-        return (
-            <FormControl
-                autoFocus
-                type="text"
-                placeholder="Search Ticker Symbol"
-                className={this.state.current_text === this.last_run_filter ? "filter-active" : "filter-inactive"}
-                value={this.state.current_text}
-                onChange={this.onFilterChange}
-                onKeyPress={this.onFilterKey}
-                onKeyDown={this.onFilterDown}
-
-            />
-        );
     }
 }
 
@@ -158,7 +166,6 @@ class AssetTable extends Component {
     constructor(props, context) {
         super(props, context);
         this.detailsPopover = <Popover id="popover-positioned-right">
-            Apple (AAPL)
             Shares: <br/>
             Price: <br/>
             Value: <br/>
@@ -174,16 +181,14 @@ class AssetTable extends Component {
 
     makeAssetRows() {
         let values = [];
-
-
         return <tr>{values}</tr>
     }
-    l
 
     makeAssetTable() {
         let tableRows = [];
         for (let i = 0; i < 10; i++) {
-            tableRows.push(<OverlayTrigger rootClose trigger="click" placement="right" overlay={this.detailsPopover}>
+            tableRows.push(
+            <OverlayTrigger rootClose trigger="click" placement="right" overlay={this.detailsPopover}>
                 <tr>
                     <td> {i} </td>
                     <td> {i} shares </td>
@@ -201,7 +206,6 @@ class AssetTable extends Component {
                     <th> Price </th>
                     <th> Value </th>
                     <th> + / - </th>
-
                 </tr>
             </thead>
             <tbody>

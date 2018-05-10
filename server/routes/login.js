@@ -43,9 +43,11 @@ const users = {
  */
 async function bcryptCompare(username, password) {
   console.log("Logging in...");
+  let hpass = users[username] ? users[username].hashedPassword : "";
+
   if (users[username]) {
     // console.log("Comparing", password, "to", users[username].hashedPassword);
-    return await bcrypt.compare(password, users[username].hashedPassword);
+    return await bcrypt.compare(password, hpass);
   }
   return false;
 }
@@ -82,10 +84,10 @@ async function login(request, response) {
       // redirect to / to go to home page
      // response.redirect("/");
 
-     response.status(200).json({a:1});
+     response.status(200).json(await getUserDetails(username));
       return;
     }
-    response.status(200).json({a:2});
+    response.status(200).json({});
     // Render handlebars file with parameter failedAttempt=true
     //response.render(path.join(__dirname + '/../views/layouts/login.handlebars'), { failedAttempt:true });
   } catch (e) {

@@ -10,7 +10,8 @@ import {
     FormControl,
     Modal,
     ControlLabel,
-    Button
+    Button,
+    Alert
 } from 'react-bootstrap';
 import './App.css';
 import { post } from './Interface';
@@ -25,23 +26,35 @@ export default class ModalLogin extends Component {
         this.state = {
             username: "",
             password: "",
-            show: true
+            show: true,
+            style: "info",
+            activity: "",
+            alertType: ""
         }
     }
 
     doLogin() {
-        // console.log("hey");
+        this.setState({
+            message: `Attempting login for ${this.state.username}...`,
+            "alertType": "info",
+            "activity": "logging-in"
+        })
+        // Post to /login server with username and password
         let a = post("http://localhost:3001/login/", {
             username: this.state.username,
             password: this.state.password
         }).then( (response) => {
-            // console.log(response);
-            if (response.data.a === 1) {
+            console.log(response);
+            if (Object.keys(response.data).length !== 0) {
                 this.setState({show: false});
+            } else {
+                this.setState({
+                    message: "Failed to login. Please try again",
+                    "alertType": "danger",
+                    activity: ""
+                })
             }
         })
-        
-        
     }
 
     handleChange(e) {
@@ -66,7 +79,12 @@ export default class ModalLogin extends Component {
                         <ControlLabel>Password:</ControlLabel>
                         <FormControl type="password"  value={this.state.password} onChange={this.handleChange} />
                     </FormGroup>
-                </form> 
+                </form>
+                {this.state.alertType !== "" && 
+                    <Alert bsStyle={this.state.alertType}>
+                    { this.state.activity ==='logging-in' && <div className='connecting-spinner'/> }
+                    { this.state.message }
+                    </Alert>}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button onClick={this.doLogin} type="submit"> Login </Button>
