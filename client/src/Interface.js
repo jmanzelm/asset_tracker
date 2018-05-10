@@ -26,10 +26,10 @@ export function post(path, body) {
    .catch((e) => {console.log(e)})
 }
 
-export function get(path){
-    fetch(path)
-    .then((response) => {
-        return response;
-    })
-    .catch((e) => {console.log(e)})
-}
+// export function get(path){
+//     fetch(path)
+//     .then((response) => {
+//         return response;
+//     })
+//     .catch((e) => {console.log(e)})
+// }
