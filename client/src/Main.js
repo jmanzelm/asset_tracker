@@ -14,7 +14,7 @@ import axios from 'axios';
 import "react-select/dist/react-select.css";
 import './App.css';
 import ModalLogin from './ModalLogin';
-
+import AssetTable from './AssetTable';
 
 
 
@@ -22,12 +22,15 @@ export default class Main extends Component {
     constructor(props, context) {
         super(props, context);
         this.toggleNavKey = this.toggleNavKey.bind(this);
+        this.storeUserData = this.storeUserData.bind(this);
         this.state = {
-            input: "",
             activeKey: "Stocks"
         }
     }
 
+    storeUserData(d) {
+    	this.setState(d.data, () => {console.log(this.state)});
+    }
     toggleNavKey(eventKey, event) {
     	event.preventDefault();
     	this.setState({
@@ -36,10 +39,12 @@ export default class Main extends Component {
     }
 
     render() {
+    	let modalLogin = <ModalLogin storeUserData={this.storeUserData}/>
+                
         return (
             <div>
-            	<ModalLogin />
-                <div>
+           		{modalLogin}
+            	<div>
                     <h3 id="asset-tracker-name">Asset Tracker</h3>
                 </div>
                 <div className="search">
@@ -48,7 +53,7 @@ export default class Main extends Component {
                 <div>
                     <AssetNavbar activeKey={this.state.activeKey} toggleNavKey={this.toggleNavKey}/>
                     <div>
-                        <AssetTable activeKey={this.state.activeKey}/>
+                        <AssetTable activeKey={this.state.activeKey} userid={this.state._id}/>
                     </div>
                 </div>
             </div>
@@ -157,63 +162,5 @@ class FilterTextBox extends Component {
             onChange={this.handleChange}
             options={this.getTickerOptions()}
         />)
-    }
-}
-
-
-class AssetTable extends Component {
-    // Props needed: the assets to filter
-    constructor(props, context) {
-        super(props, context);
-        this.detailsPopover = <Popover id="popover-positioned-right">
-            Shares: <br/>
-            Price: <br/>
-            Value: <br/>
-            Total Gain: <br/>
-            Add Shares: <br/>
-            <FormControl
-                autoFocus
-                type="text"
-                placeholder="amount of shares"
-            />
-        </Popover>
-    }
-
-    makeAssetRows() {
-        let values = [];
-        return <tr>{values}</tr>
-    }
-
-    makeAssetTable() {
-        let tableRows = [];
-        for (let i = 0; i < 10; i++) {
-            tableRows.push(
-            <OverlayTrigger rootClose trigger="click" placement="right" overlay={this.detailsPopover}>
-                <tr>
-                    <td> {i} </td>
-                    <td> {i} shares </td>
-                    <td> $ {i} </td>
-                    <td> $ {i*i} </td>
-                    <td> +/- {i} % </td>
-                </tr>
-            </OverlayTrigger>)
-        }
-        return <Table className="table asset-table" bordered hover>
-            <thead>
-                <tr>
-                    <th> Symbol </th>
-                    <th> Quantity </th>
-                    <th> Price </th>
-                    <th> Value </th>
-                    <th> + / - </th>
-                </tr>
-            </thead>
-            <tbody>
-                {tableRows}
-            </tbody>
-        </Table>
-    }
-    render() {
-        return <div> {this.makeAssetTable()} </div>
     }
 }
