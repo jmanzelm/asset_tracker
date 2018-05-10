@@ -11,20 +11,20 @@ const saltRounds = 16;
 
 // Users is a map of username: {userdetails}
 const users = {
-  "masterdetective123": {  
+  "GenericUsername": {
     hashedPassword: "$2a$16$7JKSiEmoP3GNDSalogqgPu0sUbwder7CAN/5wnvCWe6xCKAKwlTD.", // elementarymydearwatson
-    firstName: "Sherlock", 
+    firstName: "Sherlock",
     lastName: "Holmes",
     profession: "Detective",
     _id: "bd207af6-7c73-4ba8-a8bc-e4fb20df5d08"
   },
 
-  "lemon": {  
+  "lemon": {
     hashedPassword: "$2a$16$SsR2TGPD24nfBpyRlBzINeGU61AH0Yo/CbgfOlU1ajpjnPuiQaiDm", // damnyoujackdonaghy
-    firstName: "Elizabeth", 
+    firstName: "Elizabeth",
     lastName: "Lemon",
     profession: "Writer",
-  }, 
+  },
 
   "theboywholived": {
     hashedPassword: "$2a$16$4o0WWtrq.ZefEmEbijNCGukCezqWTqz1VWlPm/xnaLM8d3WlS5pnK", // quidditch
@@ -65,7 +65,7 @@ async function getUserDetails(username) {
  *  else re-renders the login page
  *
  *  @param {Object} request
- *  @param {Object} response 
+ *  @param {Object} response
  */
 async function login(request, response) {
   try {
@@ -78,11 +78,13 @@ async function login(request, response) {
       console.log("Setting AuthCookie...")
       response.cookie("AuthCookie", username);
       // redirect to / to go to home page
-      response.redirect("/");
+     // response.redirect("/");
+     response.status(200).json({a:1});
       return;
     }
+    response.status(200).json({a:2});
     // Render handlebars file with parameter failedAttempt=true
-    response.render(path.join(__dirname + '/../views/layouts/login.handlebars'), { failedAttempt:true });
+    //response.render(path.join(__dirname + '/../views/layouts/login.handlebars'), { failedAttempt:true });
   } catch (e) {
     response.status(500).json({error: e});
   }
@@ -92,9 +94,9 @@ async function login(request, response) {
  *  Mainly a redirect function when a user tries to access /
  *  Checks if a user is logged in, redirects to login page
  *  or home page as needed
- *  
+ *
  *  @param {Object} request
- *  @param {Object} response 
+ *  @param {Object} response
  */
 async function redirectAuth(request, response) {
   try {
@@ -102,7 +104,7 @@ async function redirectAuth(request, response) {
     // and render handlebars file with parameter failedAttempt=false
     if (!(request.cookies && request.cookies.AuthCookie)) {
       response.render(
-        path.join(__dirname + '/../views/layouts/login.handlebars'), 
+        path.join(__dirname + '/../views/layouts/login.handlebars'),
         { failedAttempt: false }
       );
       return;
@@ -116,9 +118,9 @@ async function redirectAuth(request, response) {
 
 /**
  *  User logout function. Clears Auth cookie, if there is one.
- *  
+ *
  *  @param {Object} request
- *  @param {Object} response 
+ *  @param {Object} response
  */
 async function logout(req, res) {
   try {
@@ -129,7 +131,7 @@ async function logout(req, res) {
       success = true;
     }
     res.status(200).render(
-      path.join(__dirname + "/../views/layouts/logout.handlebars"), 
+      path.join(__dirname + "/../views/layouts/logout.handlebars"),
       {success: success}
     );
   } catch (e) {
