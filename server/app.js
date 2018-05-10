@@ -19,7 +19,7 @@ const saltRounds = 16;
 configRoutes(app);
 
 // We can now navigate to localhost:3000
-app.listen(3000, function() {
+app.listen(3001, function() {
   console.log(
     "Your server is now listening on port 3000!"
   );
