@@ -122,7 +122,7 @@ function addInvestmentTransaction(id, userId, quantity, type) {
 				currentAmount: (type ? investment.currentAmount + quantity : investment.currentAmount - quantity)
 			}
 			return investmentCollection
-				.updateOne({_id: id}, {$set: updatedInvestment})
+				.updateOne({_id: id}, {$set: updatedInvestment}, {upsert:true})
 				.then(result => {
 					return this.getInvestmentById(id);
 				});
