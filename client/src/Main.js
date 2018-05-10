@@ -13,7 +13,7 @@ import Select from 'react-select';
 import axios from 'axios';
 import "react-select/dist/react-select.css";
 import './App.css';
-// import getUserById from './data/users'
+import ModalLogin from './ModalLogin';
 
 
 
@@ -58,6 +58,7 @@ export default class Main extends Component {
     render() {
         return (
             <div>
+            	<ModalLogin />
                 <div>
                     <h3 id="asset-tracker-name">Asset Tracker</h3>
                 </div>
