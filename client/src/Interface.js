@@ -4,7 +4,7 @@
  *
  */
 // import fetch from 'isomorphic-fetch';
-// require("es6-promise").polyfill();
+
 import axios from 'axios';
 
 export function post(path, body) {
@@ -12,21 +12,23 @@ export function post(path, body) {
     return axios({
       method: 'post',
       url: path,
-      data: body,
-      headers: {
-        "Access-Control-Allow-Origin": "*"
-      }
+      data: body, 
     });
 }
 
 export function get(path){
-    let p = "https://localhost:3001/prices/stock/AAPL";
-    axios.get(p)
-    .then((response) => {
+    // let p = "http://localhost:3001/prices/stock/AAPL/";
+    return axios({
+      method: 'get',
+      url: path
+    })
+    .then(response => {
         console.log(response);
         return response;
     })
     .catch((e) => {
-      console.log("error is:", e.response)
+      console.log("error is:", e.data)
     });
 }
+
+// console.log("meh", get("a"))
