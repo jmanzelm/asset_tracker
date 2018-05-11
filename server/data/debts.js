@@ -10,21 +10,20 @@ module.exports = ModuleA;
 
 const users = require("./users");
 
-ModuleA.getAllDebts = function() {
+ModuleA.getAllDebts = async function() {
 	if (arguments.length !== 0) {
 		throw "No arguments are needed.";
 	}
 	try {
-		return debts().then(debtCollection => {
-			return debtCollection.find({}).toArray();
-		});
+		let debtCol = debts();
+		return await debtCol.find({}).toArray();
 	}
 	catch(error) {
 		throw error;
 	}
 }
 
-ModuleA.getDebtById = function(id) {
+ModuleA.getDebtById = async function(id) {
 	if (arguments.length !== 1) {
 		throw "Please provide a single ID.";
 	}
@@ -32,19 +31,18 @@ ModuleA.getDebtById = function(id) {
 		throw "The ID must be a string.";
 	}
 	try {
-		return debts().then(debtCollection => {
-			return debtCollection.findOne({_id: id}).then(debt => {
-				if (!debt) throw "Debt not found";
-				return debt;
-			});
-		});
-	}
-	catch(error) {
+		let debtCol = debts();
+		let debt = await debtCol.findOne({_id: id});
+		if (debt) {
+			return debt;
+		}
+		throw "Debt not found";
+	} catch (error) {
 		throw error;
 	}
 }
 
-ModuleA.addDebt = function(userId, creditor, startingAmount) {
+ModuleA.addDebt = async function(userId, creditor, startingAmount) {
 	if (arguments.length !== 3) {
 		throw "Please provide a user ID, creditor, and starting amount.";
 	}
@@ -52,34 +50,27 @@ ModuleA.addDebt = function(userId, creditor, startingAmount) {
 		"The user ID and symbol must be strings and starting amount must be a number."
 	}
 	try{
-		return debts().then(debtCollection => {
-			if (startingAmount <= 0) {
-				return {};
-			}
-			let newDebt = {
-				_id: uuidv4(),
-				creditor: creditor,
-				transactions: [],
-				startingAmount: startingAmount,
-				currentAmount: startingAmount
-			};
-			return debtCollection
-				.insertOne(newDebt)
-				.then(insInfo => {
-					users.extendDebtList(userId, insInfo.insertedId);
-					return insInfo.insertedId;
-				})
-				.then(newId => {
-					return this.getDebtById(newId);
-				});
-		});
-	}
-	catch(error) {
+		if (startingAmount <= 0) {
+			return {};
+		}
+		
+		let debtCol = debts();
+		let newDebt = {
+			_id: uuidv4(),
+			creditor: creditor,
+			transactions: [],
+			startingAmount: startingAmount,
+			currentAmount: startingAmount
+		};
+		let insInfo = debtCol.insertOne(newDebt)
+		let newId = await users.extendDebtList(userId, insInfo.insertedId);
+		return this.getDebtById(newId);
+	} catch (error) {
 		throw error;
 	}
 }
 
-ModuleA.deleteDebt = function(id, userId) {
+ModuleA.deleteDebt = async function(id, userId) {
 	if (arguments.length !== 2) {
 		throw "Please provide an debt ID and a user ID.";
 	}
@@ -87,15 +78,13 @@ ModuleA.deleteDebt = function(id, userId) {
 		throw "Both IDs must be strings.";
 	}
 	try {
-		return debts().then(debtCollection => {
-			return debtCollection.removeOne({_id: id}).then(delInfo => {
-				if (delInfo.deletedCount === 0) {
-					throw `Could not remove debt with id of ${id}.`;
-				} else {
-					users.shortenDebtList(userId, id);
-				}
-			});
-		});
+		let debtCol = debts();
+		let delInfo = debtCol.removeOne({_id: id});
+		if (delInfo.deletedCount !== 0) {
+			users.shortenDebtList(userId, id);
+		} else {
+			throw `Could not remove debt with id of ${id}.`
+		}
 	}
 	catch(error) {
 		throw error;
@@ -103,7 +92,7 @@ ModuleA.deleteDebt = function(id, userId) {
 }
 
 // type is either "add" or "subtract"
-ModuleA.addDebtTransaction = function(id, userId, quantity, type) {
+ModuleA.addDebtTransaction = async function(id, userId, quantity, type) {
 	if (arguments.length !== 3) {
 		throw "Please provide an debt ID, user ID, quantity, and type.";
 	}
@@ -111,27 +100,23 @@ ModuleA.addDebtTransaction = function(id, userId, quantity, type) {
 		throw "The debt ID, user ID, and type must be strings and quantity must be a number.";
 	}
 	try {
-		return debts().then(debtCollection => {
-			debt = this.getDebtById(id);
-			if (type === "subtract" && debt.currentAmount <= quantity) {
-				this.deleteDebt(id, userId);
-				return {};
-			}
-			newTransaction = {
-				type: type,
-				qty: quantity,
-				date: Math.round((new Date()).getTime() / 1000)
-			};
-			let updatedDebt = {
-				transactions: (this.getDebtById(id)).transactions.push(newTransaction),
-				currentAmount: (type === "add" ? debt.currentAmount + quantity : debt.currentAmount - quantity)
-			}
-			return debtCollection
-				.updateOne({_id: id}, {$set: updatedDebt})
-				.then(result => {
-					return this.getDebtById(id);
-				});
-		});
+		if (type === "subtract" && debt.currentAmount <= quantity) {
+			this.deleteDebt(id, userId);
+			return {};
+		}
+		let debtCol = debt();
+		let debt = await this.getDebtById(id);
+		let newTransaction = {
+			type: type,
+			qty: quantity,
+			date: Math.round((new Date()).getTime() / 1000)
+		};
+		let updatedDebt = {
+			transactions: (this.getDebtById(id)).transactions.push(newTransaction),
+			currentAmount: (type === "add" ? debt.currentAmount + quantity : debt.currentAmount - quantity)
+		}
+		await debtCol.updateOne({_id: id}, {$set: updatedDebt});
+		return await this.getDebtById(id);
 	}
 	catch(error) {
 		throw error;
