@@ -10,41 +10,40 @@ module.exports = ModuleA;
 
 const users = require("./users");
 
-ModuleA.getAllCash = function() {
+ModuleA.getAllCash = async function() {
 	if (arguments.length !== 0) {
 		throw "No arguments are needed.";
 	}
 	try {
-		return cash().then(cashCollection => {
-			return cashCollection.find({}).toArray();
-		});
-	}
-	catch(error) {
-		throw error;
+		let cashCol = await cash();
+		return await cashCol.find({}).toArray();
+	} catch (e) {
+		throw e
 	}
 }
 
-ModuleA.getCashById = function(id) {
+ModuleA.getCashById = async function(id) {
 	if (arguments.length !== 1) {
 		throw "Please provide a single ID.";
 	}
 	if (typeof id !== "string") {
 		throw "The ID must be a string.";
 	}
+
 	try {
-		return cash().then(cashCollection => {
-			return cashCollection.findOne({_id: id}).then(cash => {
-				if (!cash) throw "Cash not found";
-				return cash;
-			});
-		});
+		let cashCol = await cash();
+		let c = await cashCol.findOne({_id: id});
+		if (c) {
+			return cash;
+		}
+		throw "Cash not found";
 	}
-	catch(error) {
+	catch (error) {
 		throw error;
 	}
 }
 
-ModuleA.addCash = function(startingAmount) {
+ModuleA.addCash = async function(startingAmount) {
 	if (arguments.length !== 1) {
 		throw "Please provide a user ID and starting amount.";
 	}
@@ -52,33 +51,26 @@ ModuleA.addCash = function(startingAmount) {
 		"The starting amount must be a number."
 	}
 	try{
-		return cash().then(cashCollection => {
-			if (startingAmount <= 0) {
-				return {};
-			}
-			let newCash = {
-				_id: uuidv4(),
-				transactions: [],
-				startingAmount: startingAmount,
-				currentAmount: startingAmount
-			};
-			return cashCollection
-				.insertOne(newCash)
-				.then(insInfo => {
-					return insInfo.insertedId;
-				})
-				.then(newId => {
-					return this.getCashById(newId);
-				});
-		});
+		if (startingAmount <= 0) {
+			return {};
+		}
+		let cashCol = await cash();
+		let newCash = {
+			_id: uuidv4(),
+			transactions: [],
+			startingAmount: startingAmount,
+			currentAmount: startingAmount
+		};
+		let insInfo = await cashCol.insertOne(newCash);
+		return await this.getCashById(insInfo.insertedId);
 	}
-	catch(error) {
+	catch (error) {
 		throw error;
 	}
 }
 
 // should only be used by the user delete
-ModuleA.deleteCash = function(id) {
+ModuleA.deleteCash = async function(id) {
 	if (arguments.length !== 1) {
 		throw "Please provide an cash ID.";
 	}
@@ -86,14 +78,11 @@ ModuleA.deleteCash = function(id) {
 		throw "The ID must be a string.";
 	}
 	try {
-		return cash().then(cashCollection => {
-			return cashCollection.removeOne({_id: id}).then(delInfo => {
-				if (delInfo.deletedCount === 0) {
-					throw `Could not remove cash with id of ${id}.`;
-				} else {
-				}
-			});
-		});
+		let cashCol = cash();
+		let delInfo = cashCol.removeOne({_id: id});
+		if (delInfo.deletedCount === 0) {
+			throw  `Could not remove cash with id of ${id}.`
+		}
 	}
 	catch(error) {
 		throw error;
@@ -101,7 +90,7 @@ ModuleA.deleteCash = function(id) {
 }
 
 // type is either "deposit" or "withdrawl"
-ModuleA.addCashTransaction = function(id, quantity, type) {
+ModuleA.addCashTransaction = async function(id, quantity, type) {
 	if (arguments.length !== 3) {
 		throw "Please provide an cash ID, user ID, quantity, and type.";
 	}
@@ -109,30 +98,23 @@ ModuleA.addCashTransaction = function(id, quantity, type) {
 		throw "The cash ID and type must be strings and quantity must be a number.";
 	}
 	try {
-		return cash().then(cashCollection => {
-			cashVal = this.getCashById(id);
-			newAmount = 0;
-			if (type === "withdrawl" && cashVal.currentAmount <= quantity) {
-				newAmount = 0;
-			}
-			else {
-				newAmount = (type === "deposit" ? cashVal.currentAmount + quantity : cashVal.currentAmount - quantity);
-			}
-			newTransaction = {
-				type: type,
-				qty: quantity,
-				date: Math.round((new Date()).getTime() / 1000)
-			};
-			let updatedCash = {
-				transactions: (this.getCashById(id)).transactions.push(newTransaction),
-				currentAmount: newAmount
-			}
-			return cashCollection
-				.updateOne({_id: id}, {$set: updatedCash})
-				.then(result => {
-					return this.getCashById(id);
-				});
-		});
+		let cashCol = cash();
+		let cashVal = await this.getCashById(id);
+		let newAmount = 0;
+		if (!(type === "withdraw" && cashVal.currentAmount <= quantity)) {
+			newAmount = (type === "deposit" ? cashVal.currentAmount + quantity : cashVal.currentAmount - quantity);
+		}
+		let newTransaction = {
+			type: type,
+			qty: quantity,
+			date: Math.round((new Date()).getTime() / 1000)
+		};
+		let updatedCash = {
+			transactions: (this.getCashById(id)).transactions.push(newTransaction),
+			currentAmount: newAmount
+		}
+		await cashCol.updateOne({_id: id}, {$set: updatedCash});
+		return await this.getCashById(id);
 	}
 	catch(error) {
 		throw error;
