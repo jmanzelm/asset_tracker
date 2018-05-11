@@ -1,9 +1,16 @@
 const mongoCollections = require("../config/mongoCollections");
 const debts = mongoCollections.debts;
 const uuidv4 = require("uuid/v4");
+
+function ModuleA() {
+
+}
+
+module.exports = ModuleA;
+
 const users = require("./users");
 
-function getAllDebts() {
+ModuleA.getAllDebts = function() {
 	if (arguments.length !== 0) {
 		throw "No arguments are needed.";
 	}
@@ -17,7 +24,7 @@ function getAllDebts() {
 	}
 }
 
-function getDebtById(id) {
+ModuleA.getDebtById = function(id) {
 	if (arguments.length !== 1) {
 		throw "Please provide a single ID.";
 	}
@@ -37,7 +44,7 @@ function getDebtById(id) {
 	}
 }
 
-function addDebt(userId, creditor, startingAmount) {
+ModuleA.addDebt = function(userId, creditor, startingAmount) {
 	if (arguments.length !== 3) {
 		throw "Please provide a user ID, creditor, and starting amount.";
 	}
@@ -72,7 +79,7 @@ function addDebt(userId, creditor, startingAmount) {
 	}
 }
 
-function deleteDebt(id, userId) {
+ModuleA.deleteDebt = function(id, userId) {
 	if (arguments.length !== 2) {
 		throw "Please provide an debt ID and a user ID.";
 	}
@@ -96,7 +103,7 @@ function deleteDebt(id, userId) {
 }
 
 // type is either "add" or "subtract"
-function addDebtTransaction(id, userId, quantity, type) {
+ModuleA.addDebtTransaction = function(id, userId, quantity, type) {
 	if (arguments.length !== 3) {
 		throw "Please provide an debt ID, user ID, quantity, and type.";
 	}
@@ -129,12 +136,4 @@ function addDebtTransaction(id, userId, quantity, type) {
 	catch(error) {
 		throw error;
 	}
-}
-
-module.exports = {
-	getAllDebts,
-	getDebtById,
-	addDebt,
-	deleteDebt,
-	addDebtTransaction
 }

@@ -1,9 +1,16 @@
 const mongoCollections = require("../config/mongoCollections");
 const cash = mongoCollections.cash;
 const uuidv4 = require("uuid/v4");
+
+function ModuleA() {
+
+}
+
+module.exports = ModuleA;
+
 const users = require("./users");
 
-function getAllCash() {
+ModuleA.getAllCash = function() {
 	if (arguments.length !== 0) {
 		throw "No arguments are needed.";
 	}
@@ -17,7 +24,7 @@ function getAllCash() {
 	}
 }
 
-function getCashById(id) {
+ModuleA.getCashById = function(id) {
 	if (arguments.length !== 1) {
 		throw "Please provide a single ID.";
 	}
@@ -37,7 +44,7 @@ function getCashById(id) {
 	}
 }
 
-function addCash(startingAmount) {
+ModuleA.addCash = function(startingAmount) {
 	if (arguments.length !== 1) {
 		throw "Please provide a user ID and starting amount.";
 	}
@@ -71,7 +78,7 @@ function addCash(startingAmount) {
 }
 
 // should only be used by the user delete
-function deleteCash(id) {
+ModuleA.deleteCash = function(id) {
 	if (arguments.length !== 1) {
 		throw "Please provide an cash ID.";
 	}
@@ -94,7 +101,7 @@ function deleteCash(id) {
 }
 
 // type is either "deposit" or "withdrawl"
-function addCashTransaction(id, quantity, type) {
+ModuleA.addCashTransaction = function(id, quantity, type) {
 	if (arguments.length !== 3) {
 		throw "Please provide an cash ID, user ID, quantity, and type.";
 	}
@@ -130,12 +137,4 @@ function addCashTransaction(id, quantity, type) {
 	catch(error) {
 		throw error;
 	}
-}
-
-module.exports = {
-	getAllCash,
-	getCashById,
-	addCash,
-	deleteCash,
-	addCashTransaction
 }

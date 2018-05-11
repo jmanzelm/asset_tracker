@@ -1,10 +1,17 @@
 const mongoCollections = require("../config/mongoCollections");
 const investments = mongoCollections.investments;
 const uuidv4 = require("uuid/v4");
-const users = require("./users");
 const axios = require("axios");
 
-function getAllInvestments() {
+function ModuleA() {
+
+}
+
+module.exports = ModuleA;
+
+const users = require("./users");
+
+ModuleA.getAllInvestments = function() {
 	if (arguments.length !== 0) {
 		throw "No arguments are needed.";
 	}
@@ -18,7 +25,7 @@ function getAllInvestments() {
 	}
 }
 
-function getInvestmentById(id) {
+ModuleA.getInvestmentById = function(id) {
 	if (arguments.length !== 1) {
 		throw "Please provide a single ID.";
 	}
@@ -39,12 +46,12 @@ function getInvestmentById(id) {
 }
 
 // type is either "stock" or "crypto"
-function addInvestment(userId, symbol, type, startingAmount) {
+ModuleA.addInvestment = function(userId, symbol, type, startingAmount) {
 	if (arguments.length !== 4) {
 		throw "Please provide a user ID, symbol, type, and starting amount.";
 	}
 	if (typeof userId !== "string" || typeof symbol !== "string" || typeof type !== "string" || typeof startingAmount !== "number"){
-		"The user ID, symbol type must be strings and starting amount must be a number."
+		throw "The user ID, symbol, and type must be strings and starting amount must be a number.";
 	}
 	try{
 		return investments().then(investmentCollection => {
@@ -75,7 +82,7 @@ function addInvestment(userId, symbol, type, startingAmount) {
 	}
 }
 
-function deleteInvestment(id, userId) {
+ModuleA.deleteInvestment = function(id, userId) {
 	if (arguments.length !== 2) {
 		throw "Please provide an investment ID and a user ID.";
 	}
@@ -99,7 +106,7 @@ function deleteInvestment(id, userId) {
 }
 
 // type is either "add" or "subtract"
-function addInvestmentTransaction(id, userId, quantity, type) {
+ModuleA.addInvestmentTransaction = function(id, userId, quantity, type) {
 	if (arguments.length !== 4) {
 		throw "Please provide an investment ID, user ID, quantity, and type.";
 	}
@@ -133,12 +140,4 @@ function addInvestmentTransaction(id, userId, quantity, type) {
 	catch(error) {
 		throw error;
 	}
-}
-
-module.exports = {
-	getAllInvestments,
-	getInvestmentById,
-	addInvestment,
-	deleteInvestment,
-	addInvestmentTransaction
 }

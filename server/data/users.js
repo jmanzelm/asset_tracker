@@ -1,11 +1,18 @@
 const mongoCollections = require("../config/mongoCollections");
 const users = mongoCollections.users;
 const uuidv4 = require("uuid/v4");
+
+function ModuleA() {
+
+}
+
+module.exports = ModuleA;
+
 const cash = require("./cash");
 const investments = require("./investments");
 const debts = require("./debts");
 
-function getAllUsers() {
+ModuleA.getAllUsers = function() {
   if (arguments.length !== 0) {
     throw "No arguments are needed.";
   }
@@ -19,7 +26,7 @@ function getAllUsers() {
   }
 }
 
-function getUserById(id) {
+ModuleA.getUserById = function(id) {
   if (arguments.length !== 1) {
     throw "Please provide a single ID.";
   }
@@ -39,7 +46,7 @@ function getUserById(id) {
   }
 }
 
-function addUser(username, hashedPassword, startingCash) {
+ModuleA.addUser = function(username, hashedPassword, startingCash) {
   if (arguments.length !== 3) {
     throw "Please provide a username, hashed password, and starting cash amount.";
   }
@@ -71,7 +78,7 @@ function addUser(username, hashedPassword, startingCash) {
   }
 }
 
-function deleteUser(id) {
+ModuleA.deleteUser = function(id) {
   if (arguments.length !== 1) {
     throw "Please provide a single ID";
   }
@@ -104,7 +111,7 @@ function deleteUser(id) {
 }
 
 // called when a new investment is created
-function extendInvestmentList(id, investmentId) {
+ModuleA.extendInvestmentList = function(id, investmentId) {
   if (arguments.length !== 2) {
     throw "Please provide a user ID and investment ID.";
   }
@@ -129,7 +136,7 @@ function extendInvestmentList(id, investmentId) {
 }
 
 // called when a investment is deleted
-function shortenInvestmentList(id, investmentId) {
+ModuleA.shortenInvestmentList = function(id, investmentId) {
   if (arguments.length !== 2) {
     throw "Please provide a user ID and investment ID.";
   }
@@ -155,7 +162,7 @@ function shortenInvestmentList(id, investmentId) {
 }
 
 // called when a new debt is created
-function extendDebtList(id, debtId) {
+ModuleA.extendDebtList = function(id, debtId) {
   if (arguments.length !== 2) {
     throw "Please provide a user ID and debt ID.";
   }
@@ -180,7 +187,7 @@ function extendDebtList(id, debtId) {
 }
 
 // called when a debt is deleted
-function shortenDebtList(id, debtId) {
+ModuleA.shortenDebtList = function(id, debtId) {
   if (arguments.length !== 2) {
     throw "Please provide a user ID and debt ID.";
   }
@@ -203,15 +210,4 @@ function shortenDebtList(id, debtId) {
   catch(error) {
     throw error;
   }
-}
-
-module.exports = {
-  getAllUsers,
-  getUserById,
-  addUser,
-  deleteUser,
-  extendInvestmentList,
-  shortenInvestmentList,
-  extendDebtList,
-  shortenDebtList
 }
