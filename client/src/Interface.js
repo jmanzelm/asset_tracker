@@ -20,9 +20,13 @@ export function post(path, body) {
 }
 
 export function get(path){
-    return axios({
-      method: "get",
-      url: path,
-      responseType: "json"
+    let p = "https://localhost:3001/prices/stock/AAPL";
+    axios.get(p)
+    .then((response) => {
+        console.log(response);
+        return response;
+    })
+    .catch((e) => {
+      console.log("error is:", e.response)
     });
 }

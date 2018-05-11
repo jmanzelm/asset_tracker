@@ -47,6 +47,7 @@ export default class ModalLogin extends Component {
             console.log(response);
             if (Object.keys(response.data).length !== 0) {
                 this.setState({show: false});
+                this.props.storeUserData(response);
             } else {
                 this.setState({
                     message: "Failed to login. Please try again",
