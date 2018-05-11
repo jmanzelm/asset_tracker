@@ -1,5 +1,5 @@
 /**
- *  Login Modal
+ *  Login Modal sends username and password to the server
  *  @author: Taylor He
  * 
  */

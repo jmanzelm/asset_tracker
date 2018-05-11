@@ -120,24 +120,6 @@ class FilterTextBox extends Component {
         this.setState({ current_text: val.value })
     }
 
-    onFilterChange = evt => {
-        this.setState({ current_text: evt.target.value });
-    };
-
-    onFilterKey = evt => {
-        if (evt.charCode === 13) {
-            this.last_run_filter = this.state.current_text;
-            this.props.applyFilter(this.last_run_filter);
-        }
-    };
-
-    onFilterDown = evt => {
-        if (evt.keyCode === 27) {
-            this.setState({ current_text: this.last_run_filter });
-        }
-    };
-
-
     getTickerOptions() {
         // let s = apicall.get()
         let s = [];

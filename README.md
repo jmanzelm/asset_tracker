@@ -1,9 +1,9 @@
 A website for tacking your assets accross a variety of investments.
 ## asset_tracker
-run with
+Start the server by cd-ing into /server folder and run the command:
 > npm start
 
-or
+Start the client by cding into the /client folder and run the command:
+> npm run start
 
-> npm run startr
-
+The client's folder is 

@@ -95,18 +95,18 @@ function deleteDebt(id, userId) {
 	}
 }
 
-// type is true if addition, false if reduction
+// type is either "add" or "subtract"
 function addDebtTransaction(id, userId, quantity, type) {
-	if (arguments.length !== 4) {
+	if (arguments.length !== 3) {
 		throw "Please provide an debt ID, user ID, quantity, and type.";
 	}
-	if (typeof id !== "string" || typeof userId !== "string" || typeof quantity !== "number" || typeof type !== "boolean"){
-		throw "The debt ID and user ID must be strings, quantity must be a number, and type must be a boolean.";
+	if (typeof id !== "string" || typeof userId !== "string" || typeof quantity !== "number" || typeof type !== "string"){
+		throw "The debt ID, user ID, and type must be strings and quantity must be a number.";
 	}
 	try {
 		return debts().then(debtCollection => {
 			debt = this.getDebtById(id);
-			if (!type && debt.currentAmount <= quantity) {
+			if (type === "subtract" && debt.currentAmount <= quantity) {
 				this.deleteDebt(id, userId);
 				return {};
 			}
@@ -117,7 +117,7 @@ function addDebtTransaction(id, userId, quantity, type) {
 			};
 			let updatedDebt = {
 				transactions: (this.getDebtById(id)).transactions.push(newTransaction),
-				currentAmount: (type ? debt.currentAmount + quantity : debt.currentAmount - quantity)
+				currentAmount: (type === "add" ? debt.currentAmount + quantity : debt.currentAmount - quantity)
 			}
 			return debtCollection
 				.updateOne({_id: id}, {$set: updatedDebt})

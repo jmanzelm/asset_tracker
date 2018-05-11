@@ -38,7 +38,7 @@ function getCashById(id) {
 }
 
 function addCash(startingAmount) {
-	if (arguments.length !== 2) {
+	if (arguments.length !== 1) {
 		throw "Please provide a user ID and starting amount.";
 	}
 	if (typeof startingAmount !== "number"){
@@ -72,7 +72,7 @@ function addCash(startingAmount) {
 
 // should only be used by the user delete
 function deleteCash(id) {
-	if (arguments.length !== 2) {
+	if (arguments.length !== 1) {
 		throw "Please provide an cash ID.";
 	}
 	if (typeof id !== "string") {
@@ -93,23 +93,23 @@ function deleteCash(id) {
 	}
 }
 
-// type is true if addition, false if reduction
+// type is either "deposit" or "withdrawl"
 function addCashTransaction(id, quantity, type) {
 	if (arguments.length !== 3) {
 		throw "Please provide an cash ID, user ID, quantity, and type.";
 	}
 	if (typeof id !== "string" || typeof quantity !== "number" || typeof type !== "string"){
-		throw "The cash ID must be a string, quantity must be a number, and type must be a boolean.";
+		throw "The cash ID and type must be strings and quantity must be a number.";
 	}
 	try {
 		return cash().then(cashCollection => {
-			cash = this.getCashById(id);
+			cashVal = this.getCashById(id);
 			newAmount = 0;
-			if (!type && cash.currentAmount <= quantity) {
+			if (type === "withdrawl" && cashVal.currentAmount <= quantity) {
 				newAmount = 0;
 			}
 			else {
-				newAmount = (type ? cash.currentAmount + quantity : cash.currentAmount - quantity);
+				newAmount = (type === "deposit" ? cashVal.currentAmount + quantity : cashVal.currentAmount - quantity);
 			}
 			newTransaction = {
 				type: type,

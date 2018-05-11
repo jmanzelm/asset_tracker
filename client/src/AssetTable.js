@@ -14,6 +14,7 @@ import Select from 'react-select';
 import { post, get } from './Interface';
 import "react-select/dist/react-select.css";
 import './App.css';
+import axios from 'axios';
 
 
 class AssetDetailsPopover extends Component {
@@ -46,6 +47,7 @@ export default class AssetTable extends Component {
     constructor(props, context) {
         super(props, context);
         this.onPopoverSubmit = this.onPopoverSubmit.bind(this);
+        this.makeAssetTable = this.makeAssetTable.bind(this);
         this.COL_DEF = [
             "Ticker",
             "Quantity",
@@ -57,12 +59,28 @@ export default class AssetTable extends Component {
             Stocks: "holdings/stocks",
             Cryptocurrencies: "holdings/crypto",
             Cash: "holdings/cash",
-            Debt: "holdings/debt"
-
+            Debt: "holdings/debt",
+            objects: []
         }
+        this.state = {
+            objects: []
+        };
         
     }
-
+    componentWillReceiveProps(nextProps) {
+        console.log("HERE");
+        post("http://localhost:3001/holdings/cash/deposit/" + this.props.userid, {
+            
+              user_id: this.props.userid,
+              amount: 100
+            
+        });
+        axios.get(`http://localhost:3001/${this.activeKeyMap[this.props.activeKey]}/${this.props.userid}/`)
+            .then(response => {
+                console.log("response is", response); 
+                this.setState({objects: response}, () => console.log("o", this.state.objects))
+            });
+    }
     onPopoverSubmit() {
         // Tommy do this
     }
@@ -74,32 +92,33 @@ export default class AssetTable extends Component {
 
 
     makeAssetTable() {
-
-        let objects1 = get(`https://localhost:3001/${this.props.activeKey}/${this.props.userid}`)
-        let objects = [
-            {   
-                _id: 2,
-                symbol: "AAPL",
-                transactions:  [
-                            {
-                                type: "Purchase",
-                                quantity: 2,
-                                date: new Date()
-                            }
-                        ],
-                startingAmount: 0,
-                currentAmount: 2,
-                type: "Stocks"
-            },
-        ]
+        
+        
+        // let objects1 = get(`https://localhost:3001/${this.props.activeKey}/${this.props.userid}`)
+        // let objects = [
+        //     {   
+        //         _id: 2,
+        //         symbol: "AAPL",
+        //         transactions:  [
+        //                     {
+        //                         type: "Purchase",
+        //                         quantity: 2,
+        //                         date: new Date()
+        //                     }
+        //                 ],
+        //         startingAmount: 0,
+        //         currentAmount: 2,
+        //         type: "Stocks"
+        //     },
+        // ]
+        let objects = this.state.objects;
         let prices = {}
         for (let i = 0; i < objects.length; i++) {
             // api call
             prices[objects[i].symbol] = "3.12"
         }
-        let tableRows = [
-
-        ];
+        let tableRows = [];
+        console.log(objects);
         for (let i = 0; i < objects.length; i++) {
             tableRows.push(
             <OverlayTrigger rootClose trigger="click" 

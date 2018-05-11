@@ -30,5 +30,3 @@ export function get(path){
       console.log("error is:", e.data)
     });
 }
-
-// console.log("meh", get("a"))
