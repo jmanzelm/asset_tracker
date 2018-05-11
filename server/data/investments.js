@@ -2,7 +2,6 @@ const mongoCollections = require("../config/mongoCollections");
 const investments = mongoCollections.investments;
 const uuidv4 = require("uuid/v4");
 const users = require("./users");
-const interface = require("../interface");
 const axios = require("axios");
 
 function getAllInvestments() {
