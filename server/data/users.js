@@ -171,7 +171,7 @@ ModuleA.extendDebtList = async function(id, debtId) {
   try {
     const userCollection = await users();
     const user1 = await this.getUserById(id);
-    user1.debts.push(investmentId)
+    user1.debts.push(debtId)
     let updatedUser = {
       debts: user1.debts
     };

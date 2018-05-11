@@ -15,7 +15,7 @@ ModuleA.getAllCash = async function() {
 		throw "No arguments are needed.";
 	}
 	try {
-		let cashCol = cash();
+		let cashCol = await cash();
 		return await cashCol.find({}).toArray();
 	} catch (e) {
 		throw e
@@ -78,7 +78,7 @@ ModuleA.deleteCash = async function(id) {
 		throw "The ID must be a string.";
 	}
 	try {
-		let cashCol = cash();
+		let cashCol = await cash();
 		let delInfo = cashCol.removeOne({_id: id});
 		if (delInfo.deletedCount === 0) {
 			throw  `Could not remove cash with id of ${id}.`
@@ -98,7 +98,7 @@ ModuleA.addCashTransaction = async function(id, quantity, type) {
 		throw "The cash ID and type must be strings and quantity must be a number.";
 	}
 	try {
-		let cashCol = cash();
+		let cashCol = await cash();
 		console.log("cash initialized");
 		let cashVal = await this.getCashById(id);
 		console.log("cashVal", cashVal)
