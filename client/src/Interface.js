@@ -20,11 +20,9 @@ export function post(path, body) {
 }
 
 export function get(path){
-    fetch(path)
-    .then((response) => {
-        return response;
-    })
-    .catch((e) => {
-      console.log(e)
+    return axios({
+      method: "get",
+      url: path,
+      responseType: "json"
     });
 }

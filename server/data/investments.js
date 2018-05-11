@@ -2,6 +2,8 @@ const mongoCollections = require("../config/mongoCollections");
 const investments = mongoCollections.investments;
 const uuidv4 = require("uuid/v4");
 const users = require("./users");
+const interface = require("../interface");
+const axios = require("axios");
 
 function getAllInvestments() {
 	if (arguments.length !== 0) {
@@ -37,13 +39,13 @@ function getInvestmentById(id) {
 	}
 }
 
-// is a stock if "type" is true, crypto if false 
+// type is either "stock" or "crypto"
 function addInvestment(userId, symbol, type, startingAmount) {
 	if (arguments.length !== 4) {
 		throw "Please provide a user ID, symbol, type, and starting amount.";
 	}
-	if (typeof userId !== "string" || typeof symbol !== "string" || typeof type !== "boolean" || typeof startingAmount !== "number"){
-		"The user ID and symbol must be strings, type must be a boolean, and starting amount must be a number."
+	if (typeof userId !== "string" || typeof symbol !== "string" || typeof type !== "string" || typeof startingAmount !== "number"){
+		"The user ID, symbol type must be strings and starting amount must be a number."
 	}
 	try{
 		return investments().then(investmentCollection => {
@@ -97,29 +99,30 @@ function deleteInvestment(id, userId) {
 	}
 }
 
-// type is true if purchase, false if sale
+// type is either "add" or "subtract"
 function addInvestmentTransaction(id, userId, quantity, type) {
 	if (arguments.length !== 4) {
 		throw "Please provide an investment ID, user ID, quantity, and type.";
 	}
-	if (typeof id !== "string" || typeof userId !== "string" || typeof quantity !== "number" || typeof type !== "boolean"){
-		throw "The investment ID and user ID must be strings, quantity must be a number, and type must be a boolean.";
+	if (typeof id !== "string" || typeof userId !== "string" || typeof quantity !== "number" || typeof type !== "string"){
+		throw "The investment ID, type, and user ID must be strings and quantity must be a number.";
 	}
 	try {
 		return investments().then(investmentCollection => {
 			let investment = this.getInvestmentById(id);
-			if (!type && investment.currentAmount <= quantity) {
+			if (type === "subtract" && investment.currentAmount <= quantity) {
 				this.deleteInvestment(id, userId);
 				return {};
 			}
 			let newTransaction = {
 				type: type,
 				qty: quantity,
-				date: Math.round((new Date()).getTime() / 1000)
+				date: Math.round((new Date()).getTime() / 1000),
+				price: (investment.type === "stock" ? axios.get("http://localhost:3001/prices/stock/" + investment.symbol).data.close : axios.get("http://localhost:3001/prices/crypto/" + investment.symbol).data.close)
 			};
 			let updatedInvestment = {
 				transactions: (this.getInvestmentById(id)).transactions.push(newTransaction),
-				currentAmount: (type ? investment.currentAmount + quantity : investment.currentAmount - quantity)
+				currentAmount: (type === "add" ? investment.currentAmount + quantity : investment.currentAmount - quantity)
 			}
 			return investmentCollection
 				.updateOne({_id: id}, {$set: updatedInvestment}, {upsert:true})
