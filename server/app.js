@@ -27,9 +27,10 @@ const saltRounds = 16;
 
 configRoutes(app);
 
-// ben = users.addUser("masterdetective123", "$2a$16$7JKSiEmoP3GNDSalogqgPu0sUbwder7CAN/5wnvCWe6xCKAKwlTD.", 50);
-// benapple = investments.addInvestment(ben._id, "AAPL", "stock", 5);
-// bencoin = investments.addInvestment(ben._id, "BTC", "crypto", 5);
+const ben = await users.addUser("masterdetective123", "$2a$16$7JKSiEmoP3GNDSalogqgPu0sUbwder7CAN/5wnvCWe6xCKAKwlTD.", 50);
+console.log(ben);
+const benapple = await investments.addInvestment(ben._id, "AAPL", "stock", 5);
+const bencoin = await investments.addInvestment(ben._id, "BTC", "crypto", 5);
 
 // We can now navigate to localhost:3000
 app.listen(3001, function() {

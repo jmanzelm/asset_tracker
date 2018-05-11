@@ -15,19 +15,14 @@ ModuleA.getAllInvestments = async function() {
 	if (arguments.length !== 0) {
 		throw "No arguments are needed.";
 	}
+	try {
+		const investmentCollection = await investments();
 
-	const investmentCollection = await investments();
-
-	return await investmentCollection.find({}).toArray();
-
-	/*try {
-		return investments().then(investmentCollection => {
-			return investmentCollection.find({}).toArray();
-		});
+		return await investmentCollection.find({}).toArray();
 	}
 	catch(error) {
 		throw error;
-	}*/
+	}
 }
 
 ModuleA.getInvestmentById = async function(id) {
@@ -37,23 +32,15 @@ ModuleA.getInvestmentById = async function(id) {
 	if (typeof id !== "string") {
 		throw "The ID must be a string.";
 	}
-
-	const investmentCollection = await investments();
-	const investment1 = await investmentCollection.findOne({_id: id});
-	if (investment1 === null) throw "investment not found";
-	return investment1;
-
-	/*try {
-		return investments().then(investmentCollection => {
-			return investmentCollection.findOne({_id: id}).then(investment => {
-				if (!investment) throw "Investment not found";
-				return investment;
-			});
-		});
+	try {
+		const investmentCollection = await investments();
+		const investment1 = await investmentCollection.findOne({_id: id});
+		if (investment1 === null) throw "investment not found";
+		return investment1;
 	}
 	catch(error) {
 		throw error;
-	}*/
+	}
 }
 
 // type is either "stock" or "crypto"
@@ -64,51 +51,27 @@ ModuleA.addInvestment = async function(userId, symbol, type, startingAmount) {
 	if (typeof userId !== "string" || typeof symbol !== "string" || typeof type !== "string" || typeof startingAmount !== "number"){
 		throw "The user ID, symbol, and type must be strings and starting amount must be a number.";
 	}
+	try {
+		const investmentCollection = await investments();
+		let newInvestment = {
+			_id: uuidv4(),
+			symbol: symbol,
+			transactions: [],
+			type: type,
+			startingAmount: startingAmount,
+			currentAmount: startingAmount
+		};
 
-	const investmentCollection = await investments();
-	let newInvestment = {
-		_id: uuidv4(),
-		symbol: symbol,
-		transactions: [],
-		type: type,
-		startingAmount: startingAmount,
-		currentAmount: startingAmount
-	};
+		const insertInfo = await investmentCollection.insertOne(newinvestment);
+		if (insertInfo.insertedCount === 0) throw "Could not add investment";
+		await users.extendInvestmentList(userId, insInfo.insertedId);
 
-	const insertInfo = await investmentCollection.insertOne(newinvestment);
-	if (insertInfo.insertedCount === 0) throw "Could not add investment";
-	await users.extendInvestmentList(userId, insInfo.insertedId);
-
-	const newId = insertInfo.insertedId;
-	return await this.getInvestmentById(newId);
-
-	/*try{
-		return investments().then(investmentCollection => {
-			if (startingAmount <= 0) {
-				return {};
-			}
-			let newInvestment = {
-				_id: uuidv4(),
-				symbol: symbol,
-				transactions: [],
-				type: type,
-				startingAmount: startingAmount,
-				currentAmount: startingAmount
-			};
-			return investmentCollection
-				.insertOne(newInvestment)
-				.then(insInfo => {
-					users.extendInvestmentList(userId, insInfo.insertedId);
-					return insInfo.insertedId;
-				})
-				.then(newId => {
-					return this.getInvestmentById(newId);
-				});
-		});
+		const newId = insertInfo.insertedId;
+		return await this.getInvestmentById(newId);
 	}
 	catch(error) {
 		throw error;
-	}*/
+	}
 }
 
 ModuleA.deleteInvestment = async function(id, userId) {
@@ -118,30 +81,19 @@ ModuleA.deleteInvestment = async function(id, userId) {
 	if (typeof id !== "string") {
 		throw "Both IDs must be strings.";
 	}
+	try {
+		const investmentCollection = await investments();
+		const deletionInfo = await investmentCollection.removeOne({ _id: id });
 
-	const investmentCollection = await investments();
-	const deletionInfo = await investmentCollection.removeOne({ _id: id });
+	    if (deletionInfo.deletedCount === 0) {
+	    	throw `Could not delete investment with id of ${id}`;
+		}
 
-    if (deletionInfo.deletedCount === 0) {
-    	throw `Could not delete investment with id of ${id}`;
-	}
-
-	await users.shortenInvestmentList(userId, id);
-
-	/*try {
-		return investments().then(investmentCollection => {
-			return investmentCollection.removeOne({_id: id}).then(delInfo => {
-				if (delInfo.deletedCount === 0) {
-					throw `Could not remove investment with id of ${id}.`;
-				} else {
-					users.shortenInvestmentList(userId, id);
-				}
-			});
-		});
+		await users.shortenInvestmentList(userId, id);
 	}
 	catch(error) {
 		throw error;
-	}*/
+	}
 }
 
 // type is either "add" or "subtract"
@@ -153,55 +105,32 @@ ModuleA.addInvestmentTransaction = async function(id, userId, quantity, type) {
 		throw "The investment ID, type, and user ID must be strings and quantity must be a number.";
 	}
 
-	const investmentCollection = await investments();
-	investment1 = await this.getInvestmentById(id);
-	if (type === "subtract" && investment.currentAmount <= quantity) {
-		await this.deleteInvestment(id, userId);
-		return {};
-	}
-	let newTransaction = {
-		type: type,
-		qty: quantity,
-		date: Math.round((new Date()).getTime() / 1000),
-		price: (investment.type === "stock" ? axios.get("http://localhost:3001/prices/stock/" + investment.symbol).data.close : axios.get("http://localhost:3001/prices/crypto/" + investment.symbol).data.close)
-	};
-	let updatedInvestment = {
-		transactions: (investment1.transactions.push(newTransaction),
-		currentAmount: (type === "add" ? investment1.currentAmount + quantity : investment1.currentAmount - quantity)
-	}
+	try {
+		const investmentCollection = await investments();
+		investment1 = await this.getInvestmentById(id);
+		if (type === "subtract" && investment.currentAmount <= quantity) {
+			await this.deleteInvestment(id, userId);
+			return {};
+		}
+		let newTransaction = {
+			type: type,
+			qty: quantity,
+			date: Math.round((new Date()).getTime() / 1000),
+			price: (investment.type === "stock" ? axios.get("http://localhost:3001/prices/stock/" + investment.symbol).data.close : axios.get("http://localhost:3001/prices/crypto/" + investment.symbol).data.close)
+		};
+		let updatedInvestment = {
+			transactions: investment1.transactions.push(newTransaction),
+			currentAmount: (type === "add" ? investment1.currentAmount + quantity : investment1.currentAmount - quantity)
+		}
 
-	const updateInfo = await investmentCollection.updateOne({_id: id}, {$set: updatedInvestment}, {upsert:true});
-	if (updateInfo.modifiedCount === 0) {
-    	throw "could not update investment successfully";
-	}
+		const updateInfo = await investmentCollection.updateOne({_id: id}, {$set: updatedInvestment}, {upsert:true});
+		if (updateInfo.modifiedCount === 0) {
+	    	throw "could not update investment successfully";
+		}
 
-	return await this.getInvestmentById(id);
-
-	/*try {
-		return investments().then(investmentCollection => {
-			investment1 = this.getInvestmentById(id);
-			if (type === "subtract" && investment.currentAmount <= quantity) {
-				this.deleteInvestment(id, userId);
-				return {};
-			}
-			let newTransaction = {
-				type: type,
-				qty: quantity,
-				date: Math.round((new Date()).getTime() / 1000),
-				price: (investment.type === "stock" ? axios.get("http://localhost:3001/prices/stock/" + investment.symbol).data.close : axios.get("http://localhost:3001/prices/crypto/" + investment.symbol).data.close)
-			};
-			let updatedInvestment = {
-				transactions: (this.getInvestmentById(id)).transactions.push(newTransaction),
-				currentAmount: (type === "add" ? investment.currentAmount + quantity : investment.currentAmount - quantity)
-			}
-			return investmentCollection
-				.updateOne({_id: id}, {$set: updatedInvestment}, {upsert:true})
-				.then(result => {
-					return this.getInvestmentById(id);
-				});
-		});
+		return await this.getInvestmentById(id);
 	}
 	catch(error) {
 		throw error;
-	}*/
+	}
 }
