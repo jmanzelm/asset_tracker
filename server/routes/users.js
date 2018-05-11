@@ -4,6 +4,8 @@ const userData = require("./login");
 
 
 app.post("/login", (req, res) => {
+  // don't use .then you are bad
+  // async await
   userData.login(req, res).then(function(userInfo){
       res.json(userInfo);
   })

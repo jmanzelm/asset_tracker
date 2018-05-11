@@ -95,10 +95,10 @@ function deleteCash(id) {
 
 // type is true if addition, false if reduction
 function addCashTransaction(id, quantity, type) {
-	if (arguments.length !== 4) {
+	if (arguments.length !== 3) {
 		throw "Please provide an cash ID, user ID, quantity, and type.";
 	}
-	if (typeof id !== "string" || typeof quantity !== "number" || typeof type !== "boolean"){
+	if (typeof id !== "string" || typeof quantity !== "number" || typeof type !== "string"){
 		throw "The cash ID must be a string, quantity must be a number, and type must be a boolean.";
 	}
 	try {

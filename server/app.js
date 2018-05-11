@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const cors = require('cors');
 const bcrypt = require("bcrypt");
 const app = express();
 const exphbs = require("express-handlebars");
@@ -13,6 +14,8 @@ app.use(express.static(__dirname + "views/layouts"));
 
 app.engine("handlebars", exphbs({ }));
 app.set("view engine", "handlebars");
+
+app.use(cors()); // Needed for cross origin resource sharing
 
 const saltRounds = 16;
 

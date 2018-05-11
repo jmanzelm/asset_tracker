@@ -13,9 +13,11 @@ const investmentsData = require("../data/investments");
   });
 
   app.get("/cash/:user_id", (req, res)=>{
-    cashData.getCashHoldingsByUserId(req.params.user_id).then( function(holdings) {
+
+    cashData.getCashById(req.params.user_id).then( function(holdings) {
      res.json(holdings);
     }).catch(e => {
+      console.log(e)
       res.status(500).json(e);
     });
   }
@@ -75,9 +77,11 @@ const investmentsData = require("../data/investments");
   app.post("/cash/deposit/:user_id/", (req, res)=>{
     console.log("234");
     let amount = req.body.amount;
-    let cashHoldings = cashData.addCashDeposit(amount, req.params.user_id).then(function(holdings){
-        res.json(holdings);
-    });
+
+    let cashHoldings = cashData.addCashTransaction(req.body.user_id, req.body.amount, "deposit")
+    // (amount, req.params.user_id).then(function(holdings){a
+    //     res.json(holdings);
+    // });
     /*console.log(cashHoldings);
     res.json(cashHoldings);
 */
