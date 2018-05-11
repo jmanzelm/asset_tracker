@@ -15,7 +15,7 @@ ModuleA.getAllCash = async function() {
 		throw "No arguments are needed.";
 	}
 	try {
-		let cashCol = await cash();
+		let cashCol = cash();
 		return await cashCol.find({}).toArray();
 	} catch (e) {
 		throw e
@@ -33,8 +33,10 @@ ModuleA.getCashById = async function(id) {
 	try {
 		let cashCol = await cash();
 		let c = await cashCol.findOne({_id: id});
+		console.log('c', c)
 		if (c) {
-			return cash;
+			console.log("cashbyid", c);
+			return c;
 		}
 		throw "Cash not found";
 	}
@@ -89,7 +91,7 @@ ModuleA.deleteCash = async function(id) {
 	}
 }
 
-// type is either "deposit" or "withdrawl"
+// type is either "deposit" or "withdraw"
 ModuleA.addCashTransaction = async function(id, quantity, type) {
 	if (arguments.length !== 3) {
 		throw "Please provide an cash ID, user ID, quantity, and type.";
@@ -99,11 +101,14 @@ ModuleA.addCashTransaction = async function(id, quantity, type) {
 	}
 	try {
 		let cashCol = cash();
+		console.log("cash initialized");
 		let cashVal = await this.getCashById(id);
+		console.log("cashVal", cashVal)
 		let newAmount = 0;
 		if (!(type === "withdraw" && cashVal.currentAmount <= quantity)) {
 			newAmount = (type === "deposit" ? cashVal.currentAmount + quantity : cashVal.currentAmount - quantity);
 		}
+		console.log("newAmount", newAmount);
 		let newTransaction = {
 			type: type,
 			qty: quantity,
@@ -113,10 +118,11 @@ ModuleA.addCashTransaction = async function(id, quantity, type) {
 			transactions: (this.getCashById(id)).transactions.push(newTransaction),
 			currentAmount: newAmount
 		}
-		await cashCol.updateOne({_id: id}, {$set: updatedCash});
+		cashCol.updateOne({_id: id}, {$set: updatedCash});
 		return await this.getCashById(id);
 	}
 	catch(error) {
+		console.log('hi tehe', error)
 		throw error;
 	}
 }
