@@ -33,9 +33,7 @@ ModuleA.getCashById = async function(id) {
 	try {
 		let cashCol = await cash();
 		let c = await cashCol.findOne({_id: id});
-		console.log('c', c)
 		if (c) {
-			console.log("cashbyid", c);
 			return c;
 		}
 		throw "Cash not found";

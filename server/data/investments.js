@@ -62,9 +62,9 @@ ModuleA.addInvestment = async function(userId, symbol, type, startingAmount) {
 			currentAmount: startingAmount
 		};
 
-		const insertInfo = await investmentCollection.insertOne(newinvestment);
+		const insertInfo = await investmentCollection.insertOne(newInvestment);
 		if (insertInfo.insertedCount === 0) throw "Could not add investment";
-		await users.extendInvestmentList(userId, insInfo.insertedId);
+		await users.extendInvestmentList(userId, insertInfo.insertedId);
 
 		const newId = insertInfo.insertedId;
 		return await this.getInvestmentById(newId);

@@ -65,7 +65,6 @@ ModuleA.addUser = async function(username, hashedPassword, startingCash) {
 
     const newId = insertInfo.insertedId;
     const temp =  await this.getUserById(newId);
-    console.log(temp);
     return temp;
   }
   catch(error) {
@@ -116,8 +115,9 @@ ModuleA.extendInvestmentList = async function(id, investmentId) {
   try {
     const userCollection = await users();
     const user1 = await this.getUserById(id);
+    user1.investments.push(investmentId)
     let updatedUser = {
-      investments: user1.investments.push(investmentId)
+      investments: user1.investments
     };
 
     const updateInfo = await userCollection.updateOne({_id: id}, {$set: updatedUser});
@@ -143,8 +143,9 @@ ModuleA.shortenInvestmentList = async function(id, investmentId) {
   try {
     const userCollection = await users();
     const user1 = await this.getUserById(id);
+    user1.investments.splice(user1.investments.findIndex(function(element) {return element === investmentId}), 1);
     let updatedUser = {
-      investments: user1.investments.splice(user1.investments.findIndex(function(element) {return element === investmentId}), 1)
+      investments: user1.investments
     };
 
     const updateInfo = await userCollection.updateOne({_id: id}, {$set: updatedUser});
@@ -170,8 +171,9 @@ ModuleA.extendDebtList = async function(id, debtId) {
   try {
     const userCollection = await users();
     const user1 = await this.getUserById(id);
+    user1.debts.push(investmentId)
     let updatedUser = {
-      debts: user1.debts.push(investmentId)
+      debts: user1.debts
     };
 
     const updateInfo = await userCollection.updateOne({_id: id}, {$set: updatedUser});
@@ -197,8 +199,9 @@ ModuleA.shortenDebtList = async function(id, debtId) {
   try {
     const userCollection = await users();
     const user1 = await this.getUserById(id);
+    user1.debts.splice(user1.debts.findIndex(function(element) {return element === debtId}), 1)
     let updatedUser = {
-      investments: user1.debts.splice(user1.debts.findIndex(function(element) {return element === investmentId}), 1)
+      investments: user1.debts
     };
 
     const updateInfo = await userCollection.updateOne({_id: id}, {$set: updatedUser});
