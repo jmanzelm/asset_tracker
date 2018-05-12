@@ -8,8 +8,6 @@ function ModuleA() {
 
 module.exports = ModuleA;
 
-const users = require("./users");
-
 ModuleA.getAllDebts = async function() {
 	if (arguments.length !== 0) {
 		throw "No arguments are needed.";
@@ -42,6 +40,25 @@ ModuleA.getDebtById = async function(id) {
 	}
 }
 
+ModuleA.getDebtByUserId = async function(id) {
+	if (arguments.length !== 1) {
+		throw "Please provide a single ID.";
+	}
+	if (typeof id !== "string") {
+		throw "The ID must be a string.";
+	}
+	try {
+		let debtCol = await debts();
+		let debt = await debtCol.find({userId: id}).toArray();
+		if (debt) {
+			return debt;
+		}
+		throw "Debt not found";
+	} catch (error) {
+		throw error;
+	}
+}
+
 ModuleA.addDebt = async function(userId, creditor, startingAmount) {
 	if (arguments.length !== 3) {
 		throw "Please provide a user ID, creditor, and starting amount.";
@@ -57,13 +74,14 @@ ModuleA.addDebt = async function(userId, creditor, startingAmount) {
 		let debtCol = await debts();
 		let newDebt = {
 			_id: uuidv4(),
+			userId: userId,
 			creditor: creditor,
 			transactions: [],
 			startingAmount: startingAmount,
-			currentAmount: startingAmount
+			currentAmount: startingAmount,
+			date: Math.round((new Date()).getTime() / 1000)
 		};
 		let insInfo = await debtCol.insertOne(newDebt)
-		await users.extendDebtList(userId, insInfo.insertedId);
 
 		const newId = insInfo.insertedId;
 		return this.getDebtById(newId);
@@ -72,19 +90,17 @@ ModuleA.addDebt = async function(userId, creditor, startingAmount) {
 	}
 }
 
-ModuleA.deleteDebt = async function(id, userId) {
-	if (arguments.length !== 2) {
-		throw "Please provide an debt ID and a user ID.";
+ModuleA.deleteDebt = async function(id) {
+	if (arguments.length !== 1) {
+		throw "Please provide a debt ID.";
 	}
 	if (typeof id !== "string") {
-		throw "Both IDs must be strings.";
+		throw "The ID must be a string.";
 	}
 	try {
 		let debtCol = await debts();
 		let delInfo = await debtCol.removeOne({_id: id});
-		if (delInfo.deletedCount !== 0) {
-			users.shortenDebtList(userId, id);
-		} else {
+		if (delInfo.deletedCount === 0) {
 			throw `Could not remove debt with id of ${id}.`
 		}
 	}
@@ -94,16 +110,16 @@ ModuleA.deleteDebt = async function(id, userId) {
 }
 
 // type is either "add" or "subtract"
-ModuleA.addDebtTransaction = async function(id, userId, quantity, type) {
+ModuleA.addDebtTransaction = async function(id, quantity, type) {
 	if (arguments.length !== 3) {
-		throw "Please provide an debt ID, user ID, quantity, and type.";
+		throw "Please provide an debt ID, quantity, and type.";
 	}
-	if (typeof id !== "string" || typeof userId !== "string" || typeof quantity !== "number" || typeof type !== "string"){
-		throw "The debt ID, user ID, and type must be strings and quantity must be a number.";
+	if (typeof id !== "string" || typeof quantity !== "number" || typeof type !== "string"){
+		throw "The debt ID and type must be strings and quantity must be a number.";
 	}
 	try {
 		if (type === "subtract" && debt.currentAmount <= quantity) {
-			this.deleteDebt(id, userId);
+			this.deleteDebt(id);
 			return {};
 		}
 		let debtCol = await debts();

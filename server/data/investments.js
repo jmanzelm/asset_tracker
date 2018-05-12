@@ -9,8 +9,6 @@ function ModuleA() {
 
 module.exports = ModuleA;
 
-const users = require("./users");
-
 ModuleA.getAllInvestments = async function() {
 	if (arguments.length !== 0) {
 		throw "No arguments are needed.";
@@ -43,6 +41,42 @@ ModuleA.getInvestmentById = async function(id) {
 	}
 }
 
+ModuleA.getStockByUserId = async function(id) {
+	if (arguments.length !== 1) {
+		throw "Please provide a single ID.";
+	}
+	if (typeof id !== "string") {
+		throw "The ID must be a string.";
+	}
+	try {
+		const investmentCollection = await investments();
+		const investment1 = await investmentCollection.find({userId: id, type: "stock"}).toArray();
+		if (investment1 === null) throw "investment not found";
+		return investment1;
+	}
+	catch(error) {
+		throw error;
+	}
+}
+
+ModuleA.getCryptoByUserId = async function(id) {
+	if (arguments.length !== 1) {
+		throw "Please provide a single ID.";
+	}
+	if (typeof id !== "string") {
+		throw "The ID must be a string.";
+	}
+	try {
+		const investmentCollection = await investments();
+		const investment1 = await investmentCollection.find({userId: id, type: "crypto"}).toArray();
+		if (investment1 === null) throw "investment not found";
+		return investment1;
+	}
+	catch(error) {
+		throw error;
+	}
+}
+
 // type is either "stock" or "crypto"
 ModuleA.addInvestment = async function(userId, symbol, type, startingAmount) {
 	if (arguments.length !== 4) {
@@ -55,16 +89,17 @@ ModuleA.addInvestment = async function(userId, symbol, type, startingAmount) {
 		const investmentCollection = await investments();
 		let newInvestment = {
 			_id: uuidv4(),
+			userId: userId,
 			symbol: symbol,
 			transactions: [],
 			type: type,
 			startingAmount: startingAmount,
-			currentAmount: startingAmount
+			currentAmount: startingAmount,
+			date: Math.round((new Date()).getTime() / 1000)
 		};
 
 		const insertInfo = await investmentCollection.insertOne(newInvestment);
 		if (insertInfo.insertedCount === 0) throw "Could not add investment";
-		await users.extendInvestmentList(userId, insertInfo.insertedId);
 
 		const newId = insertInfo.insertedId;
 		return await this.getInvestmentById(newId);
@@ -74,12 +109,12 @@ ModuleA.addInvestment = async function(userId, symbol, type, startingAmount) {
 	}
 }
 
-ModuleA.deleteInvestment = async function(id, userId) {
-	if (arguments.length !== 2) {
-		throw "Please provide an investment ID and a user ID.";
+ModuleA.deleteInvestment = async function(id) {
+	if (arguments.length !== 1) {
+		throw "Please provide an investment ID.";
 	}
 	if (typeof id !== "string") {
-		throw "Both IDs must be strings.";
+		throw "The ID must be s string.";
 	}
 	try {
 		const investmentCollection = await investments();
@@ -88,8 +123,6 @@ ModuleA.deleteInvestment = async function(id, userId) {
 	    if (deletionInfo.deletedCount === 0) {
 	    	throw `Could not delete investment with id of ${id}`;
 		}
-
-		await users.shortenInvestmentList(userId, id);
 	}
 	catch(error) {
 		throw error;
@@ -97,19 +130,19 @@ ModuleA.deleteInvestment = async function(id, userId) {
 }
 
 // type is either "add" or "subtract"
-ModuleA.addInvestmentTransaction = async function(id, userId, quantity, type) {
-	if (arguments.length !== 4) {
-		throw "Please provide an investment ID, user ID, quantity, and type.";
+ModuleA.addInvestmentTransaction = async function(id, quantity, type) {
+	if (arguments.length !== 3) {
+		throw "Please provide an investment ID, quantity, and type.";
 	}
-	if (typeof id !== "string" || typeof userId !== "string" || typeof quantity !== "number" || typeof type !== "string"){
-		throw "The investment ID, type, and user ID must be strings and quantity must be a number.";
+	if (typeof id !== "string" || typeof quantity !== "number" || typeof type !== "string"){
+		throw "The investment ID and type must be strings and quantity must be a number.";
 	}
 
 	try {
 		const investmentCollection = await investments();
 		investment1 = await this.getInvestmentById(id);
 		if (type === "subtract" && investment.currentAmount <= quantity) {
-			await this.deleteInvestment(id, userId);
+			await this.deleteInvestment(id);
 			return {};
 		}
 		let newTransaction = {

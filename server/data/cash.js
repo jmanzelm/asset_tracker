@@ -8,8 +8,6 @@ function ModuleA() {
 
 module.exports = ModuleA;
 
-const users = require("./users");
-
 ModuleA.getAllCash = async function() {
 	if (arguments.length !== 0) {
 		throw "No arguments are needed.";
@@ -43,12 +41,33 @@ ModuleA.getCashById = async function(id) {
 	}
 }
 
-ModuleA.addCash = async function(startingAmount) {
+ModuleA.getCashByUserId = async function(id) {
 	if (arguments.length !== 1) {
+		throw "Please provide a single ID.";
+	}
+	if (typeof id !== "string") {
+		throw "The ID must be a string.";
+	}
+
+	try {
+		let cashCol = await cash();
+		let c = await cashCol.findOne({userId: id});
+		if (c) {
+			return c;
+		}
+		throw "Cash not found";
+	}
+	catch (error) {
+		throw error;
+	}
+}
+
+ModuleA.addCash = async function(userId, startingAmount) {
+	if (arguments.length !== 2) {
 		throw "Please provide a user ID and starting amount.";
 	}
-	if (typeof startingAmount !== "number"){
-		"The starting amount must be a number."
+	if (typeof userId !== "string" || typeof startingAmount !== "number"){
+		"The user id must be a string and the starting amount must be a number."
 	}
 	try{
 		if (startingAmount <= 0) {
@@ -57,9 +76,11 @@ ModuleA.addCash = async function(startingAmount) {
 		let cashCol = await cash();
 		let newCash = {
 			_id: uuidv4(),
+			userId: userId,
 			transactions: [],
 			startingAmount: startingAmount,
-			currentAmount: startingAmount
+			currentAmount: startingAmount,
+			date: Math.round((new Date()).getTime() / 1000)
 		};
 		let insInfo = await cashCol.insertOne(newCash);
 		return await this.getCashById(insInfo.insertedId);
@@ -92,7 +113,7 @@ ModuleA.deleteCash = async function(id) {
 // type is either "deposit" or "withdraw"
 ModuleA.addCashTransaction = async function(id, quantity, type) {
 	if (arguments.length !== 3) {
-		throw "Please provide an cash ID, user ID, quantity, and type.";
+		throw "Please provide an cash ID, quantity, and type.";
 	}
 	if (typeof id !== "string" || typeof quantity !== "number" || typeof type !== "string"){
 		throw "The cash ID and type must be strings and quantity must be a number.";
