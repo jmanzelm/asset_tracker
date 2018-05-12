@@ -120,9 +120,7 @@ ModuleA.addCashTransaction = async function(id, quantity, type) {
 	}
 	try {
 		let cashCol = await cash();
-		console.log("cash initialized");
 		let cashVal = await this.getCashById(id);
-		console.log("cashVal", cashVal)
 		let newAmount = 0;
 		if (!(type === "withdraw" && cashVal.currentAmount <= quantity)) {
 			newAmount = (type === "deposit" ? cashVal.currentAmount + quantity : cashVal.currentAmount - quantity);

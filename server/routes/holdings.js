@@ -4,32 +4,41 @@ const cashData = require("../data/cash");
 const debtData = require("../data/debts");
 const investmentsData = require("../data/investments");
 
- app.get("/crypto/:user_id", (req, res)=>{
+app.get("/crypto/:user_id", async (req, res)=>{
+  try {
+    let c = await investmentsData.getCryptoByUserId(req.params.user_id);
+    res.json(c)
+  } catch (e) {
+    res.status(500).json(e)
+  } 
+});
 
-  });
+app.get("/stocks/:user_id", async (req, res)=>{
+  try {
+    let c = await investmentsData.getStockByUserId(req.params.user_id);
+    res.json(c)
+  } catch (e) {
+    res.status(500).json(e)
+  } 
+});
 
-  app.get("/stocks/:user_id", (req, res)=>{
+app.get("/cash/:user_id", async (req, res)=>{
+  try {
+    let c = await cashData.getCashByUserId(req.params.user_id);
+    res.json(c)
+  } catch (e) {
+    res.status(500).json(e)
+  } 
+});
 
-  });
-
-  app.get("/cash/:user_id", async (req, res)=>{
-    try {
-      let c = await cashData.getCashById(req.params.user_id);
-      res.json(c)
-    } catch (e) {
-      res.status(500).json(e)
-    } 
+app.get("/debt/:user_id", async (req, res)=>{
+  try{
+  	let debt = await debtData.getDebtsByUserId(req.params.user_id)
+  	res.json(debt);
+  } catch (e) {
+    res.status(500).json(e);
   }
-);
-
-  app.get("/debt/:user_id", async (req, res)=>{
-    try{
-    	let debt = await debtData.getDebtsByUserId(req.params.user_id)
-    	res.json(debt);
-    } catch (e) {
-      res.status(500).json(e);
-    }
-  });
+});
 
   //POST methods
 
