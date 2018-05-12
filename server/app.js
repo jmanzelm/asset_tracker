@@ -104,9 +104,9 @@ const main = async function() {
 		populateDB(ben._id);
 	}
 
-	console.log(investments.getAllInvestments());
-	console.log(cash.getAllCash());
-	console.log(debts.getAllDebts());
+	console.log(await investments.getAllInvestments());
+	console.log(await cash.getAllCash());
+	console.log(await debts.getAllDebts());
 
 	console.log(await users.getAllUsers());
 	// console.log(await investments.getAllInvestments());
