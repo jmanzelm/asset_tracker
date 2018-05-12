@@ -37,7 +37,7 @@ ModuleA.getInvestmentById = async function(id) {
 	try {
 		const investmentCollection = await investments();
 		const investment1 = await investmentCollection.findOne({_id: id});
-		if (investment1 === null) throw "investment not found";
+		if (!investment1) throw "investment not found";
 		return investment1;
 	}
 	catch(error) {
@@ -55,7 +55,7 @@ ModuleA.getStockByUserId = async function(id) {
 	try {
 		const investmentCollection = await investments();
 		const investment1 = await investmentCollection.find({userId: id, type: "stock"}).toArray();
-		if (investment1 === null) throw "investment not found";
+		if (!investment1) throw "investment not found";
 		return investment1;
 	}
 	catch(error) {
@@ -73,7 +73,7 @@ ModuleA.getCryptoByUserId = async function(id) {
 	try {
 		const investmentCollection = await investments();
 		const investment1 = await investmentCollection.find({userId: id, type: "crypto"}).toArray();
-		if (investment1 === null) throw "investment not found";
+		if (!investment1) throw "investment not found";
 		return investment1;
 	}
 	catch(error) {

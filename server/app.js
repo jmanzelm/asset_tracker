@@ -109,9 +109,9 @@ const main = async function() {
 	console.log(debts.getAllDebts());
 
 	console.log(await users.getAllUsers());
-	console.log(await investments.getAllInvestments());
-	console.log(await cash.getAllCash());
-	console.log(await debts.getAllDebts());
+	// console.log(await investments.getAllInvestments());
+	// console.log(await cash.getAllCash());
+	// console.log(await debts.getAllDebts());
 	/*console.log((await investments.getInvestmentById(benapple._id)).transactions);
 	console.log(await investments.getStockByUserId(ben._id));
 	console.log(await investments.getCryptoByUserId(ben._id));*/

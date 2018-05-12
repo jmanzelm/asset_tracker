@@ -1,66 +1,56 @@
 /**
- *  @file data/users.js
+ *  @file routes/login.js
  *  @author: Taylor He
  *
  *  Handles user login functions and data
  */
 const bcrypt = require("bcrypt");
 const path = require("path");
+const users = require('../data/users');
 
 const saltRounds = 16;
 
 // Users is a map of username: {userdetails}
-const users = {
-  "masterdetective123": {
-    hashedPassword: "$2a$16$7JKSiEmoP3GNDSalogqgPu0sUbwder7CAN/5wnvCWe6xCKAKwlTD.", // elementarymydearwatson
-    firstName: "Sherlock",
-    lastName: "Holmes",
-    profession: "Detective",
-    _id: "bd207af6-7c73-4ba8-a8bc-e4fb20df5d08"
-  },
+// const users = {
+//   "masterdetective123": {
+//     hashedPassword: "$2a$16$7JKSiEmoP3GNDSalogqgPu0sUbwder7CAN/5wnvCWe6xCKAKwlTD.", // elementarymydearwatson
+//     firstName: "Sherlock",
+//     lastName: "Holmes",
+//     profession: "Detective",
+//     _id: "bd207af6-7c73-4ba8-a8bc-e4fb20df5d08"
+//   },
 
-  "lemon": {
-    hashedPassword: "$2a$16$SsR2TGPD24nfBpyRlBzINeGU61AH0Yo/CbgfOlU1ajpjnPuiQaiDm", // damnyoujackdonaghy
-    firstName: "Elizabeth",
-    lastName: "Lemon",
-    profession: "Writer",
-  },
+//   "lemon": {
+//     hashedPassword: "$2a$16$SsR2TGPD24nfBpyRlBzINeGU61AH0Yo/CbgfOlU1ajpjnPuiQaiDm", // damnyoujackdonaghy
+//     firstName: "Elizabeth",
+//     lastName: "Lemon",
+//     profession: "Writer",
+//   },
 
-  "theboywholived": {
-    hashedPassword: "$2a$16$4o0WWtrq.ZefEmEbijNCGukCezqWTqz1VWlPm/xnaLM8d3WlS5pnK", // quidditch
-    firstName: "Harry",
-    lastName: "Potter",
-    profession: "Student",
-  }
-};
+//   "theboywholived": {
+//     hashedPassword: "$2a$16$4o0WWtrq.ZefEmEbijNCGukCezqWTqz1VWlPm/xnaLM8d3WlS5pnK", // quidditch
+//     firstName: "Harry",
+//     lastName: "Potter",
+//     profession: "Student",
+//   }
+// };
 
 /**
  *  Compares plaintext input with stored hashed password
  *
  *  @param  {Object}  username
  *  @param  {Object}  password
- *  @return {boolean} if username/password matches
+ *  @return {Object}  user document in database, or null if not found
  */
 async function bcryptCompare(username, password) {
   console.log("Logging in...");
-  let hpass = users[username] ? users[username].hashedPassword : "";
-
-  if (users[username]) {
-    // console.log("Comparing", password, "to", users[username].hashedPassword);
-    return await bcrypt.compare(password, hpass);
+  let userDetails = await users.getUserByName(username);
+  if(await bcrypt.compare(password, userDetails.hashedPassword)) {
+    return userDetails;
   }
-  return false;
+  
+  return null;
 }
-/**
- *  Gets info about a user
- *
- *  @param  {Object}  username
- *  @return {Object}  user details
- */
-async function getUserDetails(username) {
-  return users[username] ? users[username] : {};
-}
-
 /**
  *  Tries to login with the username and password provided
  *  If authentication is successful, it sets an auth cookie
@@ -71,20 +61,18 @@ async function getUserDetails(username) {
  */
 async function login(request, response) {
   try {
-    console.log("I got a request")
+    console.log("I got a login request")
     // Try to log in
     const {username, password} = request.body;
-    console.log(username, password);
-    const success = await bcryptCompare(username, password);
-    console.log(`Login was ${success ? "" : "un"}successful`);
+    // console.log(username, password);
+    const user = await bcryptCompare(username, password);
+    console.log(`Login was ${user ? "" : "un"}successful`);
     // If login was successful, set a cookie to the value of username
-    if (success) {
+    if (user) {
       console.log("Setting AuthCookie...")
-      response.cookie("AuthCookie", username);
-      // redirect to / to go to home page
-     // response.redirect("/");
+      response.cookie("AuthCookie", user);
 
-     response.status(200).json(await getUserDetails(username));
+      response.status(200).json(user);
       return;
     }
     response.status(200).json({});
