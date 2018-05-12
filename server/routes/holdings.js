@@ -13,7 +13,7 @@ app.get("/crypto/:user_id", async (req, res)=>{
   } 
 });
 
-app.get("/stocks/:user_id", async (req, res)=>{
+app.get("/stock/:user_id", async (req, res)=>{
   try {
     let c = await investmentsData.getStockByUserId(req.params.user_id);
     res.json(c)
