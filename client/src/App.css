@@ -11,6 +11,11 @@
   padding-bottom: 30px;
 
 }
+.total-asset-value {
+  display: inline-block;
+  margin-left: 10%;
+  font-size: 18pt;
+}
 
 .asset-table {
   display: inline-block;
