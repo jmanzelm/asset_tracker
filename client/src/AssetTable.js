@@ -1,17 +1,13 @@
 import React, { Component } from 'react';
 import {
-    Nav,
-    NavItem,
-    NavDropdown,
-    MenuItem,
     FormControl,
     Table,
     Button,
     OverlayTrigger,
     Popover
 } from 'react-bootstrap';
-import Select from 'react-select';
-import { post, get } from './Interface';
+// import Select from 'react-select';
+// import { post, get } from './Interface';
 import "react-select/dist/react-select.css";
 import './App.css';
 import axios from 'axios';
@@ -20,24 +16,40 @@ import axios from 'axios';
 class AssetDetailsPopover extends Component {
     constructor(props, context) {
         super(props, context);
+        this.setPriceData = this.setPriceData.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         this.state = {
             input: ""
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        this.setPriceData(nextProps);
+    }
+    
+    handleChange(e) {
+        this.setState({input: e.target.value})
+    }
+
+    // this function sets price states and calculates differences
+    async setPriceData() {
+        // let priceAcquired = await axios.get("http://localhost:3001/holdings/stock/")
+    }
+
     render() {
+        console.log("props",this.props)
         return <Popover id="popover-trigger-focus" {...this.props}>
-            Shares: <br/>
-            Price: <br/>
-            Value: <br/>
+            Price Acquired: <br/>
             Total Gain: <br/>
-            Add Shares: <br/>
+            Buy Shares: <br/>
             <FormControl
                 autoFocus
+                onChange={this.handleChange}
                 value={this.state.input}
-                type="text"
+                type="number"
                 placeholder="Enter amount of shares"
-            /> <Button onSubmit={this.props.onSubmit}>Buy</Button>
+            /> 
+            <Button onSubmit={()=>this.props.onSubmit(this.state.input)}>Buy</Button>
         </Popover>
     }
 }
@@ -55,7 +67,7 @@ export default class AssetTable extends Component {
             "Price Per Share",
             "Value"
         ]
-        // 
+        // Maps the activeKey state to the proper route
         this.activeKeyMap = {
             Stocks: "stock",
             Cryptocurrencies: "crypto",
@@ -78,7 +90,7 @@ export default class AssetTable extends Component {
     async getTableData(nextProps) {
         let type = this.activeKeyMap[nextProps.activeKey];
         const res = await axios.get(`http://localhost:3001/holdings/${type}/${nextProps.userid}/`);
-        console.log("res", res)
+        // console.log("res", res)
         let newPrices = {};
         for (let i = 0; i < res.data.length; i++) {
             let toSet = (await axios.get(`http://localhost:3001/prices/${type}/${res.data[i].symbol}`))
@@ -86,10 +98,18 @@ export default class AssetTable extends Component {
             newPrices[res.data[i].symbol] = toSet.data[this.accessPriceToken[nextProps.activeKey]];
         }
         // console.log("Setting state", newPrices);
+
         this.setState({
             objects: res.data,
             prices: newPrices
-        }, () => console.log("prices", this.state.prices));
+        }, () => {
+            let totalAssetValue = 0;
+            let objects = this.state.objects;
+            for (let i = 0; i < objects.length; i++) {
+                totalAssetValue += (this.state.prices[objects[i].symbol] * objects[i].currentAmount)
+            }
+            this.setState({totalAssetValue: this.roundTwoDecimals(totalAssetValue)});
+        });
 
     }
 
@@ -101,16 +121,11 @@ export default class AssetTable extends Component {
         // Tommy do this
     }
 
-    makeAssetRows() {
-        let values = [];
-        return <tr>{values}</tr>
+    roundTwoDecimals(n) {
+        return n.toFixed(2);
     }
 
-
     makeAssetTable() {
-        
-        
-        // let objects1 = get(`https://localhost:3001/${this.props.activeKey}/${this.props.userid}`)
         // let objects = [
         //     {   
         //         _id: 2,
@@ -129,25 +144,25 @@ export default class AssetTable extends Component {
         // ]
 
         let objects = this.state.objects;
-        // let prices = {}
-        // console.log('objs', objects)
-        // for (let i = 0; i < objects.length; i++) {
-        //     // api call
-        //     prices[objects[i].symbol] = get(`http://localhost:3001/prices/stock/${objects[i].symbol}`)
-        // }
 
         let tableRows = [];
-        console.log(objects);
+        // console.log(objects);
         for (let i = 0; i < objects.length; i++) {
             tableRows.push(
             <OverlayTrigger rootClose trigger="click" 
-                    placement="right" 
-                    overlay={ <AssetDetailsPopover onSubmit={this.onPopoverSubmit} {...this.props} />}>
+                placement="right" 
+                overlay={ 
+                    <AssetDetailsPopover 
+                        onSubmit={this.onPopoverSubmit} 
+                        {...this.props} 
+                        ticker={objects[i].symbol}/>
+                }
+            >
                 <tr>
                     <td> {objects[i].symbol} </td>
                     <td> {objects[i].currentAmount} shares </td>
-                    <td> ${this.state.prices[objects[i].symbol]} </td>
-                    <td> ${this.state.prices[objects[i].symbol] * objects[i].currentAmount} </td>
+                    <td> ${this.roundTwoDecimals(this.state.prices[objects[i].symbol])} </td>
+                    <td> ${this.roundTwoDecimals(this.state.prices[objects[i].symbol] * objects[i].currentAmount)} </td>
                 </tr>
             </OverlayTrigger>)
         }
@@ -162,7 +177,14 @@ export default class AssetTable extends Component {
             </tbody>
         </Table>
     }
+
     render() {
-        return <div> {this.makeAssetTable()} </div>
+        return <div> 
+            <div className="total-asset-value">
+            <p>Total value for all {this.props.activeKey}: ${this.state.totalAssetValue}</p>
+            </div>
+            <br />
+            {this.makeAssetTable()} 
+        </div>
     }
 }

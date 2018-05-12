@@ -53,6 +53,7 @@ const cryptoData = "https://min-api.cryptocompare.com";
     let symbol = req.params.ticker;
     symbol = symbol.toUpperCase();
     let endpoint = stockData+"/stock/"+symbol+"/chart";
+    
     request({json:true, url:endpoint}, function(err, response, body){
       if (err){
         throw err;

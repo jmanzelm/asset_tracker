@@ -40,11 +40,11 @@ export default class ModalLogin extends Component {
             "activity": "logging-in"
         })
         // Post to /login server with username and password
-        let a = post("http://localhost:3001/login/", {
+        post("http://localhost:3001/login/", {
             username: this.state.username,
             password: this.state.password
         }).then( (response) => {
-            console.log(response);
+            // console.log(response);
             if (Object.keys(response.data).length !== 0) {
                 this.setState({show: false});
                 this.props.storeUserData(response);

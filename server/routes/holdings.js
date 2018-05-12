@@ -13,7 +13,7 @@ app.get("/crypto/:user_id", async (req, res)=>{
   } 
 });
 
-app.get("/stocks/:user_id", async (req, res)=>{
+app.get("/stock/:user_id", async (req, res)=>{
   try {
     let c = await investmentsData.getStockByUserId(req.params.user_id);
     res.json(c)
@@ -74,7 +74,7 @@ app.get("/debt/:user_id", async (req, res)=>{
   });
 
   app.post("/cash/deposit/:user_id/", async (req, res)=>{
-    console.log("234");
+    // console.log("234");
     let amount = req.body.amount;
     console.log(req.body);
     try {
