@@ -34,6 +34,7 @@ const main = async function() {
 	// const bendebt = await debts.addDebt(ben._id, "college", 150000)
 	// await investments.addInvestmentTransaction(benapple._id, 2, "add");
 	// console.log(await users.getAllUsers());
+
 	// console.log(await investments.getAllInvestments());
 	// console.log(await cash.getAllCash());
 	// console.log(await debts.getAllDebts());
