@@ -115,11 +115,12 @@ ModuleA.addInvestmentTransaction = async function(id, userId, quantity, type) {
 		let newTransaction = {
 			type: type,
 			qty: quantity,
-			date: Math.round((new Date()).getTime() / 1000),
-			price: (investment.type === "stock" ? axios.get("http://localhost:3001/prices/stock/" + investment.symbol).data.close : axios.get("http://localhost:3001/prices/crypto/" + investment.symbol).data.close)
+			date: Math.round((new Date()).getTime() / 1000)
+			//price: (investment.type === "stock" ? axios.get("http://localhost:3001/prices/stock/" + investment.symbol).data.close : axios.get("http://localhost:3001/prices/crypto/" + investment.symbol).data.close)
 		};
+		investment1.transactions.push(newTransaction);
 		let updatedInvestment = {
-			transactions: investment1.transactions.push(newTransaction),
+			transactions: investment1.transactions,
 			currentAmount: (type === "add" ? investment1.currentAmount + quantity : investment1.currentAmount - quantity)
 		}
 

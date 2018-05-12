@@ -32,10 +32,12 @@ const main = async function() {
 	const benapple = await investments.addInvestment(ben._id, "AAPL", "stock", 5);
 	const bencoin = await investments.addInvestment(ben._id, "BTC", "crypto", 5);
 	const bendebt = await debts.addDebt(ben._id, "college", 150000)
+	await investments.addInvestmentTransaction(benapple._id, ben._id, 2, "add");
 	console.log(await users.getAllUsers());
 	console.log(await investments.getAllInvestments());
 	console.log(await cash.getAllCash());
 	console.log(await debts.getAllDebts());
+	console.log((await investments.getInvestmentById(benapple._id)).transactions);
 	// We can now navigate to localhost:3000
 	app.listen(3001, function() {
 	  console.log(

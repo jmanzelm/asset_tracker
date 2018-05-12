@@ -43,6 +43,24 @@ ModuleA.getUserById = async function(id) {
   }
 }
 
+ModuleA.getUserByName = async function(name) {
+  if (arguments.length !== 1) {
+    throw "Please provide a single ID.";
+  }
+  if (typeof id !== "string") {
+    throw "The ID must be a string.";
+  }
+  try {
+    const userCollection = await users();
+    const user1 = await userCollection.findOne({username: name});
+    if (user1 === null) throw "User not found";
+    return user1;
+  }
+  catch(error) {
+    throw error;
+  }
+}
+
 ModuleA.addUser = async function(username, hashedPassword, startingCash) {
   if (arguments.length !== 3) {
     throw "Please provide a username, hashed password, and starting cash amount.";
