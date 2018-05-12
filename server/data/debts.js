@@ -8,6 +8,10 @@ function ModuleA() {
 
 module.exports = ModuleA;
 
+ModuleA.getCollection = function(){
+	return debts();
+}
+
 ModuleA.getAllDebts = async function() {
 	if (arguments.length !== 0) {
 		throw "No arguments are needed.";
@@ -88,6 +92,22 @@ ModuleA.addDebt = async function(userId, creditor, startingAmount) {
 	} catch (error) {
 		throw error;
 	}
+}
+
+ModuleA.update = (id, params)=>{
+	getDebtById(id).then(function(debtObj){
+		params.keys.forEach(function(key){
+			debtObj[key] = params[key];
+		});
+		debtCol.updateOne({_id: id}, debtObj, function(err, res){
+			if (err){
+				console.log(err);
+			}
+			else{
+				console.log(res);
+			}
+		});
+	});
 }
 
 ModuleA.deleteDebt = async function(id) {

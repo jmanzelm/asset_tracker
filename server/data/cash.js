@@ -8,6 +8,10 @@ function ModuleA() {
 
 module.exports = ModuleA;
 
+ModuleA.getCollection = function(){
+	return cash();
+}
+
 ModuleA.getAllCash = async function() {
 	if (arguments.length !== 0) {
 		throw "No arguments are needed.";
@@ -18,6 +22,23 @@ ModuleA.getAllCash = async function() {
 	} catch (e) {
 		throw e
 	}
+}
+
+ModuleA.update = (id, params)=>{
+	return getCashById(id).then(function(cashObj){
+		params.keys.forEach(function(key){
+			cashObj[key] = params[key];
+		});
+		return cashCol.updateOne({_id: id}, cashObj, function(err, res){
+			if (err){
+				console.log(err);
+			}
+			else{
+				console.log(res);
+				return res;
+			}
+		});
+	});
 }
 
 ModuleA.getCashById = async function(id) {

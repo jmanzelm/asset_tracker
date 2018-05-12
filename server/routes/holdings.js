@@ -12,15 +12,24 @@ const investmentsData = require("../data/investments");
 
   });
 
-  app.get("/cash/:user_id", async (req, res)=>{
+  app.get("/cash/user/:user_id", async (req, res)=>{
     try {
-      let c = await cashData.getCashById(req.params.user_id);
+      let c = await cashData.getCashByUserId(req.params.user_id);
       res.json(c)
     } catch (e) {
-      res.status(500).json(e)
+      res.status(500).json(e);
     } 
   }
 );
+
+app.get("/cash/:id", async (req, res)=>{
+  try{
+    let c = await cashData.getCashById(req.params.id);
+    res.json(c);
+  } catch(e){
+    res.status(500).json(e);
+  }
+})
 
   app.get("/debt/:user_id", async (req, res)=>{
     try{

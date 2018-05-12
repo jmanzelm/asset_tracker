@@ -9,6 +9,10 @@ function ModuleA() {
 
 module.exports = ModuleA;
 
+ModuleA.getCollection = function(){
+	return investments();
+}
+
 ModuleA.getAllInvestments = async function() {
 	if (arguments.length !== 0) {
 		throw "No arguments are needed.";
@@ -107,6 +111,22 @@ ModuleA.addInvestment = async function(userId, symbol, type, startingAmount) {
 	catch(error) {
 		throw error;
 	}
+}
+
+ModuleA.update = (id, params)=>{
+	getInvestmentById(id).then(function(investmentObj){
+		params.keys.forEach(function(key){
+			investmentObj[key] = params[key];
+		});
+		investmentCollection.updateOne({_id: id}, investmentObj, function(err, res){
+			if (err){
+				console.log(err);
+			}
+			else{
+				console.log(res);
+			}
+		});
+	});
 }
 
 ModuleA.deleteInvestment = async function(id) {
