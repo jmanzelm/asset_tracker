@@ -26,7 +26,7 @@ class AssetDetailsPopover extends Component {
     }
 
     render() {
-        return <Popover id="popover-positioned-right">
+        return <Popover id="popover-trigger-focus" {...this.props}>
             Shares: <br/>
             Price: <br/>
             Value: <br/>
@@ -48,39 +48,55 @@ export default class AssetTable extends Component {
         super(props, context);
         this.onPopoverSubmit = this.onPopoverSubmit.bind(this);
         this.makeAssetTable = this.makeAssetTable.bind(this);
+        this.getTableData = this.getTableData.bind(this);
         this.COL_DEF = [
             "Ticker",
             "Quantity",
             "Price Per Share",
-            "Value",
-            "+/-"
+            "Value"
         ]
+        // 
         this.activeKeyMap = {
-            Stocks: "holdings/stocks",
-            Cryptocurrencies: "holdings/crypto",
-            Cash: "holdings/cash",
-            Debt: "holdings/debt",
+            Stocks: "stock",
+            Cryptocurrencies: "crypto",
+            Cash: "cash",
+            Debt: "debt",
             objects: []
         }
+        // The name of the price data field on API calls
+        this.accessPriceToken = {
+            Stocks: "close",
+            Cryptocurrencies: "price"
+        }
         this.state = {
-            objects: []
+            objects: [],
+            prices: {}
         };
         
     }
-    componentWillReceiveProps(nextProps) {
-        console.log("HERE");
-        post("http://localhost:3001/holdings/cash/deposit/" + this.props.userid, {
-            
-              user_id: this.props.userid,
-              amount: 100
-            
-        });
-        axios.get(`http://localhost:3001/${this.activeKeyMap[this.props.activeKey]}/${this.props.userid}/`)
-            .then(response => {
-                console.log("response is", response); 
-                this.setState({objects: response}, () => console.log("o", this.state.objects))
-            });
+    // On receiving new props, asynchronously make API calls for populating table.
+    async getTableData(nextProps) {
+        let type = this.activeKeyMap[nextProps.activeKey];
+        const res = await axios.get(`http://localhost:3001/holdings/${type}/${nextProps.userid}/`);
+        console.log("res", res)
+        let newPrices = {};
+        for (let i = 0; i < res.data.length; i++) {
+            let toSet = (await axios.get(`http://localhost:3001/prices/${type}/${res.data[i].symbol}`))
+            // console.log("ts", toSet);
+            newPrices[res.data[i].symbol] = toSet.data[this.accessPriceToken[nextProps.activeKey]];
+        }
+        // console.log("Setting state", newPrices);
+        this.setState({
+            objects: res.data,
+            prices: newPrices
+        }, () => console.log("prices", this.state.prices));
+
     }
+
+    async componentWillReceiveProps(nextProps) {
+        await this.getTableData(nextProps);
+    }
+
     onPopoverSubmit() {
         // Tommy do this
     }
@@ -111,25 +127,27 @@ export default class AssetTable extends Component {
         //         type: "Stocks"
         //     },
         // ]
+
         let objects = this.state.objects;
-        let prices = {}
-        for (let i = 0; i < objects.length; i++) {
-            // api call
-            prices[objects[i].symbol] = "3.12"
-        }
+        // let prices = {}
+        // console.log('objs', objects)
+        // for (let i = 0; i < objects.length; i++) {
+        //     // api call
+        //     prices[objects[i].symbol] = get(`http://localhost:3001/prices/stock/${objects[i].symbol}`)
+        // }
+
         let tableRows = [];
         console.log(objects);
         for (let i = 0; i < objects.length; i++) {
             tableRows.push(
             <OverlayTrigger rootClose trigger="click" 
                     placement="right" 
-                    overlay={ <AssetDetailsPopover onSubmit={this.onPopoverSubmit} />}>
+                    overlay={ <AssetDetailsPopover onSubmit={this.onPopoverSubmit} {...this.props} />}>
                 <tr>
                     <td> {objects[i].symbol} </td>
                     <td> {objects[i].currentAmount} shares </td>
-                    <td> $ {prices[objects[i].symbol]} </td>
-                    <td> $ {prices[objects[i].symbol] * objects[i].currentAmount} </td>
-                    <td> +/- {i} % </td>
+                    <td> ${this.state.prices[objects[i].symbol]} </td>
+                    <td> ${this.state.prices[objects[i].symbol] * objects[i].currentAmount} </td>
                 </tr>
             </OverlayTrigger>)
         }

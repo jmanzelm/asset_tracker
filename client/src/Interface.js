@@ -23,10 +23,10 @@ export function get(path){
       url: path
     })
     .then(response => {
-        console.log(response);
+        console.log('rsp', response);
         return response;
     })
     .catch((e) => {
-      console.log("error is:", e.data)
+      console.log("error is:", e)
     });
 }
