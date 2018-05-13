@@ -26,7 +26,7 @@ class AssetDetailsPopover extends Component {
     componentWillReceiveProps(nextProps) {
         this.setPriceData(nextProps);
     }
-    
+
     handleChange(e) {
         this.setState({input: e.target.value})
     }
@@ -48,7 +48,7 @@ class AssetDetailsPopover extends Component {
                 value={this.state.input}
                 type="number"
                 placeholder="Enter amount of shares"
-            /> 
+            />
             <Button onSubmit={()=>this.props.onSubmit(this.state.input)}>Buy</Button>
         </Popover>
     }
@@ -84,7 +84,7 @@ export default class AssetTable extends Component {
             objects: [],
             prices: {}
         };
-        
+
     }
     // On receiving new props, asynchronously make API calls for populating table.
     async getTableData(nextProps) {
@@ -127,7 +127,7 @@ export default class AssetTable extends Component {
 
     makeAssetTable() {
         // let objects = [
-        //     {   
+        //     {
         //         _id: 2,
         //         symbol: "AAPL",
         //         transactions:  [
@@ -149,12 +149,12 @@ export default class AssetTable extends Component {
         // console.log(objects);
         for (let i = 0; i < objects.length; i++) {
             tableRows.push(
-            <OverlayTrigger rootClose trigger="click" 
-                placement="right" 
-                overlay={ 
-                    <AssetDetailsPopover 
-                        onSubmit={this.onPopoverSubmit} 
-                        {...this.props} 
+            <OverlayTrigger rootClose trigger="click"
+                placement="right"
+                overlay={
+                    <AssetDetailsPopover
+                        onSubmit={this.onPopoverSubmit}
+                        {...this.props}
                         ticker={objects[i].symbol}/>
                 }
             >
@@ -166,7 +166,7 @@ export default class AssetTable extends Component {
                 </tr>
             </OverlayTrigger>)
         }
-        return <Table className="table asset-table" bordered hover>
+        return <Table className="table asset-table" striped bordered hover>
             <thead>
                 <tr>
                     {this.COL_DEF.map((header) => { return <th>{header}</th>})}
@@ -179,12 +179,12 @@ export default class AssetTable extends Component {
     }
 
     render() {
-        return <div> 
+        return <div>
             <div className="total-asset-value">
             <p>Total value for all {this.props.activeKey}: ${this.state.totalAssetValue}</p>
             </div>
             <br />
-            {this.makeAssetTable()} 
+            {this.makeAssetTable()}
         </div>
     }
 }

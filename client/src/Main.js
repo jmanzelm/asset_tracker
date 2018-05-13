@@ -47,7 +47,7 @@ export default class Main extends Component {
 
     render() {
     	let modalLogin = <ModalLogin storeUserData={this.storeUserData}/>
-                
+
         return (
             <div>
            		{modalLogin}
@@ -137,11 +137,11 @@ class FilterTextBox extends Component {
     // }
     handleChange(val) {
         if (val.target.current_text !== this.state.current_text) {
-            this.setState({ 
+            this.setState({
                 current_text: val.target.value,
                 validationState: null
             })
-        }   
+        }
     }
 
     submitModal() {
@@ -165,8 +165,8 @@ class FilterTextBox extends Component {
             return 'success'
         }
         this.setState({validationState: "error"})
-            
-            
+
+
         // this.setState({validationState: "error"})
         return 'error'
         console.log(a);
@@ -175,18 +175,18 @@ class FilterTextBox extends Component {
     render() {
         // {this.getValidationState()}
         return (<div>
-
-        <FormGroup validationState={this.state.validationState}>
-        <FormControl
-            name="form-field-name"
-            value={this.state.current_text}
-            onChange={this.handleChange}
-            placeholder={"Search for a " + this.activeKeyMap[this.props.activeKey] + " ticker"}
-        />
-        <FormControl.Feedback />
-        <Button onClick={this.verifyAsset}>Verify</Button>
-        </FormGroup>
-
+        <Form inline>
+            <FormGroup validationState={this.state.validationState}>
+                <FormControl
+                    name="form-field-name"
+                    value={this.state.current_text}
+                    onChange={this.handleChange}
+                    placeholder={"Search for a " + this.activeKeyMap[this.props.activeKey] + " ticker"}
+                />
+                <FormControl.Feedback />
+                <Button onClick={this.verifyAsset}>Verify</Button>
+            </FormGroup>
+        </Form>
         {this.state.validationState === "success" &&
             <Modal show={true}>
             <Modal.Header> <h4>{this.state.current_text.toUpperCase()} </h4></Modal.Header>
@@ -214,7 +214,7 @@ class FilterTextBox extends Component {
                 </Modal.Footer>
             </Modal>
         }
-       
+
         </div>)
     }
 }
