@@ -68,7 +68,13 @@ app.get("/debt/total/:user_id", async (req, res)=>{
       let type = req.body.type; //stock or crypto
       let date = (req.body.date) ? req.body.date : Math.floor(new Date()/1000);
 
-      let inv = await investmentsData.addInvestment(userId, req.body);
+      let attrs ={
+        symbol:symbol,
+        startingAmount:startingAmount,
+        type:type,
+        date:date
+      }
+      let inv = await investmentsData.addInvestment(userId, attrs);
       res.json(inv);
     } catch(e){
       res.status(500).json(e);
