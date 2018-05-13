@@ -15,15 +15,23 @@ const cryptoData = "https://min-api.cryptocompare.com";
     /3m
     /1m
     /1d
-    /date/20180129
+    /20180129
     /dynamic
     */
   app.get("/stock/:ticker/:range", (req, res)=>{
     let symbol = req.params.ticker;
     let range = req.params.range;
+    if (range.length>3){
+      range = "date/"+range;
+    }
     let endpoint = stockData+"/stock/"+symbol+"/chart/"+range;
     request({json:true, url:endpoint}, function(err, response, body){
-      res.json(body);
+      if (range.length>3){
+        res.json(body[body.length-1]);
+      }
+      else{
+        res.json(body);
+      }
     });
   });
 
