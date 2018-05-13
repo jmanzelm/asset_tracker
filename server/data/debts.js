@@ -68,7 +68,7 @@ ModuleA.addDebt = async function(userId, attrs) {
 		throw "Please provide a user ID and {creditor: x, startingAmount: y}";
 	}
 	let creditor = attrs.creditor;
-	let startingAmount = attrs.startingAmount;
+	let startingAmount = attrs.amount;
 	let date = (attrs.date) ? attrs.date : Math.round((new Date()).getTime() / 1000);
 	if (typeof userId !== "string" || typeof creditor !== "string" || typeof startingAmount !== "number"){
 		"The user ID and symbol must be strings and starting amount must be a number."
