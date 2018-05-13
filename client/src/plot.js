@@ -65,11 +65,11 @@ export async function cashPlot(userId) {
 
 export async function singleDebtPlot(userId, debtId) {
 	if (arguments.length !== 2) {
-    throw "Please provide a single ID.";
-  }
-  if (typeof userId !== "string" || typeof debtId !== "string") {
-    throw "The IDs must be strings.";
-  }
+    	throw "Please provide a single ID.";
+  	}
+  	if (typeof userId !== "string" || typeof debtId !== "string") {
+    	throw "The IDs must be strings.";
+  	}
 	let response = await axios.get("http://localhost:3001/holdings/debt/" + userId);
 	let found = response.find(function (obj) {
 		return obj._id === debtId;
@@ -107,18 +107,18 @@ export async function singleDebtPlot(userId, debtId) {
 	}
 
 	var cash = {
-	  x: x,
-	  y: y,
-	  mode: 'lines+markers',
-	  type: 'scatter',
-	  name: creditor,
-	  marker: { size: 12 }
+		x: x,
+		y: y,
+		mode: 'lines+markers',
+		type: 'scatter',
+		name: creditor,
+		marker: { size: 12 }
 	};
 
 	var data = [ cash ];
 
 	var layout = {
-	  title: creditor + " Debt"
+		title: creditor + " Debt"
 	};
 
 	Plotly.plot('plot', data, layout);

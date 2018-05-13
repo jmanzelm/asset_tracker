@@ -35,8 +35,8 @@ app.get("/cash/:user_id", async (req, res)=>{
 
 app.get("/debt/:user_id", async (req, res)=>{
   try{
-  	let debt = await debtData.getDebtByUserId(req.params.user_id)
-  	res.json(debt);
+    let debt = await debtData.getDebtByUserId(req.params.user_id)
+    res.json(debt);
   } catch (e) {
     res.status(500).json(e);
   }
@@ -50,7 +50,7 @@ app.get("/debt/total/:user_id", async (req, res)=>{
       total+=element.currentAmount;
     });
     let ret = {totalDebt:total};
-  	res.json(ret);
+    res.json(ret);
   } catch (e) {
     res.status(500).json(e);
   }
@@ -68,8 +68,8 @@ app.get("/debt/total/:user_id", async (req, res)=>{
       let type = req.body.type; //stock or crypto
       let date = (req.body.date) ? req.body.date : Math.floor(new Date()/1000);
 
-    	let inv = await investmentsData.addInvestment(userId, req.body);
-    	res.json(inv);
+      let inv = await investmentsData.addInvestment(userId, req.body);
+      res.json(inv);
     } catch(e){
       res.status(500).json(e);
     }
@@ -171,8 +171,8 @@ app.get("/debt/total/:user_id", async (req, res)=>{
 
     let attrs = {
       type: type,
-			qty: quantity,
-			date: date
+      qty: quantity,
+      date: date
     };
 
     let ret = debtData.addDebtTransaction(id)
