@@ -37,15 +37,19 @@ export default class Main extends Component {
             selectedItem: "AAPL"
         }
     }
+    // Updates selected asset
     updateSelectedAsset(ticker) {
         console.log('t', ticker)
         this.setState({
             selectedItem: ticker
         })
     }
+    // Stores the user data in the state
     storeUserData(d) {
     	this.setState(d.data);
     }
+
+    // Toggles the nav key on AssetNavBar onClick
     toggleNavKey(eventKey, event) {
     	event.preventDefault();
     	this.setState({
@@ -95,11 +99,13 @@ class AssetNavbar extends Component {
         ];
     }
 
+    // Calls props.toggleNavKey
     handleNavSelect(eventKey, event) {
     	this.props.toggleNavKey(eventKey, event);
     	return;
     }
 
+    // Creates the nav bar as specified this.navItems
 	makeNavbar() {
         return <Nav bsStyle="pills" stacked activeKey={this.props.activeKey} >
         	{this.navItems.map((itemName) => {
@@ -111,16 +117,15 @@ class AssetNavbar extends Component {
     }
     render() {
     	return <div class="navbar">
-                        {this.makeNavbar()}
-                    </div>
+                    {this.makeNavbar()}
+                </div>
     }
-
 }
 
 
 
 /**
- *	Handles Filter
+ *	Finds the stock or crypto inputted when form button is clicked
  */
 export class FilterTextBox extends Component {
     constructor(props, context) {
@@ -162,6 +167,7 @@ export class FilterTextBox extends Component {
         // console.log("type", this.activeKeyMap[this.props.activeKey])
         // console.log("date", Math.floor(this.state.date.getTime() / 1000))
         
+        // Posts to investments/ with a new type
         await axios({
           method: 'post',
           url: "http://localhost:3001/holdings/investment/" + this.props.userid,
@@ -179,15 +185,17 @@ export class FilterTextBox extends Component {
             showAssetAdd: false
         })
     }
+    // Handles the amount update
     handleModalChange(e) {
         this.setState({amount : e.target.value > 0 ? e.target.value : 0});
     }
+
+    // Handles the daypickerinput change
     handleDayChange(d) {
         this.setState({date: d})
     }
-    // async componentWillUpdate(nextProps, nextState) {
-    //     await this.getValidationState(nextProps, nextState);
-    // }
+
+    // Verifies that the stock or crypto actuallye exists by querying for it
     async verifyAsset() {
         let a = await axios.get(`http://localhost:3001/prices/${this.activeKeyMap[this.props.activeKey]}/${this.state.current_text}`);
         if (a.data && Object.keys(a.data).length !== 0 && a.data !== "U") {
@@ -210,12 +218,8 @@ export class FilterTextBox extends Component {
 
 
     render() {
-        // {this.getValidationState()}
-        // {cashPlot();}
         return (
             <div>
-
-            <div id="plot"> </div>
         <FormGroup validationState={this.state.validationState}>
         <FormControl
             disabled={["crypto", "stock"].indexOf(this.activeKeyMap[this.props.activeKey]) === -1}
@@ -225,7 +229,9 @@ export class FilterTextBox extends Component {
             placeholder={"Search for a " + this.activeKeyMap[this.props.activeKey] + " ticker"}
         />
         <FormControl.Feedback />
-        <Button disabled={["crypto", "stock"].indexOf(this.activeKeyMap[this.props.activeKey]) === -1} onClick={this.verifyAsset}>Buy or Sell Asset</Button>
+        <Button 
+            disabled={["crypto", "stock"].indexOf(this.activeKeyMap[this.props.activeKey]) === -1} 
+            onClick={this.verifyAsset}>Buy or Sell Asset</Button>
         </FormGroup>
         {this.state.validationState === "success" &&
             <Modal show={this.state.showAssetAdd}>
