@@ -110,6 +110,87 @@ ModuleA.addCash = async function(userId, startingAmount) {
 		throw error;
 	}
 }
+ModuleA.addCashDeposit = async function(user_id, attrs) {
+	if (!attrs){
+		throw "Attributes needed";
+	}
+	let amount = attrs.amount;
+    let date = (attrs.date)? attrs.date : Math.round((new Date()).getTime() / 1000);
+	
+	return cash().then(cashCollection => {
+        let deposit = {
+          type: "deposit",
+          amount: amount,
+          date: date
+        };
+        //console.log("getting here?")
+        return cashCollection
+          .updateOne({userId:user_id}, {$push:{ transactions: deposit}}, {upsert:true})
+          .then(results => {
+            //console.log(results);
+            return cashCollection.findOne({ userId: user_id }).then(holding => {
+             // console.log(holding);
+                if (!holding) throw "this holding does not exist";
+                return holding;
+              });
+          });
+    });
+  }
+  ModuleA.addCashWithdrawal = async function(user_id, attrs){
+    if (!attrs || !attrs.amount){
+		throw "Attributes needed";
+	}
+	let amount = attrs.amount;
+	let date = (attrs.date)? attrs.date : Math.round((new Date()).getTime() / 1000);
+	
+    return cash().then(cashCollection => {
+        let withdrawal = {
+          type: "withdrawal",
+          amount: amount,
+          date: date
+        };
+
+        return cashCollection
+          .findOne({"userId":user_id})
+          .then(holding=>{
+            let total = 0;
+            holding.transactions.forEach(function(element, index, array){
+              if (element.type=="deposit"){
+                total+=element.amount;
+              }
+              else if (element.type=="withdrawal"){
+                total-=element.amount;
+              }
+            });
+            if (total-withdrawal.amount<0){
+              throw "You cannot withdraw more money than you have"
+            }
+            cashCollection.updateOne({userId:user_id}, {$push:{ transactions: withdrawal}})
+              .then(result => {
+                return cashCollection.findOne({ userId: user_id }).then(holding => {
+                    if (!holding) throw "this holding does not exist";
+                    return holding;
+                  });
+              });
+          });
+    });
+  }
+
+ModuleA.addTransactionSeries = async function(user_id, series){
+	let countPromise = [];
+	for (var i = 0; i < series.length; i++){
+		let transaction = series[i];
+		if (transaction.type=="deposit"){
+			let deposit = await this.addCashDeposit(user_id, transaction);
+		}
+		else if (transaction.type=="withdrawal"){
+			let withdrawal = this.addCashWithdrawal(user_id, transaction);
+		}
+	}
+	console.log(await this.getAllCash());
+	return await this.getCashByUserId(user_id);
+}
+
 
 // should only be used by the user delete
 ModuleA.deleteCash = async function(id) {
@@ -132,10 +213,15 @@ ModuleA.deleteCash = async function(id) {
 }
 
 // type is either "deposit" or "withdraw"
-ModuleA.addCashTransaction = async function(id, quantity, type) {
-	if (arguments.length !== 3) {
-		throw "Please provide an cash ID, quantity, and type.";
+ModuleA.addCashTransaction = async function(id, attrs) {
+	if (arguments.length !== 2) {
+		throw "Please provide an cash ID and attributes";
 	}
+
+	let quantity = attrs.quantity;
+	let type = attrs.type;
+	let date = attrs.date;
+
 	if (typeof id !== "string" || typeof quantity !== "number" || typeof type !== "string"){
 		throw "The cash ID and type must be strings and quantity must be a number.";
 	}
@@ -150,7 +236,7 @@ ModuleA.addCashTransaction = async function(id, quantity, type) {
 		let newTransaction = {
 			type: type,
 			qty: quantity,
-			date: Math.round((new Date()).getTime() / 1000)
+			date: (date) ? date : Math.round((new Date()).getTime() / 1000)
 		};
 		let updatedCash = {
 			transactions: (await this.getCashById(id)).transactions.push(newTransaction),
