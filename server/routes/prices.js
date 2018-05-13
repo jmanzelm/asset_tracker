@@ -29,7 +29,7 @@ const cryptoData = "https://min-api.cryptocompare.com";
 
   app.post("/stock/:range", (req, res)=>{
     let range = req.params.range;
-    let postData = req.body.tickers;
+    let postData = req.body.symbols;
 
     let tickers=[];
     postData.forEach(element => {
@@ -47,7 +47,8 @@ const cryptoData = "https://min-api.cryptocompare.com";
           }
           else{
             let ret = {};
-            ret[symbol] = body;
+            ret["symbol"] = symbol;
+            ret["prices"] = body;
             resolve( ret); 
           }
         });
@@ -75,6 +76,40 @@ const cryptoData = "https://min-api.cryptocompare.com";
       res.json(body.Data);
     });
   });
+
+  app.post("/crypto/:range", (req, res)=>{
+    let range = req.params.range;
+    let postData = req.body.symbols;
+
+    let symbols=[];
+    postData.forEach(element => {
+      symbols.push(element.symbol.toUpperCase());
+    });
+
+    let requests = [];
+    for (let i = 0; i<symbols.length; i++){
+      let symbol = symbols[i];
+      let endpoint = cryptoData+"/data/"+range+"?fsym="+symbol+"&tsym=USD&limit=10";
+      requests.push(new Promise(function(resolve, reject){
+        request({json:true, url:endpoint}, function(err, response, body){
+          if (err){
+            reject(err);
+          }
+          else{
+            let ret = {};
+            ret["symbol"] = symbol;
+            ret["prices"] = body.Data;
+            resolve( ret); 
+          }
+        });
+      }));
+    };
+    return Promise.all(requests).then(function(data){
+      
+      res.json(data);
+    });
+  });
+
 
   //latest price only
   app.get("/stock/:ticker", (req, res)=>{

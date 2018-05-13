@@ -37,7 +37,7 @@ const main = async function() {
 	else{
 		sherlock = await users.getUserByName("masterdetective123");
 	}
-	console.log("sherlock's id", sherlock._id)
+	console.log("user id: "+sherlock._id);
 	let cashCollectionSize = await cash.getAllCash().then(function(allCash){
 		return allCash.length;
 	});
