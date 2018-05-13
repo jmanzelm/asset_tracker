@@ -8,14 +8,14 @@ async function cashPlot(userId) {
     throw "The ID must be a string.";
   }
 	let response = await axios.get("http://localhost:3001/holdings/cash/" + userId);
-	start = new Date(response.date * 1000);
-	sAmount = response.startingAmount;
-	cAmount = response.currentAmount;
-	trans = response.transactions;
+	let start = new Date(response.date * 1000);
+	let sAmount = response.startingAmount;
+	let cAmount = response.currentAmount;
+	let trans = response.transactions;
 
-	x = [];
-	y = [];
-	today = new Date();
+	let x = [];
+	let y = [];
+	let today = new Date();
 	x.unshift(today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getYear());
 	y.unshift(cAmount);
 	// go through 4 years of days
@@ -184,20 +184,20 @@ async function singleStockPlot(userId, stockId) {
   if (typeof userId !== "string" || typeof stockId !== "string") {
     throw "The IDs must be strings.";
   }
-	lete response = await axios.get("http://localhost:3001/holdings/stock/" + userId);
-	found = response.find(function (obj) {
+	let response = await axios.get("http://localhost:3001/holdings/stock/" + userId);
+	let found = response.find(function (obj) {
 		return obj._id === stockId;
 	});
-	start = new Date(found.date * 1000);
-	sAmount = found.startingAmount;
-	cAmount = found.currentAmount;
-	trans = found.transactions;
-	symbol = found.symbol;
+	let start = new Date(found.date * 1000);
+	let sAmount = found.startingAmount;
+	let cAmount = found.currentAmount;
+	let trans = found.transactions;
+	let symbol = found.symbol;
 
 	let data = await axios.get("http://localhost:3001/prices/stock/" + symbol + "/1m");
-	x = [];
-	y = [];
-	today = new Date();
+	let x = [];
+	let y = [];
+	let today = new Date();
 	today.setDate(today.getDate()-1);
 	x.unshift(today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getYear());
 	y.unshift(cAmount);
@@ -299,16 +299,16 @@ async function singleCryptoPlot(userId, cryptoId) {
 	found = response.find(function (obj) {
 		return obj._id === cryptoId;
 	});
-	start = new Date(found.date * 1000);
-	sAmount = found.startingAmount;
-	cAmount = found.currentAmount;
-	trans = found.transactions;
-	symbol = found.symbol;
+	let start = new Date(found.date * 1000);
+	let sAmount = found.startingAmount;
+	let cAmount = found.currentAmount;
+	let trans = found.transactions;
+	let symbol = found.symbol;
 
 	let data = await axios.get("http://localhost:3001/prices/crypto/" + symbol + "/histoday");
-	x = [];
-	y = [];
-	today = new Date();
+	let x = [];
+	let y = [];
+	let today = new Date();
 	today.setDate(today.getDate()-1);
 	x.unshift(today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getYear());
 	y.unshift(cAmount);
