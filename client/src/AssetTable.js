@@ -14,7 +14,7 @@ import axios from 'axios';
 import {FilterTextBox} from './Main';
 import format from 'date-fns/format';
 
-
+// This class creates the popover that appears when you click on the table and gives it functionality
 class AssetDetailsPopover extends Component {
     constructor(props, context) {
         super(props, context);
@@ -39,20 +39,14 @@ class AssetDetailsPopover extends Component {
         this.setState({input: e.target.value})
     }
 
-    // this function sets price states and calculates differences
+    // This function sets price states and calculates differences
     async setPriceData() {
-        // console.log(this.props)
         let formattedDate = format(this.props.o.date * 1000, this.DATE_FORMAT);
-        // console.log(formattedDate);
         if (this.activeKeyMap[this.props.activeKey] === "stock") {
             let pa = `http://localhost:3001/prices/stock/${this.props.o.symbol}/${formattedDate}`;
             let priceAcquired = await axios.get(pa);
-            // console.log(pa)
             let priceNow = await axios.get(`http://localhost:3001/prices/stock/${this.props.o.symbol}/`)
             let diff = priceNow.data.close - priceAcquired.data.close;
-            // console.log("pricenow", priceNow);
-            // console.log("priceAc", priceAcquired)
-            // console.log(diff);
             let pastate = 0
             if (!isNaN(priceAcquired.data.close)) {
                 pastate = priceAcquired.data.close.toFixed(2);
@@ -70,12 +64,9 @@ class AssetDetailsPopover extends Component {
         if (this.activeKeyMap[this.props.activeKey] === "crypto") {
             let pa = `http://localhost:3001/prices/crypto/${this.props.o.symbol}/${this.props.o.date}`;
             let priceAcquired = await axios.get(pa);
-            // console.log(pa)
             let priceNow = await axios.get(`http://localhost:3001/prices/crypto/${this.props.o.symbol}/`)
             let diff = priceNow.data.price - priceAcquired.data.USD;
-            // console.log("pricenow", priceNow);
-            // console.log("priceAc", priceAcquired)
-            // console.log(diff);
+
             let pastate = 0
             if (!isNaN(priceAcquired.data.USD)) {
                 pastate = priceAcquired.data.USD.toFixed(2);
@@ -93,7 +84,6 @@ class AssetDetailsPopover extends Component {
     }
 
     render() {
-        // console.log("props",this.props)
         return <Popover id="popover-trigger-focus" {...this.props}>
             Price Acquired: {this.state.priceAcquired}<br/>
             Total Gain: {this.state.diff}<br/>
@@ -101,8 +91,8 @@ class AssetDetailsPopover extends Component {
     }
 }
 
+//This class creates the table that displays the user's finances
 export default class AssetTable extends Component {
-    // Props needed: the assets to filter
     constructor(props, context) {
         super(props, context);
         this.onPopoverSubmit = this.onPopoverSubmit.bind(this);
@@ -142,8 +132,7 @@ export default class AssetTable extends Component {
             let transactions = res.data ? res.data : []
             let newPrices = {}
             for (let i = 0; i < transactions.length; i++) {
-                let toSet = (await axios.get(`http://localhost:3001/prices/${type}/${transactions[i].symbol}`))
-                // console.log("ts", toSet);
+                let toSet = (await axios.get(`http://localhost:3001/prices/${type}/${transactions[i].symbol}`));
                 newPrices[transactions[i].symbol] = toSet.data[this.accessPriceToken[nextProps.activeKey]];
             }
             this.setState({
@@ -165,10 +154,9 @@ export default class AssetTable extends Component {
             console.log(currVal);
             this.setState({totalAssetValue: this.roundTwoDecimals(currVal.data.totalDebt ? currVal.data.totalDebt : 0)})
         }
-        
-        // console.log("Setting state", newPrices);
 
-       
+
+
 
     }
 
@@ -176,36 +164,13 @@ export default class AssetTable extends Component {
         await this.getTableData(nextProps);
     }
 
-    onPopoverSubmit() {
-        // Tommy do this
-    }
-
     roundTwoDecimals(n) {
         return n.toFixed(2);
     }
-
+    //This function populates the table
     makeAssetTable() {
-        // let objects = [
-        //     {
-        //         _id: 2,
-        //         symbol: "AAPL",
-        //         transactions:  [
-        //                     {
-        //                         type: "Purchase",
-        //                         quantity: 2,
-        //                         date: new Date()
-        //                     }
-        //                 ],
-        //         startingAmount: 0,
-        //         currentAmount: 2,
-        //         type: "Stocks"
-        //     },
-        // ]
-
         let objects = this.state.objects;
-
         let tableRows = [];
-        // console.log(objects);
         for (let i = 0; i < objects.length; i++) {
             tableRows.push(
             <OverlayTrigger rootClose trigger="click"
@@ -213,7 +178,6 @@ export default class AssetTable extends Component {
                 onEnter={() => {this.props.updateSelectedAsset(objects[i].symbol)}}
                 overlay={
                     <AssetDetailsPopover
-                        onSubmit={this.onPopoverSubmit}
                         {...this.props}
                         o={objects[i]}/>
                 }
