@@ -16,7 +16,9 @@ import {
 import './App.css';
 import { post } from './Interface';
 
-
+/**
+ *  Login modal
+ */
 export default class ModalLogin extends Component {
     constructor(props, context) {
         super(props, context);
