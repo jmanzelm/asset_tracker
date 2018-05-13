@@ -35,7 +35,7 @@ app.get("/cash/:user_id", async (req, res)=>{
 
 app.get("/debt/:user_id", async (req, res)=>{
   try{
-  	let debt = await debtData.getDebtsByUserId(req.params.user_id)
+  	let debt = await debtData.getDebtByUserId(req.params.user_id)
   	res.json(debt);
   } catch (e) {
     res.status(500).json(e);

@@ -178,13 +178,18 @@ ModuleA.addCashDeposit = async function(user_id, attrs) {
 
 ModuleA.addTransactionSeries = async function(user_id, series){
 	let countPromise = [];
+	let userCashObj;
 	for (var i = 0; i < series.length; i++){
 		let transaction = series[i];
 		if (transaction.type=="deposit"){
-			let deposit = await this.addCashDeposit(user_id, transaction);
+			if (i==0){
+				//first deposit
+				userCashObj = await this.addCash(user_id, transaction.amount);
+			}
+			let deposit = await this.addCashTransaction(userCashObj._id, transaction);
 		}
 		else if (transaction.type=="withdrawal"){
-			let withdrawal = this.addCashWithdrawal(user_id, transaction);
+			let withdrawal = this.addCashTransaction(userCashObj._id, transaction);
 		}
 	}
 	console.log(await this.getAllCash());
@@ -218,28 +223,30 @@ ModuleA.addCashTransaction = async function(id, attrs) {
 		throw "Please provide an cash ID and attributes";
 	}
 
-	let quantity = attrs.quantity;
+	let amount = attrs.amount;
 	let type = attrs.type;
 	let date = (attrs.date) ? attrs.date : Math.round((new Date()).getTime() / 1000);
 
-	if (typeof id !== "string" || typeof quantity !== "number" || typeof type !== "string"){
-		throw "The cash ID and type must be strings and quantity must be a number.";
+	if (typeof id !== "string" || typeof amount !== "number" || typeof type !== "string"){
+		throw "The cash ID and type must be strings and amount must be a number.";
 	}
 	try {
 		let cashCol = await cash();
 		let cashVal = await this.getCashById(id);
 		let newAmount = 0;
-		if (!(type === "withdraw" && cashVal.currentAmount <= quantity)) {
-			newAmount = (type === "deposit" ? cashVal.currentAmount + quantity : cashVal.currentAmount - quantity);
+		if (!(type === "withdraw" && cashVal.currentAmount <= amount)) {
+			newAmount = (type === "deposit" ? cashVal.currentAmount + amount : cashVal.currentAmount - amount);
 		}
 		console.log("newAmount", newAmount);
 		let newTransaction = {
 			type: type,
-			qty: quantity,
+			qty: amount,
 			date: (date) ? date : Math.round((new Date()).getTime() / 1000)
 		};
+
+		cashVal.transactions.push(newTransaction);
 		let updatedCash = {
-			transactions: (await this.getCashById(id)).transactions.push(newTransaction),
+			transactions: cashVal.transactions,
 			currentAmount: newAmount
 		}
 		cashCol.updateOne({_id: id}, {$set: updatedCash});
