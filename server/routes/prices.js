@@ -25,7 +25,37 @@ const cryptoData = "https://min-api.cryptocompare.com";
     request({json:true, url:endpoint}, function(err, response, body){
       res.json(body);
     });
+  });
 
+  app.post("/stock/:range", (req, res)=>{
+    let range = req.params.range;
+    let postData = req.body.tickers;
+
+    let tickers=[];
+    postData.forEach(element => {
+      tickers.push(element.symbol.toUpperCase());
+    });
+
+    let requests = [];
+    for (let i = 0; i<tickers.length; i++){
+      let symbol = tickers[i];
+      let endpoint = stockData+"/stock/"+symbol+"/chart/"+range;
+      requests.push(new Promise(function(resolve, reject){
+        request({json:true, url:endpoint}, function(err, response, body){
+          if (err){
+            reject(err);
+          }
+          else{
+            let ret = {};
+            ret[symbol] = body;
+            resolve( ret); 
+          }
+        });
+      }));
+    };
+    return Promise.all(requests).then(function(data){
+      res.json(data);
+    });
   });
 
   /*date range formats:
@@ -37,7 +67,6 @@ const cryptoData = "https://min-api.cryptocompare.com";
     /exchange (Get total volume from the daily historical exchange data.The values are based on 00:00 GMT time. We store the data in BTC and we multiply by the BTC-tsym value)
     */
   app.get("/crypto/:ticker/:range", (req, res)=>{
-    let ts = Math.round((new Date()).getTime() / 1000);
     let symbol = req.params.ticker;
     symbol = symbol.toUpperCase();
     let range = req.params.range;

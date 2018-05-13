@@ -33,7 +33,8 @@ const main = async function() {
 	let sherlock;
 	if (usersList.length==0){
 		sherlock = await users.addUser("masterdetective123", "$2a$16$7JKSiEmoP3GNDSalogqgPu0sUbwder7CAN/5wnvCWe6xCKAKwlTD.", 50);
-	} else {
+	}
+	else{
 		sherlock = await users.getUserByName("masterdetective123");
 	}
 	 
