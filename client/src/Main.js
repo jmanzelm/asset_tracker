@@ -156,7 +156,7 @@ class FilterTextBox extends Component {
             symbol: this.state.current_text,
             startingAmount: this.state.amount,
             type: this.activeKeyMap[this.props.activeKey],
-            date: this.state.date;
+            date: this.state.date
           }
         });
     }

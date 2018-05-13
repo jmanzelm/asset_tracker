@@ -274,10 +274,10 @@ const populateDb = async function(user){
 	
 	// investments.addInvestment(userId, symbol, type, startingAmount)
 	// console.log("investments by id", await investments.getInvestmentById(user._id))
-	// console.log("investments", await investments.getAllInvestments());
-	// console.log("cash", await cash.getAllCash());
-	// console.log("debts", await debts.getAllDebts());
-	// console.log("debtsbyid", sherlock._id, await debts.getDebtByUserId(sherlock._id))
+	console.log("investments", await investments.getAllInvestments());
+	console.log("cash", await cash.getAllCash());
+	console.log("debts", await debts.getAllDebts());
+	console.log("debtsbyid", sherlock._id, await debts.getDebtByUserId(sherlock._id))
 
 }
 
