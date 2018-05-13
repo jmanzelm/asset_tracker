@@ -22,7 +22,7 @@ import ModalLogin from './ModalLogin';
 import AssetTable from './AssetTable';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
-
+import {PlotGraph} from './PlotGraph';
 
 
 export default class Main extends Component {
@@ -47,7 +47,7 @@ export default class Main extends Component {
 
     render() {
     	let modalLogin = <ModalLogin storeUserData={this.storeUserData}/>
-
+                
         return (
             <div>
            		{modalLogin}
@@ -55,9 +55,10 @@ export default class Main extends Component {
                     <h3 id="asset-tracker-name">Asset Tracker</h3>
                 </div>
                 <div className="search">
-                    <FilterTextBox applyFilter={t => this.setState({ filter: t })} activeKey={this.state.activeKey}/>
+                    <FilterTextBox applyFilter={t => this.setState({ filter: t })} userid={this.state._id} activeKey={this.state.activeKey}/>
                 </div>
                 <div>
+                    <PlotGraph userid={this.state._id} />
                     <AssetNavbar activeKey={this.state.activeKey} toggleNavKey={this.toggleNavKey}/>
                     <div>
                         <AssetTable activeKey={this.state.activeKey} userid={this.state._id}/>
@@ -106,6 +107,8 @@ class AssetNavbar extends Component {
 
 }
 
+
+
 /**
  *	Handles Filter
  */
@@ -137,11 +140,11 @@ class FilterTextBox extends Component {
     // }
     handleChange(val) {
         if (val.target.current_text !== this.state.current_text) {
-            this.setState({
+            this.setState({ 
                 current_text: val.target.value,
                 validationState: null
             })
-        }
+        }   
     }
 
     submitModal() {
@@ -165,28 +168,29 @@ class FilterTextBox extends Component {
             return 'success'
         }
         this.setState({validationState: "error"})
-
-
+            
+            
         // this.setState({validationState: "error"})
         return 'error'
         console.log(a);
     }
 
+
+
     render() {
         // {this.getValidationState()}
         return (<div>
-        <Form inline>
-            <FormGroup validationState={this.state.validationState}>
-                <FormControl
-                    name="form-field-name"
-                    value={this.state.current_text}
-                    onChange={this.handleChange}
-                    placeholder={"Search for a " + this.activeKeyMap[this.props.activeKey] + " ticker"}
-                />
-                <FormControl.Feedback />
-                <Button onClick={this.verifyAsset}>Verify</Button>
-            </FormGroup>
-        </Form>
+        <FormGroup validationState={this.state.validationState}>
+        <FormControl
+            name="form-field-name"
+            value={this.state.current_text}
+            onChange={this.handleChange}
+            placeholder={"Search for a " + this.activeKeyMap[this.props.activeKey] + " ticker"}
+        />
+        <FormControl.Feedback />
+        <Button onClick={this.verifyAsset}>Verify</Button>
+        </FormGroup>
+
         {this.state.validationState === "success" &&
             <Modal show={true}>
             <Modal.Header> <h4>{this.state.current_text.toUpperCase()} </h4></Modal.Header>
@@ -214,7 +218,7 @@ class FilterTextBox extends Component {
                 </Modal.Footer>
             </Modal>
         }
-
+       
         </div>)
     }
 }
