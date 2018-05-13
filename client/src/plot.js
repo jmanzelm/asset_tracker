@@ -1,13 +1,14 @@
 const axios = require("axios");
+const Plotly = require('plotly')("jmanzelm", "LRrfcOTLoYFHQUGWzNDy");
 
-async function cashPlot(userId) {
+export async function cashPlot(userId) {
 	if (arguments.length !== 1) {
-    throw "Please provide a single ID.";
-  }
-  if (typeof userId !== "string") {
-    throw "The ID must be a string.";
-  }
-	let response = await axios.get("http://localhost:3001/holdings/cash/" + userId);
+    	throw "Please provide a single ID.";
+	}
+	if (typeof userId !== "string") {
+		throw "The ID must be a string.";
+	}
+	let response = (await axios.get("http://localhost:3001/holdings/cash/" + userId)).data;
 	let start = new Date(response.date * 1000);
 	let sAmount = response.startingAmount;
 	let cAmount = response.currentAmount;
@@ -19,7 +20,7 @@ async function cashPlot(userId) {
 	x.unshift(today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getYear());
 	y.unshift(cAmount);
 	// go through 4 years of days
-	for (i=0; i<6; i++) {
+	for (let i=0; i<6; i++) {
 		today.setDate(today.getDate()-1);
 		x.unshift(today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getYear());
 		// set value for that day to 0 if before object existed
@@ -45,24 +46,24 @@ async function cashPlot(userId) {
 	}
 
 	var cash = {
-	  x: x,
-	  y: y,
-	  mode: 'lines+markers',
-	  type: 'scatter',
-	  name: 'Cash',
-	  marker: { size: 12 }
+		x: x,
+		y: y,
+		mode: 'lines+markers',
+		type: 'scatter',
+		name: 'Cash',
+		marker: { size: 12 }
 	};
 
 	var data = [ cash ];
 
 	var layout = {
-	  title:'Your Cash'
+		title:'Your Cash'
 	};
 
-	Plotly.newPlot('plot', data, layout);
+	Plotly.plot('plot', data, layout);
 }
 
-async function singleDebtPlot(userId, debtId) {
+export async function singleDebtPlot(userId, debtId) {
 	if (arguments.length !== 2) {
     throw "Please provide a single ID.";
   }
@@ -70,21 +71,21 @@ async function singleDebtPlot(userId, debtId) {
     throw "The IDs must be strings.";
   }
 	let response = await axios.get("http://localhost:3001/holdings/debt/" + userId);
-	found = response.find(function (obj) {
+	let found = response.find(function (obj) {
 		return obj._id === debtId;
 	});
-	start = new Date(found.date * 1000);
-	sAmount = found.startingAmount;
-	cAmount = found.currentAmount;
-	trans = found.transactions;
-	creditor = found.creditor;
+	let start = new Date(found.date * 1000);
+	let sAmount = found.startingAmount;
+	let cAmount = found.currentAmount;
+	let trans = found.transactions;
+	let creditor = found.creditor;
 
-	x = [];
-	y = [];
-	today = new Date();
+	let x = [];
+	let y = [];
+	let today = new Date();
 	x.unshift(today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getYear());
 	y.unshift(cAmount);
-	for (i=0; i<1460; i++) {
+	for (let i=0; i<1460; i++) {
 		today.setDate(today.getDate()-1);
 		x.unshift(today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getYear());
 		if (start > today) {
@@ -120,10 +121,10 @@ async function singleDebtPlot(userId, debtId) {
 	  title: creditor + " Debt"
 	};
 
-	Plotly.newPlot('plot', data, layout);
+	Plotly.plot('plot', data, layout);
 }
 
-async function debtPlot(userId) {
+export async function debtPlot(userId) {
 	if (arguments.length !== 1) {
     throw "Please provide a single ID.";
   }
@@ -131,12 +132,12 @@ async function debtPlot(userId) {
     throw "The ID must be a string.";
   }
 	let response = await axios.get("http://localhost:3001/holdings/debt/" + userId);
-	x = [];
-	y = [];
-	today = new Date();
+	let x = [];
+	let y = [];
+	let today = new Date();
 	x.unshift(today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getYear());
 	y.unshift(response.reduce(function (total, obj) {return total + obj.currentAmount}));
-	for (i=0; i<1460; i++) {
+	for (let i=0; i<1460; i++) {
 		today.setDate(today.getDate()-1);
 		x.unshift(today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getYear());
 
@@ -174,10 +175,10 @@ async function debtPlot(userId) {
 	  title:'Your Debts'
 	};
 
-	Plotly.newPlot('plot', data, layout);
+	Plotly.plot('plot', data, layout);
 }
 
-async function singleStockPlot(userId, stockId) {
+export async function singleStockPlot(userId, stockId) {
 	if (arguments.length !== 2) {
     throw "Please provide a single ID.";
   }
@@ -201,7 +202,7 @@ async function singleStockPlot(userId, stockId) {
 	today.setDate(today.getDate()-1);
 	x.unshift(today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getYear());
 	y.unshift(cAmount);
-	for (i=0; i<6; i++) {
+	for (let i=0; i<6; i++) {
 		today.setDate(today.getDate()-1);
 		x.unshift(today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getYear());
 		if (start > today) {
@@ -222,7 +223,7 @@ async function singleStockPlot(userId, stockId) {
 		}
 	}
 
-	for (i=0; i<7; i++) {
+	for (let i=0; i<7; i++) {
 		y[6-i] *= data[data.length - 1 - i].close;
 	}
 
@@ -235,16 +236,16 @@ async function singleStockPlot(userId, stockId) {
 	  marker: { size: 12 }
 	};
 
-	var data = [ cash ];
+	var plotData = [ cash ];
 
 	var layout = {
 	  title: symbol + " Value"
 	};
 
-	Plotly.newPlot('plot', data, layout);
+	Plotly.plot('plot', plotData, layout);
 }
 
-async function stockPlot(userId) {
+export async function stockPlot(userId) {
 	if (arguments.length !== 1) {
     throw "Please provide a single ID.";
   }
@@ -281,14 +282,14 @@ async function stockPlot(userId) {
 		  title:'Your Debts'
 		};
 
-		Plotly.newPlot('plot', data, layout);
+		Plotly.plot('plot', data, layout);
 	})
 	.catch(function (error) {
 		throw error;
 	});*/
 }
 
-async function singleCryptoPlot(userId, cryptoId) {
+export async function singleCryptoPlot(userId, cryptoId) {
 	if (arguments.length !== 2) {
     throw "Please provide a single ID.";
   }
@@ -296,7 +297,7 @@ async function singleCryptoPlot(userId, cryptoId) {
     throw "The IDs must be strings.";
   }
 	let response = await axios.get("http://localhost:3001/holdings/crypto/" + userId);
-	found = response.find(function (obj) {
+	let found = response.find(function (obj) {
 		return obj._id === cryptoId;
 	});
 	let start = new Date(found.date * 1000);
@@ -312,7 +313,7 @@ async function singleCryptoPlot(userId, cryptoId) {
 	today.setDate(today.getDate()-1);
 	x.unshift(today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getYear());
 	y.unshift(cAmount);
-	for (i=0; i<6; i++) {
+	for (let i=0; i<6; i++) {
 		today.setDate(today.getDate()-1);
 		x.unshift(today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getYear());
 		if (start > today) {
@@ -333,7 +334,7 @@ async function singleCryptoPlot(userId, cryptoId) {
 		}
 	}
 
-	for (i=0; i<7; i++) {
+	for (let i=0; i<7; i++) {
 		y[6-i] *= data[data.length - 1 - i].close;
 	}
 
@@ -346,16 +347,16 @@ async function singleCryptoPlot(userId, cryptoId) {
 	  marker: { size: 12 }
 	};
 
-	var data = [ cash ];
+	var plotData = [ cash ];
 
 	var layout = {
 	  title: symbol + " Value"
 	};
 
-	Plotly.newPlot('plot', data, layout);
+	Plotly.plot('plot', plotData, layout);
 }
 
-async function cryptoPlot(userId) {
+export async function cryptoPlot(userId) {
 	if (arguments.length !== 1) {
     throw "Please provide a single ID.";
   }
@@ -384,19 +385,9 @@ async function cryptoPlot(userId) {
 		  title:'Your Debts'
 		};
 
-		Plotly.newPlot('plot', data, layout);
+		Plotly.plot('plot', data, layout);
 	})
 	.catch(function (error) {
 		throw error;
 	});*/
-}
-
-module.exports = {
-	cashPlot,
-	singleDebtPlot,
-	debtPlot,
-	singleStockPlot,
-	stockPlot,
-	singleCryptoPlot,
-	cryptoPlot
 }

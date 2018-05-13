@@ -22,7 +22,7 @@ import ModalLogin from './ModalLogin';
 import AssetTable from './AssetTable';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
-// import {cashPlot} from "./plot";
+import {PlotGraph} from './PlotGraph';
 
 
 export default class Main extends Component {
@@ -58,6 +58,7 @@ export default class Main extends Component {
                     <FilterTextBox applyFilter={t => this.setState({ filter: t })} activeKey={this.state.activeKey} userid={this.state._id}/>
                 </div>
                 <div>
+                    <PlotGraph userid={this.state._id} />
                     <AssetNavbar activeKey={this.state.activeKey} toggleNavKey={this.toggleNavKey}/>
                     <div>
                         <AssetTable activeKey={this.state.activeKey} userid={this.state._id}/>
@@ -105,6 +106,8 @@ class AssetNavbar extends Component {
     }
 
 }
+
+
 
 /**
  *	Handles Filter
@@ -181,16 +184,18 @@ class FilterTextBox extends Component {
             return 'error'
         }
         // this.setState({validationState: "error"})
-        
+
         console.log(a);
     }
+
+
 
     render() {
         // {this.getValidationState()}
         // {cashPlot();}
         return (
-
             <div>
+
             <div id="plot"> </div>
         <FormGroup validationState={this.state.validationState}>
         <FormControl

@@ -45,11 +45,14 @@ app.get("/debt/:user_id", async (req, res)=>{
   //new asset
   app.post("/new/crypto/:user_id", async (req, res)=>{
     try{
-
-      let symbol = req.body.symbol;
-      let type = req.body.type;
+      let userId = req.params.user_id;
+      let symbol = req.body.symbol.toUpperCase();
       let startingAmount = req.body.startingAmount;
-    	let inv = investmentsData.addInvestment(user_id, symbol, 0, startingAmount)
+      let type = req.body.type; //stock or crypto
+      let date = (req.body.date) ? req.body.date : Math.floor(new Date()/1000);
+
+    	let inv = await investmentsData.addInvestment(userId, req.body);
+
     	res.json(inv);
     } catch(e){
       res.status(500).json(e);
