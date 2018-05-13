@@ -37,7 +37,7 @@ const main = async function() {
 	else{
 		sherlock = await users.getUserByName("masterdetective123");
 	}
-	 
+	console.log("user id: "+sherlock._id);
 	let cashCollectionSize = await cash.getAllCash().then(function(allCash){
 		return allCash.length;
 	});
@@ -104,9 +104,10 @@ const main = async function() {
 		const sherlockDebts = await debts.addTransactionSeries(sherlock._id, creditSeries);
 	}
 
-	console.log(await investments.getAllInvestments());
-	console.log(await cash.getAllCash());
-	console.log(await debts.getAllDebts());
+	console.log("investments", await investments.getAllInvestments());
+	console.log("cash", await cash.getAllCash());
+	console.log("debts", await debts.getAllDebts());
+	console.log("debtsbyid", sherlock._id, await debts.getDebtByUserId(sherlock._id))
 
 
 	// console.log(await investments.getAllInvestments());

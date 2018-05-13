@@ -122,7 +122,8 @@ class FilterTextBox extends Component {
         this.submitModal = this.submitModal.bind(this);
         this.activeKeyMap = {
             Stocks : "stock",
-            Cryptocurrencies: "crypto"
+            Cryptocurrencies: "crypto",
+
         }
         let init_val = "";
         // Initialize the filter text box based on the query string
@@ -161,17 +162,17 @@ class FilterTextBox extends Component {
     // }
     async verifyAsset() {
         let a = await axios.get(`http://localhost:3001/prices/${this.activeKeyMap[this.props.activeKey]}/${this.state.current_text}`);
-        if (a.data && a.data !== "U") {
-            console.log("returning success")
+        if (a.data && Object.keys(a.data).length !== 0 && a.data !== "U") {
+            console.log("returning success", a)
             this.setState({validationState: "success"})
             // this.setState({validationState: "success"})
             return 'success'
+        } else {
+            this.setState({validationState: "error"})
+            return 'error'
         }
-        this.setState({validationState: "error"})
-            
-            
         // this.setState({validationState: "error"})
-        return 'error'
+        
         console.log(a);
     }
 
@@ -180,6 +181,7 @@ class FilterTextBox extends Component {
     render() {
         // {this.getValidationState()}
         return (<div>
+
         <FormGroup validationState={this.state.validationState}>
         <FormControl
             name="form-field-name"
@@ -188,11 +190,10 @@ class FilterTextBox extends Component {
             placeholder={"Search for a " + this.activeKeyMap[this.props.activeKey] + " ticker"}
         />
         <FormControl.Feedback />
-        <Button onClick={this.verifyAsset}>Verify</Button>
+        <Button onClick={this.verifyAsset}>Buy or Sell Asset</Button>
         </FormGroup>
-
         {this.state.validationState === "success" &&
-            <Modal show={true}>
+            <Modal show={this.state.showAssetAdd}>
             <Modal.Header> <h4>{this.state.current_text.toUpperCase()} </h4></Modal.Header>
                 <Modal.Body>
                 <form onSubmit={this.handleModalSubmit}>
@@ -214,6 +215,7 @@ class FilterTextBox extends Component {
                 </form>
                 </Modal.Body>
                 <Modal.Footer>
+                    <Button onClick={this.toggleShowAssetAdd} type="submit"> Close </Button>
                     <Button onClick={this.submitModal} type="submit"> Submit </Button>
                 </Modal.Footer>
             </Modal>
