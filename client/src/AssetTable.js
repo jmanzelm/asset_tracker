@@ -47,14 +47,25 @@ class AssetDetailsPopover extends Component {
         if (this.activeKeyMap[this.props.activeKey] === "stock") {
             let pa = `http://localhost:3001/prices/stock/${this.props.o.symbol}/${formattedDate}`;
             let priceAcquired = await axios.get(pa);
-            console.log(pa)
+            // console.log(pa)
             let priceNow = await axios.get(`http://localhost:3001/prices/stock/${this.props.o.symbol}/`)
             let diff = priceNow.data.close - priceAcquired.data.close;
             console.log("pricenow", priceNow);
             console.log("priceAc", priceAcquired)
             console.log(diff);
-
-            this.setState({diff: diff})
+            let pastate = 0
+            if (!isNaN(priceAcquired.data.close)) {
+                pastate = priceAcquired.data.close.toFixed(2);
+            }
+            if (!isNaN(diff)) {
+                diff = (diff * this.props.o.startingAmount).toFixed(2)
+            } else {
+                diff = 0
+            }
+            this.setState({
+                priceAcquired: pastate,
+                diff: diff
+            })
         }
        
     }
@@ -62,8 +73,8 @@ class AssetDetailsPopover extends Component {
     render() {
         console.log("props",this.props)
         return <Popover id="popover-trigger-focus" {...this.props}>
-            Price Acquired: {this.state.diff}<br/>
-            Total Gain: <br/>
+            Price Acquired: {this.state.priceAcquired}<br/>
+            Total Gain: {this.state.diff}<br/>
         </Popover>
     }
 }
