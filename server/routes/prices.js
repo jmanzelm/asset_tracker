@@ -27,7 +27,7 @@ const cryptoData = "https://min-api.cryptocompare.com";
     let endpoint = stockData+"/stock/"+symbol+"/chart/"+range;
     request({json:true, url:endpoint}, function(err, response, body){
       if (range.length>3){
-        res.json(body[body.length]);
+        res.json(body[body.length-1]);
       }
       else{
         res.json(body);
