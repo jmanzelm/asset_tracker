@@ -4,8 +4,7 @@
   "description": "A website for tracking your assets accross a variety of investments.",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "startr": "react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
