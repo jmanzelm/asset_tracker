@@ -188,7 +188,7 @@ ModuleA.addTransactionSeries = async function(user_id, series){
 			}
 			let deposit = await this.addCashTransaction(userCashObj._id, transaction);
 		}
-		else if (transaction.type=="withdrawal"){
+		else if (transaction.type=="withdraw"){
 			let withdrawal = this.addCashTransaction(userCashObj._id, transaction);
 		}
 	}
