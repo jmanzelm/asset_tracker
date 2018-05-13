@@ -27,7 +27,7 @@ const cryptoData = "https://min-api.cryptocompare.com";
     let endpoint = stockData+"/stock/"+symbol+"/chart/"+range;
     request({json:true, url:endpoint}, function(err, response, body){
       if (range.length>3){
-        res.json(body[body.length-1]);
+        res.json(body[body.length]);
       }
       else{
         res.json(body);
@@ -71,7 +71,7 @@ const cryptoData = "https://min-api.cryptocompare.com";
     /histoday
     /histohour
     /histominute
-    /prehistorical
+    /pricehistorical
     /davAvg
     /exchange (Get total volume from the daily historical exchange data.The values are based on 00:00 GMT time. We store the data in BTC and we multiply by the BTC-tsym value)
     */
@@ -79,9 +79,22 @@ const cryptoData = "https://min-api.cryptocompare.com";
     let symbol = req.params.ticker;
     symbol = symbol.toUpperCase();
     let range = req.params.range;
-    let endpoint = cryptoData+"/data/"+range+"?fsym="+symbol+"&tsym=USD&limit=10";
+    let endpoint;
+    if (range.length==10){//unix timestamp recieved
+      endpoint = cryptoData+"/data/pricehistorical?fsym="+symbol+"&tsyms=USD&ts="+range;
+    }
+    else{
+      endpoint = cryptoData+"/data/"+range+"?fsyms="+symbol+"&tsym=USD&limit=10";
+    }
     request({json:true, url:endpoint}, function(err, response, body){
-      res.json(body.Data);
+      if (body.Data){
+
+        res.json(body.Data);
+      }
+      else{
+        let symbol = Object.keys(body)[0];
+        res.json(body[symbol]);
+      }
     });
   });
 

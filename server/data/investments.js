@@ -88,6 +88,7 @@ ModuleA.addInvestment = async function(userId, attrs) {
 	let symbol = attrs.symbol;
 	let type = attrs.type;
 	let startingAmount = attrs.startingAmount;
+	let date = (req.body.date) ? req.body.date : Math.round((new Date()).getTime() / 1000);
 
 	if (typeof userId !== "string" || typeof symbol !== "string" || typeof type !== "string" || typeof startingAmount !== "number"){
 		throw "The user ID, symbol, and type must be strings and starting amount must be a number.";
@@ -102,7 +103,7 @@ ModuleA.addInvestment = async function(userId, attrs) {
 			type: type,
 			startingAmount: startingAmount,
 			currentAmount: startingAmount,
-			date: Math.round((new Date()).getTime() / 1000)
+			date: date
 		};
 
 		const insertInfo = await investmentCollection.insertOne(newInvestment);
