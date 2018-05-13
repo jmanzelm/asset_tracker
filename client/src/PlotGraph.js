@@ -11,10 +11,25 @@ export class PlotGraph extends Component {
     constructor(props, context) {
         super(props, context);
         this.singleStockPlot = this.singleStockPlot.bind(this);
-        this.state = {};
+        this.state = {
+            layout : ""
+        };
     }
     async componentWillReceiveProps(nextProps) {
-        await this.singleStockPlot(nextProps.userid, "AAPL");
+        if (nextProps.activeKey === "Stocks") {
+            await this.singleStockPlot(nextProps.userid, nextProps.ticker);
+        }
+        if (nextProps.activeKey === "Cryptocurrencies") {
+            await this.singleCryptoPlot(nextProps.userid, nextProps.ticker);
+        }
+        if (nextProps.activeKey === "Cash") {
+            await this.cashPlot(nextProps.userid);
+        }
+        if (nextProps.activeKey === "Debt") {
+            await this.debtPlot(nextProps.userid);
+        }
+        this.setState({layout: {title: nextProps.activeKey}})
+       
     }
     async cashPlot(userId) {
         if (arguments.length !== 1) {
@@ -342,7 +357,7 @@ export class PlotGraph extends Component {
 
     render() {
         return (<div className="reactPlot"> <Plot data={this.state.plotData}
-                layout={this.singleStockPlotLayout()} />
+                layout={this.state.layout} />
         </div>)
     }
 

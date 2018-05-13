@@ -31,13 +31,19 @@ export default class Main extends Component {
         super(props, context);
         this.toggleNavKey = this.toggleNavKey.bind(this);
         this.storeUserData = this.storeUserData.bind(this);
+        this.updateSelectedAsset = this.updateSelectedAsset.bind(this);
         this.state = {
             activeKey: "Stocks"
         }
     }
-
+    updateSelectedAsset(ticker) {
+        console.log('t', ticker)
+        this.setState({
+            selectedItem: ticker
+        })
+    }
     storeUserData(d) {
-    	this.setState(d.data, () => {console.log(this.state)});
+    	this.setState(d.data);
     }
     toggleNavKey(eventKey, event) {
     	event.preventDefault();
@@ -45,6 +51,7 @@ export default class Main extends Component {
     		activeKey: eventKey
     	})
     }
+
 
     render() {
     	let modalLogin = <ModalLogin storeUserData={this.storeUserData}/>
@@ -57,15 +64,15 @@ export default class Main extends Component {
                 </div>
                 <div>
                     <div className="mleft-col">
-                    <AssetNavbar activeKey={this.state.activeKey} toggleNavKey={this.toggleNavKey}/>
+                    <AssetNavbar activeKey={this.state.activeKey} toggleNavKey={this.toggleNavKey} />
                     <CashDebtForm userid={this.state._id} />
                     </div>
                     <div>
-                        <AssetTable activeKey={this.state.activeKey} userid={this.state._id}/>
+                        <AssetTable activeKey={this.state.activeKey} userid={this.state._id} updateSelectedAsset={this.updateSelectedAsset} />
                     </div>
                     
                 </div>
-                <PlotGraph userid={this.state._id} />
+                <PlotGraph userid={this.state._id} activeKey={this.state.activeKey} ticker={this.state.selectedItem}/>
             </div>
         )
     }
@@ -183,7 +190,7 @@ export class FilterTextBox extends Component {
     async verifyAsset() {
         let a = await axios.get(`http://localhost:3001/prices/${this.activeKeyMap[this.props.activeKey]}/${this.state.current_text}`);
         if (a.data && Object.keys(a.data).length !== 0 && a.data !== "U") {
-            console.log("returning success", a)
+            // console.log("returning success", a)
             this.setState({
                 validationState: "success",
                 showAssetAdd: true
@@ -196,7 +203,7 @@ export class FilterTextBox extends Component {
         }
         // this.setState({validationState: "error"})
 
-        console.log(a);
+        // console.log(a);
     }
 
 

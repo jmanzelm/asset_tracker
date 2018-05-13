@@ -41,18 +41,18 @@ class AssetDetailsPopover extends Component {
 
     // this function sets price states and calculates differences
     async setPriceData() {
-        console.log(this.props)
+        // console.log(this.props)
         let formattedDate = format(this.props.o.date * 1000, this.DATE_FORMAT);
-        console.log(formattedDate);
+        // console.log(formattedDate);
         if (this.activeKeyMap[this.props.activeKey] === "stock") {
             let pa = `http://localhost:3001/prices/stock/${this.props.o.symbol}/${formattedDate}`;
             let priceAcquired = await axios.get(pa);
             // console.log(pa)
             let priceNow = await axios.get(`http://localhost:3001/prices/stock/${this.props.o.symbol}/`)
             let diff = priceNow.data.close - priceAcquired.data.close;
-            console.log("pricenow", priceNow);
-            console.log("priceAc", priceAcquired)
-            console.log(diff);
+            // console.log("pricenow", priceNow);
+            // console.log("priceAc", priceAcquired)
+            // console.log(diff);
             let pastate = 0
             if (!isNaN(priceAcquired.data.close)) {
                 pastate = priceAcquired.data.close.toFixed(2);
@@ -67,11 +67,33 @@ class AssetDetailsPopover extends Component {
                 diff: diff
             })
         }
-       
+        if (this.activeKeyMap[this.props.activeKey] === "crypto") {
+            let pa = `http://localhost:3001/prices/crypto/${this.props.o.symbol}/${this.props.o.date}`;
+            let priceAcquired = await axios.get(pa);
+            // console.log(pa)
+            let priceNow = await axios.get(`http://localhost:3001/prices/crypto/${this.props.o.symbol}/`)
+            let diff = priceNow.data.price - priceAcquired.data.USD;
+            // console.log("pricenow", priceNow);
+            // console.log("priceAc", priceAcquired)
+            // console.log(diff);
+            let pastate = 0
+            if (!isNaN(priceAcquired.data.USD)) {
+                pastate = priceAcquired.data.USD.toFixed(2);
+            }
+            if (!isNaN(diff)) {
+                diff = (diff * this.props.o.startingAmount).toFixed(2)
+            } else {
+                diff = 0
+            }
+            this.setState({
+                priceAcquired: pastate,
+                diff: diff
+            })
+        }
     }
 
     render() {
-        console.log("props",this.props)
+        // console.log("props",this.props)
         return <Popover id="popover-trigger-focus" {...this.props}>
             Price Acquired: {this.state.priceAcquired}<br/>
             Total Gain: {this.state.diff}<br/>
@@ -188,6 +210,7 @@ export default class AssetTable extends Component {
             tableRows.push(
             <OverlayTrigger rootClose trigger="click"
                 placement="right"
+                onEnter={() => {this.props.updateSelectedAsset(objects[i].symbol)}}
                 overlay={
                     <AssetDetailsPopover
                         onSubmit={this.onPopoverSubmit}
