@@ -46,15 +46,15 @@ const main = async function() {
 	let may9 = new Date(2018, 5, 9)/1000;
 	let may10 = new Date(2018, 5, 10)/1000;
 	let may11 = new Date(2028, 5, 11)/1000;
-	
+
 	if (cashCollectionSize==0){
 
-		let depositSeries = [ 
+		let depositSeries = [
 			{amount:100, date: may7, type:"deposit"},
 			{amount: 25, date: may8, type:"withdrawal"},
 			{amount: 35000, date: may9, type:"deposit"},
 			{amount: 2000, date: may10, type: "withdrawal"},
-			{amount: 250000, date: may11, type: "deposit"} 
+			{amount: 250000, date: may11, type: "deposit"}
 		]
 		const sherlockCash = await cash.addTransactionSeries(sherlock._id, depositSeries);
 	}
@@ -100,7 +100,7 @@ const main = async function() {
 				]
 			}
 		];
-			
+
 		const sherlockDebts = await debts.addTransactionSeries(sherlock._id, creditSeries);
 	}
 
