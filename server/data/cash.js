@@ -2,17 +2,17 @@ const mongoCollections = require("../config/mongoCollections");
 const cash = mongoCollections.cash;
 const uuidv4 = require("uuid/v4");
 
-function ModuleA() {
+function cashModule() {
 
 }
 
-module.exports = ModuleA;
+module.exports = cashModule;
 
-ModuleA.getCollection = function(){
+cashModule.getCollection = function(){
 	return cash();
 }
 
-ModuleA.getAllCash = async function() {
+cashModule.getAllCash = async function() {
 	if (arguments.length !== 0) {
 		throw "No arguments are needed.";
 	}
@@ -24,7 +24,7 @@ ModuleA.getAllCash = async function() {
 	}
 }
 
-ModuleA.update = (id, params)=>{
+cashModule.update = (id, params)=>{
 	return getCashById(id).then(function(cashObj){
 		params.keys.forEach(function(key){
 			cashObj[key] = params[key];
@@ -41,7 +41,7 @@ ModuleA.update = (id, params)=>{
 	});
 }
 
-ModuleA.getCashById = async function(id) {
+cashModule.getCashById = async function(id) {
 	if (arguments.length !== 1) {
 		throw "Please provide a single ID.";
 	}
@@ -62,7 +62,7 @@ ModuleA.getCashById = async function(id) {
 	}
 }
 
-ModuleA.getCashByUserId = async function(id) {
+cashModule.getCashByUserId = async function(id) {
 	if (arguments.length !== 1) {
 		throw "Please provide a single ID.";
 	}
@@ -83,7 +83,7 @@ ModuleA.getCashByUserId = async function(id) {
 	}
 }
 
-ModuleA.addCash = async function(userId, startingAmount) {
+cashModule.addCash = async function(userId, startingAmount) {
 	if (arguments.length !== 2) {
 		throw "Please provide a user ID and starting amount.";
 	}
@@ -110,7 +110,7 @@ ModuleA.addCash = async function(userId, startingAmount) {
 		throw error;
 	}
 }
-ModuleA.addCashDeposit = async function(user_id, attrs) {
+cashModule.addCashDeposit = async function(user_id, attrs) {
 	if (!attrs){
 		throw "Attributes needed";
 	}
@@ -136,7 +136,8 @@ ModuleA.addCashDeposit = async function(user_id, attrs) {
           });
     });
   }
-  ModuleA.addCashWithdrawal = async function(user_id, attrs){
+  
+  cashModule.addCashWithdrawal = async function(user_id, attrs){
     if (!attrs || !attrs.amount){
 		throw "Attributes needed";
 	}
@@ -176,7 +177,7 @@ ModuleA.addCashDeposit = async function(user_id, attrs) {
     });
   }
 
-ModuleA.addTransactionSeries = async function(user_id, series){
+cashModule.addTransactionSeries = async function(user_id, series){
 	let countPromise = [];
 	let userCashObj;
 	for (var i = 0; i < series.length; i++){
@@ -198,7 +199,7 @@ ModuleA.addTransactionSeries = async function(user_id, series){
 
 
 // should only be used by the user delete
-ModuleA.deleteCash = async function(id) {
+cashModule.deleteCash = async function(id) {
 	if (arguments.length !== 1) {
 		throw "Please provide an cash ID.";
 	}
@@ -218,7 +219,7 @@ ModuleA.deleteCash = async function(id) {
 }
 
 // type is either "deposit" or "withdraw"
-ModuleA.addCashTransaction = async function(id, attrs) {
+cashModule.addCashTransaction = async function(id, attrs) {
 	if (arguments.length !== 2) {
 		throw "Please provide an cash ID and attributes";
 	}
