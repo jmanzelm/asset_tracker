@@ -31,6 +31,7 @@ export class PlotGraph extends Component {
         this.setState({layout: {title: nextProps.activeKey}})
        
     }
+    // plot cash over time for a user
     async cashPlot(userId) {
         if (arguments.length !== 1) {
             throw "Please provide a single ID.";
@@ -38,6 +39,8 @@ export class PlotGraph extends Component {
         if (typeof userId !== "string") {
             throw "The ID must be a string.";
         }
+
+        // get cash object
         let response = (await axios.get("http://localhost:3001/holdings/cash/" + userId)).data;
 
         let start = new Date(response.date * 1000);
@@ -50,7 +53,7 @@ export class PlotGraph extends Component {
         let today = new Date();
         x.unshift(today.toLocaleDateString());
         y.unshift(cAmount);
-        // go through 4 years of days
+        // go through 7 days
         for (let i=0; i<6; i++) {
             today.setDate(today.getDate()-1);
             x.unshift(today.toLocaleDateString());
@@ -88,14 +91,7 @@ export class PlotGraph extends Component {
         let data = [ cash ];
         this.setState({plotData: data});
     }
-
-    cashPlotLayout() {
-        let layout = {
-            title:'Your Cash'
-        };
-        return layout;
-    }
-
+    // plots a debt over time for a user
     async singleDebtPlot(userId, debtName) {
         if (arguments.length !== 2) {
             throw "Please provide a user ID and a debt ID.";
@@ -103,10 +99,13 @@ export class PlotGraph extends Component {
         if (typeof userId !== "string" || typeof debtName !== "string") {
             throw "The IDs must be strings.";
         }
+        // get debt objects
         let response = (await axios.get("http://localhost:3001/holdings/debt/" + userId)).data;
+        // find the desired debt object
         let found = response.find(function (obj) {
             return obj.creditor === debtName;
         });
+        // error checking
         if (! found) {
             found = {
                 date: new Date(),
@@ -127,6 +126,7 @@ export class PlotGraph extends Component {
         let today = new Date();
         x.unshift(today.toLocaleDateString());
         y.unshift(cAmount);
+        // go though 7 days
         for (let i=0; i<6; i++) {
             today.setDate(today.getDate()-1);
             x.unshift(today.toLocaleDateString());
@@ -134,6 +134,7 @@ export class PlotGraph extends Component {
                 y.unshift(0);
                 continue;
             }
+            // modify amount for transactions
             if(trans.length > 0 && trans[trans.length-1].date > today / 1000) {
                 if (trans[trans.length-1].type === "add") {
                     y.unshift(y[0] - trans[trans.length-1].qty);
@@ -160,78 +161,7 @@ export class PlotGraph extends Component {
         let data = [ debt ];
         this.setState({plotData: data});
     }
-
-    async singleCryptoPlot(userId, cryptoId) {
-        if (arguments.length !== 2) {
-            throw "Please provide a single ID.";
-        }
-        if (typeof userId !== "string" || typeof cryptoId !== "string") {
-            throw "The IDs must be strings.";
-        }
-        let response = (await axios.get("http://localhost:3001/holdings/crypto/" + userId)).data;
-        let found = response.find(function (obj) {
-            return obj._id === cryptoId;
-        });
-        if (! found) {
-            found = {
-                date: new Date(),
-                startingAmount: 0,
-                currentAmount: 0,
-                transactions: [],
-                symbol: this.props.ticker
-            }
-        }
-        let start = new Date(found.date * 1000);
-        let sAmount = found.startingAmount;
-        let cAmount = found.currentAmount;
-        let trans = found.transactions;
-        let symbol = found.symbol;
-
-        let x = [];
-        let y = [];
-        let today = new Date();
-        x.unshift(today.toLocaleDateString());
-        y.unshift(cAmount);
-        for (let i=0; i<1460; i++) {
-            today.setDate(today.getDate()-1);
-            x.unshift(today.toLocaleDateString());
-            if (start > today) {
-                y.unshift(0);
-                continue;
-            }
-            if(trans.length > 0 && Date(trans[trans.length-1].date) > today) {
-                if (trans[trans.length-1].type === "add") {
-                    y.unshift(y[0] - trans[trans.length-1].quantity);
-                }
-                else {
-                    y.unshift(y[0] + trans[trans.length-1].quantity);
-                }
-                trans.pop();
-            }
-            else {
-                y.unshift(y[0]);
-            }
-        }
-
-        let debt = {
-            x: x,
-            y: y,
-            mode: 'lines+markers',
-            type: 'scatter',
-            name: symbol,
-            marker: { size: 12 }
-        };
-
-        let data = [ debt ];
-    }
-
-    singleDebtPlotLayout() {
-        let layout = {
-            title: "Debt"
-        };
-        return layout;
-    }
-
+    // plots all debts over time for a user
     async debtPlot(userId) {
         if (arguments.length !== 1) {
             throw "Please provide a single ID.";
@@ -281,14 +211,7 @@ export class PlotGraph extends Component {
         let data = [ debts ];
         this.setState({plotData: data});
     }
-
-    debtPlotLayout() {
-        let layout = {
-            title: "Your Debts"
-        };
-        return layout;
-    }
-
+    // plots a single stock for a user
     async singleStockPlot(userId, stockName) {
         if (arguments.length !== 2) {
             throw "Please provide a user ID and a stock ID.";
@@ -361,14 +284,7 @@ export class PlotGraph extends Component {
         let dataVal = [ stock ];
         this.setState({plotData: dataVal});
     }
-
-    singleStockPlotLayout() {
-        let layout = {
-            title: "Stock Value"
-        };
-        return layout;
-    }
-
+    // plots a single crypto for a user
     async singleCryptoPlot(userId, cryptoName) {
         if (arguments.length !== 2) {
             throw "Please provide a user ID and a crypto ID.";
@@ -442,13 +358,6 @@ export class PlotGraph extends Component {
 
         let dataVal = [ crypto ];
         this.setState({plotData: dataVal});
-    }
-
-    singleCryptoPlotLayout() {
-        let layout = {
-            title: "Crypto Value"
-        };
-        return layout;
     }
 
     render() {
