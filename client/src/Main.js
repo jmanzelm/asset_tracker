@@ -196,19 +196,7 @@ class FilterTextBox extends Component {
                         <Button onClick={this.verifyAsset}>Buy or Sell Asset</Button>
                     </FormGroup>
                 </Form>
-        return (<div>
-
-        <FormGroup validationState={this.state.validationState}>
-        <FormControl
-            name="form-field-name"
-            value={this.state.current_text}
-            onChange={this.handleChange}
-            placeholder={"Search for a " + this.activeKeyMap[this.props.activeKey] + " ticker"}
-        />
-        <FormControl.Feedback />
-        <Button onClick={this.verifyAsset}>Buy or Sell Asset</Button>
-        </FormGroup>
->>>>>>> ff027b65e47d11cf7b6b8503e7110d6bdc21676c
+        )
         {this.state.validationState === "success" &&
             <Modal show={this.state.showAssetAdd}>
             <Modal.Header> <h4>{this.state.current_text.toUpperCase()} </h4></Modal.Header>
