@@ -1,12 +1,21 @@
 body{
     background-color: #abcdd6;
 }
-
+.mleft-col {
+  width: 300px;
+}
+.cash-debt {
+  position: absolute;
+  right: 10%;
+  width: 10%;
+  /*display: inline-block;*/
+}
 .navbar {
+  margin-left: 50px;
   font-size: 1.6em;
   border-radius: 15px;
   background-color: #14151b;
-  width: 26%;
+  width: 100%;
   text-align: left;
   float: left;
 }
@@ -35,27 +44,36 @@ body{
   display: inline;
   width: 10% !important;
   margin-left: 5px;
+  /*margin-top: -1000px;*/
 }
 .input-modal-action-name {
   margin-left: 10px;
 }
 
-.search {
-  width: 50%;
-  margin-left: 36%;
+.filtertextbox {
+  position: absolute;
+  top:10px;
+  left: 35%;
+  width: 30%;
   padding-bottom: 30px;
+  display: inline-block;
 
 }
 .total-asset-value {
+  position: absolute;
+  top: 600px;
+  left: 25%;
   display: inline-block;
   margin-left: 10%;
   font-size: 18pt;
 }
 
 .asset-table {
+  position: absolute;
+  left: 35%;
+  top: 650px;
   background-color: #cbdbe9;
   display: inline-block;
-  margin-left: 10%;
   width: auto !important;
 }
 
@@ -86,7 +104,11 @@ body{
   -webkit-animation: spin 2s linear infinite; /* Safari */
   animation: spin 2s linear infinite;
 }
-
+.reactPlot {
+    position: absolute;
+    top: 120px;
+    left: 30%;
+}
 .App {
   text-align: center;
 }

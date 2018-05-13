@@ -15,15 +15,23 @@ const cryptoData = "https://min-api.cryptocompare.com";
     /3m
     /1m
     /1d
-    /date/20180129
+    /20180129
     /dynamic
     */
   app.get("/stock/:ticker/:range", (req, res)=>{
     let symbol = req.params.ticker;
     let range = req.params.range;
+    if (range.length>3){
+      range = "date/"+range;
+    }
     let endpoint = stockData+"/stock/"+symbol+"/chart/"+range;
     request({json:true, url:endpoint}, function(err, response, body){
-      res.json(body);
+      if (range.length>3){
+        res.json(body[body.length-1]);
+      }
+      else{
+        res.json(body);
+      }
     });
   });
 
@@ -63,7 +71,7 @@ const cryptoData = "https://min-api.cryptocompare.com";
     /histoday
     /histohour
     /histominute
-    /prehistorical
+    /pricehistorical
     /davAvg
     /exchange (Get total volume from the daily historical exchange data.The values are based on 00:00 GMT time. We store the data in BTC and we multiply by the BTC-tsym value)
     */
@@ -71,9 +79,22 @@ const cryptoData = "https://min-api.cryptocompare.com";
     let symbol = req.params.ticker;
     symbol = symbol.toUpperCase();
     let range = req.params.range;
-    let endpoint = cryptoData+"/data/"+range+"?fsym="+symbol+"&tsym=USD&limit=10";
+    let endpoint;
+    if (range.length==10){//unix timestamp recieved
+      endpoint = cryptoData+"/data/pricehistorical?fsym="+symbol+"&tsyms=USD&ts="+range;
+    }
+    else{
+      endpoint = cryptoData+"/data/"+range+"?fsyms="+symbol+"&tsym=USD&limit=10";
+    }
     request({json:true, url:endpoint}, function(err, response, body){
-      res.json(body.Data);
+      if (body.Data){
+
+        res.json(body.Data);
+      }
+      else{
+        let symbol = Object.keys(body)[0];
+        res.json(body[symbol]);
+      }
     });
   });
 

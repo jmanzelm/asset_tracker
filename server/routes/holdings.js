@@ -68,7 +68,13 @@ app.get("/debt/total/:user_id", async (req, res)=>{
       let type = req.body.type; //stock or crypto
       let date = (req.body.date) ? req.body.date : Math.floor(new Date()/1000);
 
-      let inv = await investmentsData.addInvestment(userId, req.body);
+      let attrs ={
+        symbol:symbol,
+        startingAmount:startingAmount,
+        type:type,
+        date:date
+      }
+      let inv = await investmentsData.addInvestment(userId, attrs);
       res.json(inv);
     } catch(e){
       res.status(500).json(e);
@@ -115,24 +121,16 @@ app.get("/debt/total/:user_id", async (req, res)=>{
 
   });
 
-  app.post("/debt/:user_id", (req, res)=>{
+  app.post("/debt/:user_id", async (req, res)=>{
     try {
       // console.log("234");
       let amount = req.body.amount;
       let creditor = req.body.creditor;
-      let startingAmount = req.body.startingAmount;
       let date = (req.body.date) ? req.body.date : Math.round(new Date()/1000);
-
-      let attrs = {
-        creditor: creditor,
-        startingAmount: startingAmount,
-        date: date
-      };
-
       console.log(req.body);
    
-      let debts = debtData.addDebt(req.params.user_id, attrs);
-      res.json(cashHoldings);
+      let debt = await debtData.addDebt(req.params.user_id, req.body);
+      res.json(debt);
     } catch (e) {
       res.status(500).json(e);
     }
@@ -143,7 +141,7 @@ app.get("/debt/total/:user_id", async (req, res)=>{
   //PUT methods
 
   //update asset
-  app.put("/investment", (req, res)=>{
+  app.put("/investment", async (req, res)=>{
     try {
       let id = req.body.id;      
       let quantity = req.body.quantity;
@@ -156,7 +154,7 @@ app.get("/debt/total/:user_id", async (req, res)=>{
         date: date
       }
 
-      let ret = investmentsData.addInvestmentTransaction(id, attrs);
+      let ret = await investmentsData.addInvestmentTransaction(id, attrs);
       
       res.json(ret);
     }catch(e){
@@ -164,7 +162,7 @@ app.get("/debt/total/:user_id", async (req, res)=>{
       }
   });
 
-  app.put("/debt", (req, res)=>{
+  app.put("/debt", async (req, res)=>{
     let id = req.body.id;
     let quantity = req.body.amount;
     let type = req.body.type; //add or subtract
@@ -176,6 +174,6 @@ app.get("/debt/total/:user_id", async (req, res)=>{
       date: date
     };
 
-    let ret = debtData.addDebtTransaction(id)
+    let ret = await debtData.addDebtTransaction(id)
   });
   module.exports = app;

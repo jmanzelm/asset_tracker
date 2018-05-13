@@ -56,13 +56,16 @@ export default class Main extends Component {
                     <h3 id="asset-tracker-name">Asset Tracker</h3>
                 </div>
                 <div>
+                    <div className="mleft-col">
                     <AssetNavbar activeKey={this.state.activeKey} toggleNavKey={this.toggleNavKey}/>
                     <CashDebtForm userid={this.state._id} />
+                    </div>
                     <div>
                         <AssetTable activeKey={this.state.activeKey} userid={this.state._id}/>
                     </div>
-                    <PlotGraph userid={this.state._id} />
+                    
                 </div>
+                <PlotGraph userid={this.state._id} />
             </div>
         )
     }
@@ -146,10 +149,10 @@ export class FilterTextBox extends Component {
     }
 
     async submitModal() {
-        console.log("ticker", this.state.current_text)
-        console.log("amt", this.state.amount)
-        console.log("type", this.activeKeyMap[this.props.activeKey])
-        console.log("date", Math.floor(this.state.date.getTime() / 1000))
+        // console.log("ticker", this.state.current_text)
+        // console.log("amt", this.state.amount)
+        // console.log("type", this.activeKeyMap[this.props.activeKey])
+        // console.log("date", Math.floor(this.state.date.getTime() / 1000))
         
         await axios({
           method: 'post',

@@ -68,7 +68,7 @@ ModuleA.addDebt = async function(userId, attrs) {
 		throw "Please provide a user ID and {creditor: x, startingAmount: y}";
 	}
 	let creditor = attrs.creditor;
-	let startingAmount = attrs.startingAmount;
+	let startingAmount = attrs.amount;
 	let date = (attrs.date) ? attrs.date : Math.round((new Date()).getTime() / 1000);
 	if (typeof userId !== "string" || typeof creditor !== "string" || typeof startingAmount !== "number"){
 		"The user ID and symbol must be strings and starting amount must be a number."
@@ -162,14 +162,14 @@ ModuleA.addDebtTransaction = async function(id, attrs) {
 	if (arguments.length !== 2) {
 		throw "Please provide a debt ID {quantity: x, type: y, ?date: z}";
 	}
-	let quantity = attrs.quantity;
+	let amount = attrs.quantity;
 	let type = attrs.type;
 	let date = (attrs.date) ? attrs.date : Math.round((new Date()).getTime() / 1000);
-	if (typeof id !== "string" || typeof quantity !== "number" || typeof type !== "string"){
-		throw "The debt ID and type must be strings and quantity must be a number.";
+	if (typeof id !== "string" || typeof amount !== "number" || typeof type !== "string"){
+		throw "The debt ID and type must be strings and amount must be a number.";
 	}
 	try {
-		if (type === "subtract" && debt.currentAmount <= quantity) {
+		if (type === "subtract" && debt.currentAmount <= amount) {
 			await this.deleteDebt(id);
 			return {};
 		}
@@ -177,13 +177,13 @@ ModuleA.addDebtTransaction = async function(id, attrs) {
 		let debt = await this.getDebtById(id);
 		let newTransaction = {
 			type: type,
-			qty: quantity,
+			qty: amount,
 			date: date
 		};
 		debt.transactions.push(newTransaction);
 		let updatedDebt = {
 			transactions: debt.transactions,
-			currentAmount: (type === "add" ? debt.currentAmount + quantity : debt.currentAmount - quantity)
+			currentAmount: (type === "add" ? debt.currentAmount + amount : debt.currentAmount - amount)
 		};
 		await debtCol.updateOne({_id: id}, {$set: updatedDebt});
 		return await this.getDebtById(id);
