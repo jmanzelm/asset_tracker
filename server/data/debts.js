@@ -63,10 +63,13 @@ ModuleA.getDebtByUserId = async function(id) {
 	}
 }
 
-ModuleA.addDebt = async function(userId, creditor, startingAmount) {
-	if (arguments.length !== 3) {
-		throw "Please provide a user ID, creditor, and starting amount.";
+ModuleA.addDebt = async function(userId, attrs) {
+	if (arguments.length !== 2) {
+		throw "Please provide a user ID and {creditor: x, startingAmount: y}";
 	}
+	let creditor = attrs.creditor;
+	let startingAmount = attrs.startingAmount;
+	let date = (attrs.date) ? attrs.date : Math.round((new Date()).getTime() / 1000);
 	if (typeof userId !== "string" || typeof creditor !== "string" || typeof startingAmount !== "number"){
 		"The user ID and symbol must be strings and starting amount must be a number."
 	}
@@ -83,7 +86,7 @@ ModuleA.addDebt = async function(userId, creditor, startingAmount) {
 			transactions: [],
 			startingAmount: startingAmount,
 			currentAmount: startingAmount,
-			date: Math.round((new Date()).getTime() / 1000)
+			date: date
 		};
 		let insInfo = await debtCol.insertOne(newDebt)
 
@@ -92,6 +95,31 @@ ModuleA.addDebt = async function(userId, creditor, startingAmount) {
 	} catch (error) {
 		throw error;
 	}
+}
+
+ModuleA.addTransactionSeries = async function(user_id, series){
+	let countPromises = [];
+	let ret;
+	for (var i = 0; i < series.length; i++){
+		let debt = series[i];
+			let attrs = {
+				creditor: debt.creditor, 
+				startingAmount: debt.transactions[0].qty, 
+				date: debt.transactions[0].date
+			};
+			ret = await this.addDebt(user_id, attrs);
+		
+			for (var j = 1; j < debt.transactions.length; j++){
+				let attrs = {
+					quantity: debt.transactions[j].qty,
+					date: debt.transactions[j].date,
+					type: "add"
+				};
+				await this.addDebtTransaction(ret._id, attrs);
+			}
+	}
+	
+	return await this.getAllDebts();
 }
 
 ModuleA.update = (id, params)=>{
@@ -130,10 +158,13 @@ ModuleA.deleteDebt = async function(id) {
 }
 
 // type is either "add" or "subtract"
-ModuleA.addDebtTransaction = async function(id, quantity, type) {
-	if (arguments.length !== 3) {
-		throw "Please provide an debt ID, quantity, and type.";
+ModuleA.addDebtTransaction = async function(id, attrs) {
+	if (arguments.length !== 2) {
+		throw "Please provide a debt ID {quantity: x, type: y, ?date: z}";
 	}
+	let quantity = attrs.quantity;
+	let type = attrs.type;
+	let date = (attrs.date) ? attrs.date : Math.round((new Date()).getTime() / 1000);
 	if (typeof id !== "string" || typeof quantity !== "number" || typeof type !== "string"){
 		throw "The debt ID and type must be strings and quantity must be a number.";
 	}
@@ -147,12 +178,13 @@ ModuleA.addDebtTransaction = async function(id, quantity, type) {
 		let newTransaction = {
 			type: type,
 			qty: quantity,
-			date: Math.round((new Date()).getTime() / 1000)
+			date: date
 		};
+		debt.transactions.push(newTransaction);
 		let updatedDebt = {
-			transactions: (await this.getDebtById(id)).transactions.push(newTransaction),
+			transactions: debt.transactions,
 			currentAmount: (type === "add" ? debt.currentAmount + quantity : debt.currentAmount - quantity)
-		}
+		};
 		await debtCol.updateOne({_id: id}, {$set: updatedDebt});
 		return await this.getDebtById(id);
 	}

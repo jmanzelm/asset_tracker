@@ -220,7 +220,7 @@ ModuleA.addCashTransaction = async function(id, attrs) {
 
 	let quantity = attrs.quantity;
 	let type = attrs.type;
-	let date = attrs.date;
+	let date = (attrs.date) ? attrs.date : Math.round((new Date()).getTime() / 1000);
 
 	if (typeof id !== "string" || typeof quantity !== "number" || typeof type !== "string"){
 		throw "The cash ID and type must be strings and quantity must be a number.";
