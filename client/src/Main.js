@@ -23,6 +23,7 @@ import AssetTable from './AssetTable';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
 import {PlotGraph} from './PlotGraph';
+import {CashDebtForm} from './CashDebtForm';
 
 
 export default class Main extends Component {
@@ -54,15 +55,13 @@ export default class Main extends Component {
             	<div>
                     <h3 id="asset-tracker-name">Asset Tracker</h3>
                 </div>
-                <div className="search">
-                    <FilterTextBox applyFilter={t => this.setState({ filter: t })} activeKey={this.state.activeKey} userid={this.state._id}/>
-                </div>
                 <div>
-                    <PlotGraph userid={this.state._id} />
                     <AssetNavbar activeKey={this.state.activeKey} toggleNavKey={this.toggleNavKey}/>
+                    <CashDebtForm userid={this.state._id} />
                     <div>
                         <AssetTable activeKey={this.state.activeKey} userid={this.state._id}/>
                     </div>
+                    <PlotGraph userid={this.state._id} />
                 </div>
             </div>
         )
@@ -112,7 +111,7 @@ class AssetNavbar extends Component {
 /**
  *	Handles Filter
  */
-class FilterTextBox extends Component {
+export class FilterTextBox extends Component {
     constructor(props, context) {
         super(props, context);
         this.handleChange = this.handleChange.bind(this);
@@ -132,8 +131,6 @@ class FilterTextBox extends Component {
             date: new Date()
         };
         this.last_run_filter = init_val;
-
-        props.applyFilter(this.last_run_filter);
     }
 
     // async componentDidUpdate(prevProps, prevState) {
@@ -149,19 +146,30 @@ class FilterTextBox extends Component {
     }
 
     async submitModal() {
+        console.log("ticker", this.state.current_text)
+        console.log("amt", this.state.amount)
+        console.log("type", this.activeKeyMap[this.props.activeKey])
+        console.log("date", Math.floor(this.state.date.getTime() / 1000))
+        
         await axios({
           method: 'post',
           url: "http://localhost:3001/holdings/investment/" + this.props.userid,
           data: {
             symbol: this.state.current_text,
-            startingAmount: this.state.amount,
+            startingAmount: Number(this.state.amount),
             type: this.activeKeyMap[this.props.activeKey],
-            date: this.state.date
+            date: Math.floor(this.state.date.getTime() / 1000)
           }
         });
+        this.setState({
+            current_text: "",
+            date: new Date(),
+            amount: 0,
+            showAssetAdd: false
+        })
     }
     handleModalChange(e) {
-        this.setState({[e.target.id] : e.target.value > 0 ? e.target.value : 0});
+        this.setState({amount : e.target.value > 0 ? e.target.value : 0});
     }
     handleDayChange(d) {
         this.setState({date: d})
