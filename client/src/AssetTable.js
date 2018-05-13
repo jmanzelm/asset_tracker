@@ -105,7 +105,6 @@ export default class AssetTable extends Component {
     // Props needed: the assets to filter
     constructor(props, context) {
         super(props, context);
-        this.onPopoverSubmit = this.onPopoverSubmit.bind(this);
         this.makeAssetTable = this.makeAssetTable.bind(this);
         this.getTableData = this.getTableData.bind(this);
         this.COL_DEF = [
