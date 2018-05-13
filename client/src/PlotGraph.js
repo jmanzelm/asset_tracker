@@ -14,7 +14,7 @@ export class PlotGraph extends Component {
         this.state = {};
     }
     async componentWillReceiveProps(nextProps) {
-        await this.singleCryptoPlot(nextProps.userid, "614bff45-f076-470e-9bf8-28e6f2b10d0f");
+        await this.singleStockPlot(nextProps.userid, "AAPL");
     }
     async cashPlot(userId) {
         if (arguments.length !== 1) {
@@ -80,16 +80,16 @@ export class PlotGraph extends Component {
         return layout;
     }
 
-    async singleDebtPlot(userId, debtId) {
+    async singleDebtPlot(userId, debtName) {
         if (arguments.length !== 2) {
             throw "Please provide a user ID and a debt ID.";
         }
-        if (typeof userId !== "string" || typeof debtId !== "string") {
+        if (typeof userId !== "string" || typeof debtName !== "string") {
             throw "The IDs must be strings.";
         }
         let response = (await axios.get("http://localhost:3001/holdings/debt/" + userId)).data;
         let found = response.find(function (obj) {
-            return obj._id === debtId;
+            return obj.creditor === debtName;
         });
         let start = new Date(found.date * 1000);
         let sAmount = found.startingAmount;
@@ -255,17 +255,19 @@ export class PlotGraph extends Component {
         return layout;
     }
 
-    async singleStockPlot(userId, stockId) {
+    async singleStockPlot(userId, stockName) {
         if (arguments.length !== 2) {
             throw "Please provide a user ID and a stock ID.";
         }
-        if (typeof userId !== "string" || typeof stockId !== "string") {
+        if (typeof userId !== "string" || typeof stockName !== "string") {
             throw "The IDs must be strings.";
         }
         let response = (await axios.get("http://localhost:3001/holdings/stock/" + userId)).data;
+        console.log(response);
         let found = response.find(function (obj) {
-            return obj._id === stockId;
+            return obj.symbol === stockName;
         });
+        console.log(found);
         let start = new Date(found.date * 1000);
         let sAmount = found.startingAmount;
         let cAmount = found.currentAmount;
@@ -324,16 +326,16 @@ export class PlotGraph extends Component {
         return layout;
     }
 
-    async singleCryptoPlot(userId, cryptoId) {
+    async singleCryptoPlot(userId, cryptoName) {
         if (arguments.length !== 2) {
             throw "Please provide a user ID and a crypto ID.";
         }
-        if (typeof userId !== "string" || typeof cryptoId !== "string") {
+        if (typeof userId !== "string" || typeof cryptoname !== "string") {
             throw "The IDs must be strings.";
         }
         let response = (await axios.get("http://localhost:3001/holdings/crypto/" + userId)).data;
         let found = response.find(function (obj) {
-            return obj._id === cryptoId;
+            return obj.symbol === cryptoName;
         });
         let start = new Date(found.date * 1000);
         let sAmount = found.startingAmount;

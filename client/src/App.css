@@ -11,7 +11,7 @@ body{
   /*display: inline-block;*/
 }
 .navbar {
-  margin-left: 50px;
+  margin-left: 18%;
   font-size: 1.6em;
   border-radius: 15px;
   background-color: #14151b;
@@ -52,16 +52,16 @@ body{
 
 .filtertextbox {
   position: absolute;
-  top:10px;
+  top:2%;
   left: 35%;
   width: 30%;
-  padding-bottom: 30px;
+  padding-bottom: 5%;
   display: inline-block;
 
 }
 .total-asset-value {
   position: absolute;
-  top: 600px;
+  top: 65%;
   left: 25%;
   display: inline-block;
   margin-left: 10%;
@@ -71,7 +71,7 @@ body{
 .asset-table {
   position: absolute;
   left: 35%;
-  top: 650px;
+  top: 70%;
   background-color: #cbdbe9;
   display: inline-block;
   width: auto !important;
@@ -87,7 +87,7 @@ body{
 #asset-tracker-name {
   background-color: #4b9ab4;
   border-radius: 15px;
-  margin-left: 50px;
+  margin-left: 3%;
   padding: 15px;
   width: 20% !important;
 }
@@ -106,7 +106,7 @@ body{
 }
 .reactPlot {
     position: absolute;
-    top: 120px;
+    top: 15%;
     left: 30%;
 }
 .App {
