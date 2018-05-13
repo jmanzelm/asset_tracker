@@ -55,7 +55,7 @@ export default class Main extends Component {
                     <h3 id="asset-tracker-name">Asset Tracker</h3>
                 </div>
                 <div className="search">
-                    <FilterTextBox applyFilter={t => this.setState({ filter: t })} userid={this.state._id} activeKey={this.state.activeKey}/>
+                    <FilterTextBox applyFilter={t => this.setState({ filter: t })} activeKey={this.state.activeKey} userid={this.state._id}/>
                 </div>
                 <div>
                     <PlotGraph userid={this.state._id} />
@@ -148,8 +148,17 @@ class FilterTextBox extends Component {
         }
     }
 
-    submitModal() {
-
+    async submitModal() {
+        await axios({
+          method: 'post',
+          url: "http://localhost:3001/holdings/investment/" + this.props.userid,
+          data: {
+            symbol: this.state.current_text,
+            startingAmount: this.state.amount,
+            type: this.activeKeyMap[this.props.activeKey],
+            date: this.state.date;
+          }
+        });
     }
     handleModalChange(e) {
         this.setState({[e.target.id] : e.target.value > 0 ? e.target.value : 0});
@@ -164,7 +173,10 @@ class FilterTextBox extends Component {
         let a = await axios.get(`http://localhost:3001/prices/${this.activeKeyMap[this.props.activeKey]}/${this.state.current_text}`);
         if (a.data && Object.keys(a.data).length !== 0 && a.data !== "U") {
             console.log("returning success", a)
-            this.setState({validationState: "success"})
+            this.setState({
+                validationState: "success",
+                showAssetAdd: true
+            })
             // this.setState({validationState: "success"})
             return 'success'
         } else {
@@ -183,23 +195,25 @@ class FilterTextBox extends Component {
         // {cashPlot();}
         return (
             <div>
-                <div id="plot"> </div>
-                <Form inline>
-                    <FormGroup validationState={this.state.validationState}>
-                        <FormControl
-                            name="form-field-name"
-                            value={this.state.current_text}
-                            onChange={this.handleChange}
-                            placeholder={"Search for a " + this.activeKeyMap[this.props.activeKey] + " ticker"}
-                        />
-                        <FormControl.Feedback />
-                        <Button onClick={this.verifyAsset}>Buy or Sell Asset</Button>
-                    </FormGroup>
-                </Form>
 
+            <div id="plot"> </div>
+        <FormGroup validationState={this.state.validationState}>
+        <FormControl
+            disabled={["crypto", "stock"].indexOf(this.activeKeyMap[this.props.activeKey]) === -1}
+            name="form-field-name"
+            value={this.state.current_text}
+            onChange={this.handleChange}
+            placeholder={"Search for a " + this.activeKeyMap[this.props.activeKey] + " ticker"}
+        />
+        <FormControl.Feedback />
+        <Button disabled={["crypto", "stock"].indexOf(this.activeKeyMap[this.props.activeKey]) === -1} onClick={this.verifyAsset}>Buy or Sell Asset</Button>
+        </FormGroup>
         {this.state.validationState === "success" &&
             <Modal show={this.state.showAssetAdd}>
-            <Modal.Header> <h4>{this.state.current_text.toUpperCase()} </h4></Modal.Header>
+            <Modal.Header> 
+                <button type="button" className="close" aria-hidden="true" onClick={() => {this.setState({showAssetAdd: !this.state.showAssetAdd})}}>&times;</button>
+                <h4>{this.state.current_text.toUpperCase()} </h4>
+            </Modal.Header>
                 <Modal.Body>
                 <form onSubmit={this.handleModalSubmit}>
                     <FormGroup className="input-modal">
@@ -208,7 +222,7 @@ class FilterTextBox extends Component {
                     </FormGroup>
                     <FormGroup controlId='date' className="input-modal">
                         <ControlLabel>Choose Date:</ControlLabel>
-                        <DayPickerInput placeholder={this.state.date.toLocaleDateString()} onDayChange={this.handleDayChange} />
+                        <DayPickerInput dayPickerProps={{ disabledDays: {after: new Date()} }} placeholder={this.state.date.toLocaleDateString()} onDayChange={this.handleDayChange} />
                     </FormGroup>
                     <FormGroup controlId='action' className="input-modal">
                         <ControlLabel className="input-modal-action-name">Action:</ControlLabel>
@@ -220,7 +234,7 @@ class FilterTextBox extends Component {
                 </form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={this.toggleShowAssetAdd} type="submit"> Close </Button>
+                    <Button onClick={() => {this.setState({showAssetAdd: !this.state.showAssetAdd})}} type="submit"> Close </Button>
                     <Button onClick={this.submitModal} type="submit"> Submit </Button>
                 </Modal.Footer>
             </Modal>

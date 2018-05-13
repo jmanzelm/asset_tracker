@@ -91,6 +91,7 @@ export default class AssetTable extends Component {
         let type = this.activeKeyMap[nextProps.activeKey];
         const res = await axios.get(`http://localhost:3001/holdings/${type}/${nextProps.userid}/`);
         if (type === "crypto" || type === "stock") {
+            console.log(res)
             let transactions = res.data ? res.data : []
             let newPrices = {}
             for (let i = 0; i < transactions.length; i++) {
@@ -110,16 +111,12 @@ export default class AssetTable extends Component {
                 this.setState({totalAssetValue: this.roundTwoDecimals(totalAssetValue)});
             });
         } else if (type === "cash"){
-            console.log("cash", res);
-            let totalAssetValue = 0;
-            let transactions = res.transactions ? res.transactions : []
-            for (let i = 0; i < transactions.length; i++) {
-
-            }
-            this.setState({totalAssetValue: this.roundTwoDecimals(totalAssetValue)})
+            let currVal = res.data.currentAmount;
+            this.setState({totalAssetValue: this.roundTwoDecimals(currVal ? currVal : 0)})
         } else if (type === "debt") {
-            let totalAssetValue = 0;
-
+            let currVal = await axios.get(`http://localhost:3001/holdings/${type}/total/${nextProps.userid}/`);
+            console.log(currVal);
+            this.setState({totalAssetValue: this.roundTwoDecimals(currVal.data.totalDebt ? currVal.data.totalDebt : 0)})
         }
         
         // console.log("Setting state", newPrices);
@@ -184,7 +181,7 @@ export default class AssetTable extends Component {
 
         let type = this.activeKeyMap[this.props.activeKey]
         if (type === "crypto" || type === "stock") {
-            return <Table className="table asset-table" striped bordered hover>
+            return <Table className="table asset-table" bordered hover>
                 <thead>
                     <tr>
                         {this.COL_DEF.map((header) => { return <th>{header}</th>})}
