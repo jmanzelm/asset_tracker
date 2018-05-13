@@ -262,13 +262,13 @@ const populateDb = async function(user){
 	let stockSize = await investments.getAllInvestments();
 	console.log(stockSize.length)
 	if (stockSize.length === 0) {
-		investments.addInvestment(sherlock._id, "AAPL", "stock", 10);
-		investments.addInvestment(sherlock._id, "GOOG", "stock", 5);
-		investments.addInvestment(sherlock._id, "TSLA", "stock", 15);
+		investments.addInvestment(user._id, "AAPL", "stock", 10);
+		investments.addInvestment(user._id, "GOOG", "stock", 5);
+		investments.addInvestment(user._id, "TSLA", "stock", 15);
 
-		investments.addInvestment(sherlock._id, "BTC", "crypto", 10);
-		investments.addInvestment(sherlock._id, "LTC", "crypto", 11);
-		investments.addInvestment(sherlock._id, "XMR", "crypto", 15);
+		investments.addInvestment(user._id, "BTC", "crypto", 10);
+		investments.addInvestment(user._id, "LTC", "crypto", 11);
+		investments.addInvestment(user._id, "XMR", "crypto", 15);
 	}
 	
 	
@@ -277,7 +277,7 @@ const populateDb = async function(user){
 	console.log("investments", await investments.getAllInvestments());
 	console.log("cash", await cash.getAllCash());
 	console.log("debts", await debts.getAllDebts());
-	console.log("debtsbyid", sherlock._id, await debts.getDebtByUserId(sherlock._id))
+	console.log("debtsbyid", user._id, await debts.getDebtByUserId(user._id))
 
 }
 
