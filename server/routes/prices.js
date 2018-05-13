@@ -84,7 +84,7 @@ const cryptoData = "https://min-api.cryptocompare.com";
       endpoint = cryptoData+"/data/pricehistorical?fsym="+symbol+"&tsyms=USD&ts="+range;
     }
     else{
-      endpoint = cryptoData+"/data/"+range+"?fsyms="+symbol+"&tsym=USD&limit=10";
+      endpoint = cryptoData+"/data/"+range+"?fsym="+symbol+"&tsym=USD&limit=10";
     }
     request({json:true, url:endpoint}, function(err, response, body){
       if (body.Data){

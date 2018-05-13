@@ -136,6 +136,61 @@ export class PlotGraph extends Component {
         this.setState({plotData: data});
     }
 
+    async singleCryptoPlot(userId, cryptoId) {
+        if (arguments.length !== 2) {
+            throw "Please provide a single ID.";
+        }
+        if (typeof userId !== "string" || typeof cryptoId !== "string") {
+            throw "The IDs must be strings.";
+        }
+        let response = (await axios.get("http://localhost:3001/holdings/crypto/" + userId)).data;
+        let found = response.find(function (obj) {
+            return obj._id === cryptoId;
+        });
+        let start = new Date(found.date * 1000);
+        let sAmount = found.startingAmount;
+        let cAmount = found.currentAmount;
+        let trans = found.transactions;
+        let symbol = found.symbol;
+
+        let x = [];
+        let y = [];
+        let today = new Date();
+        x.unshift(today.toLocaleDateString());
+        y.unshift(cAmount);
+        for (let i=0; i<1460; i++) {
+            today.setDate(today.getDate()-1);
+            x.unshift(today.toLocaleDateString());
+            if (start > today) {
+                y.unshift(0);
+                continue;
+            }
+            if(trans.length > 0 && Date(trans[trans.length-1].date) > today) {
+                if (trans[trans.length-1].type === "add") {
+                    y.unshift(y[0] - trans[trans.length-1].quantity);
+                }
+                else {
+                    y.unshift(y[0] + trans[trans.length-1].quantity);
+                }
+                trans.pop();
+            }
+            else {
+                y.unshift(y[0]);
+            }
+        }
+
+        let debt = {
+            x: x,
+            y: y,
+            mode: 'lines+markers',
+            type: 'scatter',
+            name: symbol,
+            marker: { size: 12 }
+        };
+
+        let data = [ debt ];
+    }
+
     singleDebtPlotLayout() {
         let layout = {
             title: "Debt"
