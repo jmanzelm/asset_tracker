@@ -11,7 +11,8 @@ import {
 import "react-select/dist/react-select.css";
 import './App.css';
 import axios from 'axios';
-import {FilterTextBox} from './Main'
+import {FilterTextBox} from './Main';
+import format from 'date-fns/format';
 
 
 class AssetDetailsPopover extends Component {
@@ -19,8 +20,14 @@ class AssetDetailsPopover extends Component {
         super(props, context);
         this.setPriceData = this.setPriceData.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.activeKeyMap = {
+            Stocks: "stock",
+            Cryptocurrencies: "crypto"
+        }
+        this.DATE_FORMAT = 'YYYYMMDD';
         this.state = {
-            input: ""
+            input: "",
+            diff: 0
         }
     }
 
@@ -34,23 +41,29 @@ class AssetDetailsPopover extends Component {
 
     // this function sets price states and calculates differences
     async setPriceData() {
-        // let priceAcquired = await axios.get("http://localhost:3001/holdings/stock/")
+        console.log(this.props)
+        let formattedDate = format(this.props.o.date * 1000, this.DATE_FORMAT);
+        console.log(formattedDate);
+        if (this.activeKeyMap[this.props.activeKey] === "stock") {
+            let pa = `http://localhost:3001/prices/stock/${this.props.o.symbol}/${formattedDate}`;
+            let priceAcquired = await axios.get(pa);
+            console.log(pa)
+            let priceNow = await axios.get(`http://localhost:3001/prices/stock/${this.props.o.symbol}/`)
+            let diff = priceNow.data.close - priceAcquired.data.close;
+            console.log("pricenow", priceNow);
+            console.log("priceAc", priceAcquired)
+            console.log(diff);
+
+            this.setState({diff: diff})
+        }
+       
     }
 
     render() {
         console.log("props",this.props)
         return <Popover id="popover-trigger-focus" {...this.props}>
-            Price Acquired: <br/>
+            Price Acquired: {this.state.diff}<br/>
             Total Gain: <br/>
-            Buy Shares: <br/>
-            <FormControl
-                autoFocus
-                onChange={this.handleChange}
-                value={this.state.input}
-                type="number"
-                placeholder="Enter amount of shares"
-            />
-            <Button onSubmit={()=>this.props.onSubmit(this.state.input)}>Buy</Button>
         </Popover>
     }
 }
@@ -168,7 +181,7 @@ export default class AssetTable extends Component {
                     <AssetDetailsPopover
                         onSubmit={this.onPopoverSubmit}
                         {...this.props}
-                        ticker={objects[i].symbol}/>
+                        o={objects[i]}/>
                 }
             >
                 <tr>

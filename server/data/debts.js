@@ -162,7 +162,7 @@ ModuleA.addDebtTransaction = async function(id, attrs) {
 	if (arguments.length !== 2) {
 		throw "Please provide a debt ID {quantity: x, type: y, ?date: z}";
 	}
-	let amount = attrs.amount;
+	let amount = attrs.quantity;
 	let type = attrs.type;
 	let date = (attrs.date) ? attrs.date : Math.round((new Date()).getTime() / 1000);
 	if (typeof id !== "string" || typeof amount !== "number" || typeof type !== "string"){

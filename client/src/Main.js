@@ -149,10 +149,10 @@ export class FilterTextBox extends Component {
     }
 
     async submitModal() {
-        console.log("ticker", this.state.current_text)
-        console.log("amt", this.state.amount)
-        console.log("type", this.activeKeyMap[this.props.activeKey])
-        console.log("date", Math.floor(this.state.date.getTime() / 1000))
+        // console.log("ticker", this.state.current_text)
+        // console.log("amt", this.state.amount)
+        // console.log("type", this.activeKeyMap[this.props.activeKey])
+        // console.log("date", Math.floor(this.state.date.getTime() / 1000))
         
         await axios({
           method: 'post',
