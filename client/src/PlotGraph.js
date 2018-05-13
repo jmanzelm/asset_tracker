@@ -217,8 +217,6 @@ export class PlotGraph extends Component {
         let trans = found.transactions;
         let symbol = found.symbol;
 
-        console.log(found);
-
         let data = (await axios.get("http://localhost:3001/prices/stock/" + symbol + "/1m")).data;
         let x = [];
         let y = [];
@@ -233,7 +231,7 @@ export class PlotGraph extends Component {
                 y.unshift(0);
                 continue;
             }
-            if(trans.length > 0 && Date(trans[trans.length-1].date) > today) {
+            if(trans.length > 0 && trans[trans.length-1].date > today / 1000) {
                 if (trans[trans.length-1].type === "add") {
                     y.unshift(y[0] - trans[trans.length-1].qty);
                 }
