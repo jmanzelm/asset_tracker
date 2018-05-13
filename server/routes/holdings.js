@@ -27,7 +27,7 @@ app.get("/stock/:user_id", async (req, res)=>{
 app.get("/cash/:user_id", async (req, res)=>{
   try {
     let c = await cashData.getCashByUserId(req.params.user_id);
-    res.json(c)
+    res.json(c);
   } catch (e) {
     res.status(500).json(e)
   } 
@@ -37,6 +37,20 @@ app.get("/debt/:user_id", async (req, res)=>{
   try{
   	let debt = await debtData.getDebtByUserId(req.params.user_id)
   	res.json(debt);
+  } catch (e) {
+    res.status(500).json(e);
+  }
+});
+
+app.get("/debt/total/:user_id", async (req, res)=>{
+  try{
+    let debt = await debtData.getDebtByUserId(req.params.user_id);
+    let total = 0;
+    debt.forEach(element => {
+      total+=element.currentAmount;
+    });
+    let ret = {totalDebt:total};
+  	res.json(ret);
   } catch (e) {
     res.status(500).json(e);
   }
