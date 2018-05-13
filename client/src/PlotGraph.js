@@ -10,11 +10,11 @@ import axios from 'axios';
 export class PlotGraph extends Component {
     constructor(props, context) {
         super(props, context);
-        this.singleStockPlot = this.singleStockPlot.bind(this);
+        this.singleCryptoPlot = this.singleCryptoPlot.bind(this);
         this.state = {};
     }
     async componentWillReceiveProps(nextProps) {
-        await this.singleStockPlot(nextProps.userid, "c7a1b811-68fb-4e8b-8048-474f731b5c9c");
+        await this.singleCryptoPlot(nextProps.userid, "614bff45-f076-470e-9bf8-28e6f2b10d0f");
     }
     async cashPlot(userId) {
         if (arguments.length !== 1) {
@@ -134,6 +134,61 @@ export class PlotGraph extends Component {
 
         let data = [ debt ];
         this.setState({plotData: data});
+    }
+
+    async singleCryptoPlot(userId, cryptoId) {
+        if (arguments.length !== 2) {
+            throw "Please provide a single ID.";
+        }
+        if (typeof userId !== "string" || typeof cryptoId !== "string") {
+            throw "The IDs must be strings.";
+        }
+        let response = (await axios.get("http://localhost:3001/holdings/crypto/" + userId)).data;
+        let found = response.find(function (obj) {
+            return obj._id === cryptoId;
+        });
+        let start = new Date(found.date * 1000);
+        let sAmount = found.startingAmount;
+        let cAmount = found.currentAmount;
+        let trans = found.transactions;
+        let symbol = found.symbol;
+
+        let x = [];
+        let y = [];
+        let today = new Date();
+        x.unshift(today.toLocaleDateString());
+        y.unshift(cAmount);
+        for (let i=0; i<1460; i++) {
+            today.setDate(today.getDate()-1);
+            x.unshift(today.toLocaleDateString());
+            if (start > today) {
+                y.unshift(0);
+                continue;
+            }
+            if(trans.length > 0 && Date(trans[trans.length-1].date) > today) {
+                if (trans[trans.length-1].type === "add") {
+                    y.unshift(y[0] - trans[trans.length-1].quantity);
+                }
+                else {
+                    y.unshift(y[0] + trans[trans.length-1].quantity);
+                }
+                trans.pop();
+            }
+            else {
+                y.unshift(y[0]);
+            }
+        }
+
+        let debt = {
+            x: x,
+            y: y,
+            mode: 'lines+markers',
+            type: 'scatter',
+            name: symbol,
+            marker: { size: 12 }
+        };
+
+        let data = [ debt ];
     }
 
     singleDebtPlotLayout() {
@@ -339,9 +394,8 @@ export class PlotGraph extends Component {
     }
 
     render() {
-        return (<div className="reactPlot"> <Plot data={this.state.plotData}
-                layout={this.singleStockPlotLayout()} />
-        </div>)
+        return <Plot data={this.state.plotData}
+                layout={this.singleCryptoPlot()} />
     }
 
 }
