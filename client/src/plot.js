@@ -1,15 +1,14 @@
 const axios = require("axios");
-const Plotly = require('plotly')("jmanzelm", "LRrfcOTLoYFHQUGWzNDy")
+const Plotly = require('plotly')("jmanzelm", "LRrfcOTLoYFHQUGWzNDy");
 
 export async function cashPlot(userId) {
 	if (arguments.length !== 1) {
-    throw "Please provide a single ID.";
-  }
-  if (typeof userId !== "string") {
-    throw "The ID must be a string.";
-  }
+    	throw "Please provide a single ID.";
+	}
+	if (typeof userId !== "string") {
+		throw "The ID must be a string.";
+	}
 	let response = (await axios.get("http://localhost:3001/holdings/cash/" + userId)).data;
-	console.log(response);
 	let start = new Date(response.date * 1000);
 	let sAmount = response.startingAmount;
 	let cAmount = response.currentAmount;
@@ -47,21 +46,21 @@ export async function cashPlot(userId) {
 	}
 
 	var cash = {
-	  x: x,
-	  y: y,
-	  mode: 'lines+markers',
-	  type: 'scatter',
-	  name: 'Cash',
-	  marker: { size: 12 }
+		x: x,
+		y: y,
+		mode: 'lines+markers',
+		type: 'scatter',
+		name: 'Cash',
+		marker: { size: 12 }
 	};
 
 	var data = [ cash ];
 
 	var layout = {
-	  title:'Your Cash'
+		title:'Your Cash'
 	};
 
-	Plotly.newPlot('plot', data, layout);
+	Plotly.plot('plot', data, layout);
 }
 
 export async function singleDebtPlot(userId, debtId) {
@@ -122,7 +121,7 @@ export async function singleDebtPlot(userId, debtId) {
 	  title: creditor + " Debt"
 	};
 
-	Plotly.newPlot('plot', data, layout);
+	Plotly.plot('plot', data, layout);
 }
 
 export async function debtPlot(userId) {
@@ -176,7 +175,7 @@ export async function debtPlot(userId) {
 	  title:'Your Debts'
 	};
 
-	Plotly.newPlot('plot', data, layout);
+	Plotly.plot('plot', data, layout);
 }
 
 export async function singleStockPlot(userId, stockId) {
@@ -243,7 +242,7 @@ export async function singleStockPlot(userId, stockId) {
 	  title: symbol + " Value"
 	};
 
-	Plotly.newPlot('plot', plotData, layout);
+	Plotly.plot('plot', plotData, layout);
 }
 
 export async function stockPlot(userId) {
@@ -283,7 +282,7 @@ export async function stockPlot(userId) {
 		  title:'Your Debts'
 		};
 
-		Plotly.newPlot('plot', data, layout);
+		Plotly.plot('plot', data, layout);
 	})
 	.catch(function (error) {
 		throw error;
@@ -354,7 +353,7 @@ export async function singleCryptoPlot(userId, cryptoId) {
 	  title: symbol + " Value"
 	};
 
-	Plotly.newPlot('plot', plotData, layout);
+	Plotly.plot('plot', plotData, layout);
 }
 
 export async function cryptoPlot(userId) {
@@ -386,7 +385,7 @@ export async function cryptoPlot(userId) {
 		  title:'Your Debts'
 		};
 
-		Plotly.newPlot('plot', data, layout);
+		Plotly.plot('plot', data, layout);
 	})
 	.catch(function (error) {
 		throw error;
