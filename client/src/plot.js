@@ -1,6 +1,12 @@
 const axios = require("axios");
 
 async function cashPlot(userId) {
+	if (arguments.length !== 1) {
+    throw "Please provide a single ID.";
+  }
+  if (typeof userId !== "string") {
+    throw "The ID must be a string.";
+  }
 	axios.get("http://localhost:3001/cash/" + userId)
 	.then(function (response) {
 		start = new Date(response.date * 1000);
