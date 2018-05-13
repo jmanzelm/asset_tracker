@@ -24,6 +24,7 @@ export class PlotGraph extends Component {
             throw "The ID must be a string.";
         }
         let response = (await axios.get("http://localhost:3001/holdings/cash/" + userId)).data;
+        console.log(response);
         let start = new Date(response.date * 1000);
         let sAmount = response.startingAmount;
         let cAmount = response.currentAmount;
@@ -32,12 +33,12 @@ export class PlotGraph extends Component {
         let x = [];
         let y = [];
         let today = new Date();
-        x.unshift(today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getYear());
+        x.unshift(today.toLocaleDateString());
         y.unshift(cAmount);
         // go through 4 years of days
         for (let i=0; i<6; i++) {
             today.setDate(today.getDate()-1);
-            x.unshift(today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getYear());
+            x.unshift(today.toLocaleDateString());
             // set value for that day to 0 if before object existed
             if (start > today) {
                 y.unshift(0);
@@ -73,12 +74,76 @@ export class PlotGraph extends Component {
         this.setState({plotData: data});
         
     }
+
     cashPlotLayout() {
         let layout = {
             title:'Your Cash'
         };
         return layout;
     }
+
+    async singleDebtPlot(userId, debtId) {
+        if (arguments.length !== 2) {
+            throw "Please provide a single ID.";
+        }
+        if (typeof userId !== "string" || typeof debtId !== "string") {
+            throw "The IDs must be strings.";
+        }
+        let response = await axios.get("http://localhost:3001/holdings/debt/" + userId);
+        let found = response.find(function (obj) {
+            return obj._id === debtId;
+        });
+        let start = new Date(found.date * 1000);
+        let sAmount = found.startingAmount;
+        let cAmount = found.currentAmount;
+        let trans = found.transactions;
+        let creditor = found.creditor;
+
+        let x = [];
+        let y = [];
+        let today = new Date();
+        x.unshift(today.toLocaleDateString());
+        y.unshift(cAmount);
+        for (let i=0; i<1460; i++) {
+            today.setDate(today.getDate()-1);
+            x.unshift(today.toLocaleDateString());
+            if (start > today) {
+                y.unshift(0);
+                continue;
+            }
+            if(trans.length > 0 && Date(trans[trans.length-1].date) > today) {
+                if (trans[trans.length-1].type === "add") {
+                    y.unshift(y[0] - trans[trans.length-1].quantity);
+                }
+                else {
+                    y.unshift(y[0] + trans[trans.length-1].quantity);
+                }
+                trans.pop();
+            }
+            else {
+                y.unshift(y[0]);
+            }
+        }
+
+        let debt = {
+            x: x,
+            y: y,
+            mode: 'lines+markers',
+            type: 'scatter',
+            name: creditor,
+            marker: { size: 12 }
+        };
+
+        let data = [ debt ];
+    }
+
+    singleDebtPlotLayout() {
+        let layout = {
+            title: "Debt"
+        };
+        return layout;
+    }
+
     render() {
         return <Plot data={this.state.plotData}
                 layout={this.cashPlotLayout()} />

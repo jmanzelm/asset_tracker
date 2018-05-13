@@ -42,9 +42,9 @@ const populateDb = async function(user){
 
 		let depositSeries = [ 
 			{amount:100000, date: may7, type:"deposit"},
-			{amount: 4500, date: may8, type:"withdrawal"},
+			{amount: 4500, date: may8, type:"withdraw"},
 			{amount: 35000, date: may9, type:"deposit"},
-			{amount: 2000, date: may10, type: "withdrawal"},
+			{amount: 2000, date: may10, type: "withdraw"},
 			{amount: 250000, date: may11, type: "deposit"}
 		]
 		const sherlockCash = await cash.addTransactionSeries(user._id, depositSeries);
