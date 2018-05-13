@@ -47,7 +47,7 @@ const populateDb = async function(user){
 			{amount: 2000, date: may10, type: "withdrawal"},
 			{amount: 250000, date: may11, type: "deposit"}
 		]
-		const sherlockCash = await cash.addTransactionSeries(user._id, depositSeries);
+		const userCash = await cash.addTransactionSeries(user._id, depositSeries);
 	}
 
 	let debtCollectionSize = await debts.getAllDebts().then(function(allDebts){
@@ -259,26 +259,6 @@ const populateDb = async function(user){
 		];
 		const userInvestments = await investments.addTransactionSeries(user._id, investmentSeries);
 	}
-	let stockSize = await investments.getAllInvestments();
-	console.log(stockSize.length)
-	if (stockSize.length === 0) {
-		investments.addInvestment(user._id, "AAPL", "stock", 10);
-		investments.addInvestment(user._id, "GOOG", "stock", 5);
-		investments.addInvestment(user._id, "TSLA", "stock", 15);
-
-		investments.addInvestment(user._id, "BTC", "crypto", 10);
-		investments.addInvestment(user._id, "LTC", "crypto", 11);
-		investments.addInvestment(user._id, "XMR", "crypto", 15);
-	}
-	
-	
-	// investments.addInvestment(userId, symbol, type, startingAmount)
-	// console.log("investments by id", await investments.getInvestmentById(user._id))
-	console.log("investments", await investments.getAllInvestments());
-	console.log("cash", await cash.getAllCash());
-	console.log("debts", await debts.getAllDebts());
-	console.log("debtsbyid", user._id, await debts.getDebtByUserId(user._id))
-
 }
 
 const main = async function() {
