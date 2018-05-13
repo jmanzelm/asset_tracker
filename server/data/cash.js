@@ -153,7 +153,7 @@ ModuleA.addCashTransaction = async function(id, quantity, type) {
 			date: Math.round((new Date()).getTime() / 1000)
 		};
 		let updatedCash = {
-			transactions: (this.getCashById(id)).transactions.push(newTransaction),
+			transactions: (await this.getCashById(id)).transactions.push(newTransaction),
 			currentAmount: newAmount
 		}
 		cashCol.updateOne({_id: id}, {$set: updatedCash});

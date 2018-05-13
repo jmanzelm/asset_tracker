@@ -88,7 +88,7 @@ ModuleA.addDebt = async function(userId, creditor, startingAmount) {
 		let insInfo = await debtCol.insertOne(newDebt)
 
 		const newId = insInfo.insertedId;
-		return this.getDebtById(newId);
+		return await this.getDebtById(newId);
 	} catch (error) {
 		throw error;
 	}
@@ -139,7 +139,7 @@ ModuleA.addDebtTransaction = async function(id, quantity, type) {
 	}
 	try {
 		if (type === "subtract" && debt.currentAmount <= quantity) {
-			this.deleteDebt(id);
+			await this.deleteDebt(id);
 			return {};
 		}
 		let debtCol = await debts();
@@ -150,7 +150,7 @@ ModuleA.addDebtTransaction = async function(id, quantity, type) {
 			date: Math.round((new Date()).getTime() / 1000)
 		};
 		let updatedDebt = {
-			transactions: (this.getDebtById(id)).transactions.push(newTransaction),
+			transactions: (await this.getDebtById(id)).transactions.push(newTransaction),
 			currentAmount: (type === "add" ? debt.currentAmount + quantity : debt.currentAmount - quantity)
 		}
 		await debtCol.updateOne({_id: id}, {$set: updatedDebt});

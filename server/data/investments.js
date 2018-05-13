@@ -1,7 +1,6 @@
 const mongoCollections = require("../config/mongoCollections");
 const investments = mongoCollections.investments;
 const uuidv4 = require("uuid/v4");
-const axios = require("axios");
 
 function ModuleA() {
 
@@ -169,7 +168,6 @@ ModuleA.addInvestmentTransaction = async function(id, quantity, type) {
 			type: type,
 			qty: quantity,
 			date: Math.round((new Date()).getTime() / 1000)
-			//price: (investment.type === "stock" ? axios.get("http://localhost:3001/prices/stock/" + investment.symbol).data.close : axios.get("http://localhost:3001/prices/crypto/" + investment.symbol).data.close)
 		};
 		investment1.transactions.push(newTransaction);
 		let updatedInvestment = {
