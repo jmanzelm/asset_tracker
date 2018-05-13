@@ -31,11 +31,11 @@ const populateDb = async function(user){
 	let cashCollectionSize = await cash.getAllCash().then(function(allCash){
 		return allCash.length;
 	});
-	let may7 = new Date(2018, 5, 7)/1000;
-	let may8 = new Date(2018, 5, 8)/1000;
-	let may9 = new Date(2018, 5, 9)/1000;
-	let may10 = new Date(2018, 5, 10)/1000;
-	let may11 = new Date(2028, 5, 11)/1000;
+	let may7 = Math.round(new Date(2018, 4, 7)/1000);
+	let may8 = Math.round(new Date(2018, 4, 8)/1000);
+	let may9 = Math.round(new Date(2018, 4, 9)/1000);
+	let may10 = Math.round(new Date(2018, 4, 10)/1000);
+	let may11 = Math.round(new Date(2018, 4, 11)/1000);
 
 	if (cashCollectionSize==0){
 
