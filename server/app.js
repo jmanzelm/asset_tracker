@@ -5,10 +5,7 @@ const cors = require('cors');
 const bcrypt = require("bcrypt");
 const app = express();
 const exphbs = require("express-handlebars");
-<<<<<<< Updated upstream
-=======
 const path = require("path");
->>>>>>> Stashed changes
 const configRoutes = require("./routes");
 
 const mongoCollections = require("./config/mongoCollections");
@@ -34,8 +31,11 @@ configRoutes(app);
 const main = async function() {
 
 	let usersList = await users.getAllUsers();
+	let sherlock;
 	if (usersList.length==0){
-		const sherlock = await users.addUser("masterdetective123", "$2a$16$7JKSiEmoP3GNDSalogqgPu0sUbwder7CAN/5wnvCWe6xCKAKwlTD.", 50);
+		sherlock = await users.addUser("masterdetective123", "$2a$16$7JKSiEmoP3GNDSalogqgPu0sUbwder7CAN/5wnvCWe6xCKAKwlTD.", 50);
+	} else {
+		sherlock = await users.getUserByName("masterdetective123");
 	}
 	 
 	let cashCollectionSize = await cash.getAllCash().then(function(allCash){
