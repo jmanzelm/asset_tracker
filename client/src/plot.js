@@ -12,7 +12,7 @@ async function cashPlot(userId) {
 		start = new Date(response.date * 1000);
 		sAmount = response.startingAmount;
 		cAmount = response.currentAmount;
-		trans = response.trans;
+		transactions = response.transactions;
 
 		x = [];
 		y = [];
@@ -26,14 +26,14 @@ async function cashPlot(userId) {
 				y.unshift(0);
 				continue;
 			}
-			if(trans.length > 0 && Date(trans[trans.length-1].date) > today) {
-				if (trans[trans.length-1].type === "deposit") {
-					y.unshift(y[0] - trans[trans.length-1].quantity);
+			if(transactions.length > 0 && Date(transactions[transactions.length-1].date) > today) {
+				if (transactions[transactions.length-1].type === "deposit") {
+					y.unshift(y[0] - transactions[transactions.length-1].quantity);
 				}
 				else {
-					y.unshift(y[0] + trans[trans.length-1].quantity);
+					y.unshift(y[0] + transactions[transactions.length-1].quantity);
 				}
-				trans.pop();
+				transactions.pop();
 			}
 			else {
 				y.unshift(y[0]);

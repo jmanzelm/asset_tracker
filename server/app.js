@@ -5,10 +5,6 @@ const cors = require('cors');
 const bcrypt = require("bcrypt");
 const app = express();
 const exphbs = require("express-handlebars");
-<<<<<<< Updated upstream
-=======
-const path = require("path");
->>>>>>> Stashed changes
 const configRoutes = require("./routes");
 
 const mongoCollections = require("./config/mongoCollections");
@@ -34,19 +30,24 @@ configRoutes(app);
 const main = async function() {
 
 	let usersList = await users.getAllUsers();
+	let sherlock;
 	if (usersList.length==0){
-		const sherlock = await users.addUser("masterdetective123", "$2a$16$7JKSiEmoP3GNDSalogqgPu0sUbwder7CAN/5wnvCWe6xCKAKwlTD.", 50);
+		sherlock = await users.addUser("masterdetective123", "$2a$16$7JKSiEmoP3GNDSalogqgPu0sUbwder7CAN/5wnvCWe6xCKAKwlTD.", 50);
+	}
+	else{
+		sherlock = await users.getUserByName("masterdetective123");
 	}
 	 
 	let cashCollectionSize = await cash.getAllCash().then(function(allCash){
 		return allCash.length;
 	});
+	let may7 = new Date(2018, 5, 7)/1000;
+	let may8 = new Date(2018, 5, 8)/1000;
+	let may9 = new Date(2018, 5, 9)/1000;
+	let may10 = new Date(2018, 5, 10)/1000;
+	let may11 = new Date(2028, 5, 11)/1000;
+	
 	if (cashCollectionSize==0){
-		let may7 = new Date(2018, 5, 7)/1000;
-		let may8 = new Date(2018, 5, 8)/1000;
-		let may9 = new Date(2018, 5, 9)/1000;
-		let may10 = new Date(2018, 5, 10)/1000;
-		let may11 = new Date(2028, 5, 11)/1000;
 
 		let depositSeries = [ 
 			{amount:100, date: may7, type:"deposit"},
@@ -56,6 +57,51 @@ const main = async function() {
 			{amount: 250000, date: may11, type: "deposit"} 
 		]
 		const sherlockCash = await cash.addTransactionSeries(sherlock._id, depositSeries);
+	}
+
+	let debtCollectionSize = await debts.getAllDebts().then(function(allDebts){
+		return allDebts.length;
+	});
+	if (debtCollectionSize==0){
+		let creditSeries = [
+			{
+				creditor: "Capital One",
+				transactions: [
+					{
+						type: "add",
+						qty: 4000,
+						date: may9
+					}
+				]
+			},
+			{
+				creditor: "Navient",
+				transactions: [
+					{
+						type: "add",
+						qty: 8000,
+						date: 1407485811
+					},
+					{
+						type: "add",
+						qty: 8000,
+						date: 1439021811
+					},
+					{
+						type: "add",
+						qty: 8000,
+						date: 1470644211
+					},
+					{
+						type: "add",
+						qty: 8000,
+						date: 1502180211
+					}
+				]
+			}
+		];
+			
+		const sherlockDebts = await debts.addTransactionSeries(sherlock._id, creditSeries);
 	}
 
 	console.log(await investments.getAllInvestments());
