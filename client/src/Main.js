@@ -196,7 +196,7 @@ class FilterTextBox extends Component {
                         <Button onClick={this.verifyAsset}>Buy or Sell Asset</Button>
                     </FormGroup>
                 </Form>
-        )
+
         {this.state.validationState === "success" &&
             <Modal show={this.state.showAssetAdd}>
             <Modal.Header> <h4>{this.state.current_text.toUpperCase()} </h4></Modal.Header>
