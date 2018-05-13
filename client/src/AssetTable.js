@@ -26,7 +26,7 @@ class AssetDetailsPopover extends Component {
     componentWillReceiveProps(nextProps) {
         this.setPriceData(nextProps);
     }
-    
+
     handleChange(e) {
         this.setState({input: e.target.value})
     }
@@ -90,26 +90,41 @@ export default class AssetTable extends Component {
     async getTableData(nextProps) {
         let type = this.activeKeyMap[nextProps.activeKey];
         const res = await axios.get(`http://localhost:3001/holdings/${type}/${nextProps.userid}/`);
-        // console.log("res", res)
-        let newPrices = {};
-        for (let i = 0; i < res.data.length; i++) {
-            let toSet = (await axios.get(`http://localhost:3001/prices/${type}/${res.data[i].symbol}`))
-            // console.log("ts", toSet);
-            newPrices[res.data[i].symbol] = toSet.data[this.accessPriceToken[nextProps.activeKey]];
+        if (type === "crypto" || type === "stock") {
+            let transactions = res.data ? res.data : []
+            let newPrices = {}
+            for (let i = 0; i < transactions.length; i++) {
+                let toSet = (await axios.get(`http://localhost:3001/prices/${type}/${transactions[i].symbol}`))
+                // console.log("ts", toSet);
+                newPrices[transactions[i].symbol] = toSet.data[this.accessPriceToken[nextProps.activeKey]];
+            }
+            this.setState({
+                objects: transactions,
+                prices: newPrices
+            }, () => {
+                let totalAssetValue = 0;
+                let objects = this.state.objects;
+                for (let i = 0; i < objects.length; i++) {
+                    totalAssetValue += (this.state.prices[objects[i].symbol] * objects[i].currentAmount)
+                }
+                this.setState({totalAssetValue: this.roundTwoDecimals(totalAssetValue)});
+            });
+        } else if (type === "cash"){
+            console.log("cash", res);
+            let totalAssetValue = 0;
+            let transactions = res.transactions ? res.transactions : []
+            for (let i = 0; i < transactions.length; i++) {
+
+            }
+            this.setState({totalAssetValue: this.roundTwoDecimals(totalAssetValue)})
+        } else if (type === "debt") {
+            let totalAssetValue = 0;
+
         }
+        
         // console.log("Setting state", newPrices);
 
-        this.setState({
-            objects: res.data,
-            prices: newPrices
-        }, () => {
-            let totalAssetValue = 0;
-            let objects = this.state.objects;
-            for (let i = 0; i < objects.length; i++) {
-                totalAssetValue += (this.state.prices[objects[i].symbol] * objects[i].currentAmount)
-            }
-            this.setState({totalAssetValue: this.roundTwoDecimals(totalAssetValue)});
-        });
+       
 
     }
 
@@ -166,16 +181,20 @@ export default class AssetTable extends Component {
                 </tr>
             </OverlayTrigger>)
         }
-        return <Table className="table asset-table" bordered hover>
-            <thead>
-                <tr>
-                    {this.COL_DEF.map((header) => { return <th>{header}</th>})}
-                </tr>
-            </thead>
-            <tbody>
-                {tableRows}
-            </tbody>
-        </Table>
+        let type = this.activeKeyMap[this.props.activeKey]
+        if (type === "crypto" || type === "stock") {
+            return <Table className="table asset-table" bordered hover>
+                <thead>
+                    <tr>
+                        {this.COL_DEF.map((header) => { return <th>{header}</th>})}
+                    </tr>
+                </thead>
+                <tbody>
+                    {tableRows}
+                </tbody>
+            </Table>
+        }
+        
     }
 
     render() {
