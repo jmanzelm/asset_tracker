@@ -169,7 +169,7 @@ class FilterTextBox extends Component {
             return 'error'
         }
         // this.setState({validationState: "error"})
-        
+
         console.log(a);
     }
 
@@ -177,19 +177,20 @@ class FilterTextBox extends Component {
         // {this.getValidationState()}
         // {cashPlot();}
         return (
-
             <div>
-            <div id="plot"> </div>
-        <FormGroup validationState={this.state.validationState}>
-        <FormControl
-            name="form-field-name"
-            value={this.state.current_text}
-            onChange={this.handleChange}
-            placeholder={"Search for a " + this.activeKeyMap[this.props.activeKey] + " ticker"}
-        />
-        <FormControl.Feedback />
-        <Button onClick={this.verifyAsset}>Buy or Sell Asset</Button>
-        </FormGroup>
+                <div id="plot"> </div>
+                <Form inline>
+                    <FormGroup validationState={this.state.validationState}>
+                        <FormControl
+                            name="form-field-name"
+                            value={this.state.current_text}
+                            onChange={this.handleChange}
+                            placeholder={"Search for a " + this.activeKeyMap[this.props.activeKey] + " ticker"}
+                        />
+                        <FormControl.Feedback />
+                        <Button onClick={this.verifyAsset}>Buy or Sell Asset</Button>
+                    </FormGroup>
+                </Form>
         {this.state.validationState === "success" &&
             <Modal show={this.state.showAssetAdd}>
             <Modal.Header> <h4>{this.state.current_text.toUpperCase()} </h4></Modal.Header>
