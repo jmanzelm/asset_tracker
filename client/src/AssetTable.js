@@ -197,7 +197,7 @@ export default class AssetTable extends Component {
 
     render() {
         return <div>
-            <div className="search">
+            <div className="filtertextbox">
                 <FilterTextBox activeKey={this.props.activeKey} userid={this.props.userid}/>
             </div>
             <div className="total-asset-value">

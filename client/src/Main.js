@@ -56,13 +56,16 @@ export default class Main extends Component {
                     <h3 id="asset-tracker-name">Asset Tracker</h3>
                 </div>
                 <div>
+                    <div className="mleft-col">
                     <AssetNavbar activeKey={this.state.activeKey} toggleNavKey={this.toggleNavKey}/>
                     <CashDebtForm userid={this.state._id} />
+                    </div>
                     <div>
                         <AssetTable activeKey={this.state.activeKey} userid={this.state._id}/>
                     </div>
-                    <PlotGraph userid={this.state._id} />
+                    
                 </div>
+                <PlotGraph userid={this.state._id} />
             </div>
         )
     }

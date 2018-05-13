@@ -120,12 +120,11 @@ app.get("/debt/total/:user_id", async (req, res)=>{
       // console.log("234");
       let amount = req.body.amount;
       let creditor = req.body.creditor;
-      let startingAmount = req.body.startingAmount;
       let date = (req.body.date) ? req.body.date : Math.round(new Date()/1000);
 
       let attrs = {
         creditor: creditor,
-        startingAmount: startingAmount,
+        amount: amount,
         date: date
       };
 

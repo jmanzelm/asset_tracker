@@ -1,12 +1,18 @@
 body{
     background-color: #abcdd6;
 }
-
+.mleft-col {
+  width: 300px;
+}
+.cash-debt {
+  width: 100%;
+  /*display: inline-block;*/
+}
 .navbar {
   font-size: 1.6em;
   border-radius: 15px;
   background-color: #14151b;
-  width: 26%;
+  width: 100%;
   text-align: left;
   float: left;
 }
@@ -35,15 +41,17 @@ body{
   display: inline;
   width: 10% !important;
   margin-left: 5px;
+  /*margin-top: -1000px;*/
 }
 .input-modal-action-name {
   margin-left: 10px;
 }
 
-.search {
-  width: 50%;
-  margin-left: 36%;
+.filtertextbox {
+  width: 30%;
+  margin-left: 40%;
   padding-bottom: 30px;
+  display: inline-block;
 
 }
 .total-asset-value {
