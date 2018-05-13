@@ -39,15 +39,10 @@ const populateDb = async function(user){
 
 	if (cashCollectionSize==0){
 
-<<<<<<< Updated upstream
-		let depositSeries = [
-			{amount:100, date: may7, type:"deposit"},
-			{amount: 25, date: may8, type:"withdrawal"},
-=======
+
 		let depositSeries = [ 
 			{amount:100000, date: may7, type:"deposit"},
 			{amount: 4500, date: may8, type:"withdrawal"},
->>>>>>> Stashed changes
 			{amount: 35000, date: may9, type:"deposit"},
 			{amount: 2000, date: may10, type: "withdrawal"},
 			{amount: 250000, date: may11, type: "deposit"}
@@ -96,13 +91,8 @@ const populateDb = async function(user){
 				]
 			}
 		];
-<<<<<<< Updated upstream
-
-		const sherlockDebts = await debts.addTransactionSeries(sherlock._id, creditSeries);
-=======
 			
 		const userDebts = await debts.addTransactionSeries(user._id, creditSeries);
->>>>>>> Stashed changes
 	}
 
 	let investmentCollectionSize = await investments.getAllInvestments().then(function(allInvestments){
