@@ -11,6 +11,7 @@ import {
 import "react-select/dist/react-select.css";
 import './App.css';
 import axios from 'axios';
+import {FilterTextBox} from './Main'
 
 
 class AssetDetailsPopover extends Component {
@@ -196,6 +197,9 @@ export default class AssetTable extends Component {
 
     render() {
         return <div>
+            <div className="search">
+                <FilterTextBox activeKey={this.props.activeKey} userid={this.props.userid}/>
+            </div>
             <div className="total-asset-value">
             <p>Total value for all {this.props.activeKey}: ${this.state.totalAssetValue}</p>
             </div>
