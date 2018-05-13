@@ -33,7 +33,8 @@ export default class Main extends Component {
         this.storeUserData = this.storeUserData.bind(this);
         this.updateSelectedAsset = this.updateSelectedAsset.bind(this);
         this.state = {
-            activeKey: "Stocks"
+            activeKey: "Stocks",
+            selectedItem: "AAPL"
         }
     }
     updateSelectedAsset(ticker) {

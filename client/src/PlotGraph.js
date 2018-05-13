@@ -17,10 +17,10 @@ export class PlotGraph extends Component {
     }
     async componentWillReceiveProps(nextProps) {
         if (nextProps.activeKey === "Stocks") {
-            await this.singleStockPlot(nextProps.userid, nextProps.ticker);
+            await this.singleStockPlot(nextProps.userid, nextProps.ticker.toUpperCase());
         }
         if (nextProps.activeKey === "Cryptocurrencies") {
-            await this.singleCryptoPlot(nextProps.userid, nextProps.ticker);
+            await this.singleCryptoPlot(nextProps.userid, nextProps.ticker.toUpperCase());
         }
         if (nextProps.activeKey === "Cash") {
             await this.cashPlot(nextProps.userid);
@@ -39,6 +39,7 @@ export class PlotGraph extends Component {
             throw "The ID must be a string.";
         }
         let response = (await axios.get("http://localhost:3001/holdings/cash/" + userId)).data;
+
         let start = new Date(response.date * 1000);
         let sAmount = response.startingAmount;
         let cAmount = response.currentAmount;
@@ -106,6 +107,15 @@ export class PlotGraph extends Component {
         let found = response.find(function (obj) {
             return obj.creditor === debtName;
         });
+        if (! found) {
+            found = {
+                date: new Date(),
+                startingAmount: 0,
+                currentAmount: 0,
+                transactions: [],
+                creditor: "Joe"
+            }
+        }
         let start = new Date(found.date * 1000);
         let sAmount = found.startingAmount;
         let cAmount = found.currentAmount;
@@ -162,6 +172,15 @@ export class PlotGraph extends Component {
         let found = response.find(function (obj) {
             return obj._id === cryptoId;
         });
+        if (! found) {
+            found = {
+                date: new Date(),
+                startingAmount: 0,
+                currentAmount: 0,
+                transactions: [],
+                symbol: this.props.ticker
+            }
+        }
         let start = new Date(found.date * 1000);
         let sAmount = found.startingAmount;
         let cAmount = found.currentAmount;
@@ -282,6 +301,15 @@ export class PlotGraph extends Component {
         let found = response.find(function (obj) {
             return obj.symbol === stockName;
         });
+        if (! found) {
+            found = {
+                date: new Date(),
+                startingAmount: 0,
+                currentAmount: 0,
+                transactions: [],
+                symbol: this.props.ticker
+            }
+        }
         console.log(found);
         let start = new Date(found.date * 1000);
         let sAmount = found.startingAmount;
@@ -352,6 +380,16 @@ export class PlotGraph extends Component {
         let found = response.find(function (obj) {
             return obj.symbol === cryptoName;
         });
+        console.log(found)
+        if (! found) {
+            found = {
+                date: new Date(),
+                startingAmount: 0,
+                currentAmount: 0,
+                transactions: [],
+                symbol: this.props.ticker
+            }
+        }
         let start = new Date(found.date * 1000);
         let sAmount = found.startingAmount;
         let cAmount = found.currentAmount;
@@ -386,11 +424,13 @@ export class PlotGraph extends Component {
             }
         }
 
-        console.log(data);
-        for (let i=0; i<7; i++) {
-            y[6-i] *= data[data.length - 1 - i].close;
+        console.log("data", data);
+        if (data.length >= 7) {
+            for (let i=0; i<7; i++) {
+                y[6-i] *= data[data.length - 1 - i].close;
+            }
         }
-
+        
         let crypto = {
             x: x,
             y: y,
