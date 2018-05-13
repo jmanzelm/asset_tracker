@@ -35,9 +35,9 @@ ModuleA.getInvestmentById = async function(id) {
 	}
 	try {
 		const investmentCollection = await investments();
-		const investment1 = await investmentCollection.findOne({_id: id});
-		if (!investment1) throw "investment not found";
-		return investment1;
+		const investment = await investmentCollection.findOne({_id: id});
+		if (!investment) throw "investment not found";
+		return investment;
 	}
 	catch(error) {
 		throw error;
@@ -53,9 +53,9 @@ ModuleA.getStockByUserId = async function(id) {
 	}
 	try {
 		const investmentCollection = await investments();
-		const investment1 = await investmentCollection.find({userId: id, type: "stock"}).toArray();
-		if (!investment1) throw "investment not found";
-		return investment1;
+		const investment = await investmentCollection.find({userId: id, type: "stock"}).toArray();
+		if (!investment) throw "investment not found";
+		return investment;
 	}
 	catch(error) {
 		throw error;
@@ -71,9 +71,9 @@ ModuleA.getCryptoByUserId = async function(id) {
 	}
 	try {
 		const investmentCollection = await investments();
-		const investment1 = await investmentCollection.find({userId: id, type: "crypto"}).toArray();
-		if (!investment1) throw "investment not found";
-		return investment1;
+		const investment = await investmentCollection.find({userId: id, type: "crypto"}).toArray();
+		if (!investment) throw "investment not found";
+		return investment;
 	}
 	catch(error) {
 		throw error;
@@ -149,17 +149,21 @@ ModuleA.deleteInvestment = async function(id) {
 }
 
 // type is either "add" or "subtract"
-ModuleA.addInvestmentTransaction = async function(id, quantity, type) {
-	if (arguments.length !== 3) {
+ModuleA.addInvestmentTransaction = async function(id, attrs) {
+	if (arguments.length !== 2 || !attrs.type || !attrs.quantity) {
 		throw "Please provide an investment ID, quantity, and type.";
 	}
+	let type = attrs.type;
+	let quantity = attrs.quantity;
+	let date = attrs.date;
+	
 	if (typeof id !== "string" || typeof quantity !== "number" || typeof type !== "string"){
 		throw "The investment ID and type must be strings and quantity must be a number.";
 	}
 
 	try {
-		const investmentCollection = await investments();
-		investment1 = await this.getInvestmentById(id);
+		let investmentCollection = await investments();
+		let investment = await this.getInvestmentById(id);
 		if (type === "subtract" && investment.currentAmount <= quantity) {
 			await this.deleteInvestment(id);
 			return {};
@@ -169,10 +173,10 @@ ModuleA.addInvestmentTransaction = async function(id, quantity, type) {
 			qty: quantity,
 			date: Math.round((new Date()).getTime() / 1000)
 		};
-		investment1.transactions.push(newTransaction);
+		investment.transactions.push(newTransaction);
 		let updatedInvestment = {
-			transactions: investment1.transactions,
-			currentAmount: (type === "add" ? investment1.currentAmount + quantity : investment1.currentAmount - quantity)
+			transactions: investment.transactions,
+			currentAmount: (type === "add" ? investment.currentAmount + quantity : investment.currentAmount - quantity)
 		}
 
 		const updateInfo = await investmentCollection.updateOne({_id: id}, {$set: updatedInvestment}, {upsert:true});

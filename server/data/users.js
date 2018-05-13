@@ -76,7 +76,7 @@ ModuleA.addUser = async function(username, hashedPassword, startingCash) {
     };
     const insertInfo = await userCollection.insertOne(newUser);
     if (insertInfo.insertedCount === 0) throw "Could not add user";
-    await cash.addCash(newUser._id, startingCash) // add a new cash object
+    //await cash.addCash(newUser._id, startingCash) // add a new cash object
 
     const newId = insertInfo.insertedId;
     const temp =  await this.getUserById(newId);

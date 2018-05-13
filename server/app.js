@@ -5,6 +5,10 @@ const cors = require('cors');
 const bcrypt = require("bcrypt");
 const app = express();
 const exphbs = require("express-handlebars");
+<<<<<<< Updated upstream
+=======
+const path = require("path");
+>>>>>>> Stashed changes
 const configRoutes = require("./routes");
 
 const mongoCollections = require("./config/mongoCollections");
@@ -28,12 +32,36 @@ const saltRounds = 16;
 configRoutes(app);
 
 const main = async function() {
-	// const ben = await users.addUser("masterdetective123", "$2a$16$7JKSiEmoP3GNDSalogqgPu0sUbwder7CAN/5wnvCWe6xCKAKwlTD.", 50);
-	// const benapple = await investments.addInvestment(ben._id, "AAPL", "stock", 5);
-	// const bencoin = await investments.addInvestment(ben._id, "BTC", "crypto", 5);
-	// const bendebt = await debts.addDebt(ben._id, "college", 150000)
-	// await investments.addInvestmentTransaction(benapple._id, 2, "add");
-	// console.log(await users.getAllUsers());
+
+	let usersList = await users.getAllUsers();
+	if (usersList.length==0){
+		const sherlock = await users.addUser("masterdetective123", "$2a$16$7JKSiEmoP3GNDSalogqgPu0sUbwder7CAN/5wnvCWe6xCKAKwlTD.", 50);
+	}
+	 
+	let cashCollectionSize = await cash.getAllCash().then(function(allCash){
+		return allCash.length;
+	});
+	if (cashCollectionSize==0){
+		let may7 = new Date(2018, 5, 7)/1000;
+		let may8 = new Date(2018, 5, 8)/1000;
+		let may9 = new Date(2018, 5, 9)/1000;
+		let may10 = new Date(2018, 5, 10)/1000;
+		let may11 = new Date(2028, 5, 11)/1000;
+
+		let depositSeries = [ 
+			{amount:100, date: may7, type:"deposit"},
+			{amount: 25, date: may8, type:"withdrawal"},
+			{amount: 35000, date: may9, type:"deposit"},
+			{amount: 2000, date: may10, type: "withdrawal"},
+			{amount: 250000, date: may11, type: "deposit"} 
+		]
+		const sherlockCash = await cash.addTransactionSeries(sherlock._id, depositSeries);
+	}
+
+	console.log(await investments.getAllInvestments());
+	console.log(await cash.getAllCash());
+	console.log(await debts.getAllDebts());
+
 
 	// console.log(await investments.getAllInvestments());
 	// console.log(await cash.getAllCash());
