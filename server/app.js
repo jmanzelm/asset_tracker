@@ -5,10 +5,6 @@ const cors = require('cors');
 const bcrypt = require("bcrypt");
 const app = express();
 const exphbs = require("express-handlebars");
-<<<<<<< HEAD
-=======
-const path = require("path");
->>>>>>> 007af91c6e55eee818617c69e4f0e5cfa14d76b9
 const configRoutes = require("./routes");
 
 const mongoCollections = require("./config/mongoCollections");
@@ -37,12 +33,8 @@ const main = async function() {
 	let sherlock;
 	if (usersList.length==0){
 		sherlock = await users.addUser("masterdetective123", "$2a$16$7JKSiEmoP3GNDSalogqgPu0sUbwder7CAN/5wnvCWe6xCKAKwlTD.", 50);
-<<<<<<< HEAD
 	}
 	else{
-=======
-	} else {
->>>>>>> 007af91c6e55eee818617c69e4f0e5cfa14d76b9
 		sherlock = await users.getUserByName("masterdetective123");
 	}
 	 
