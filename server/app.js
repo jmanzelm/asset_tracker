@@ -273,7 +273,7 @@ const populateDb = async function(user){
 	
 	
 	// investments.addInvestment(userId, symbol, type, startingAmount)
-	console.log("investments by id", await investments.getInvestmentById("72bd45b5-5eb5-4589-80c7-ce80dd55c565"))
+	// console.log("investments by id", await investments.getInvestmentById(user._id))
 	// console.log("investments", await investments.getAllInvestments());
 	// console.log("cash", await cash.getAllCash());
 	// console.log("debts", await debts.getAllDebts());
