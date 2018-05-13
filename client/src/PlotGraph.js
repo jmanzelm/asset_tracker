@@ -10,11 +10,11 @@ import axios from 'axios';
 export class PlotGraph extends Component {
     constructor(props, context) {
         super(props, context);
-        this.singleStockPlot = this.singleStockPlot.bind(this);
+        this.singleCryptoPlot = this.singleCryptoPlot.bind(this);
         this.state = {};
     }
     async componentWillReceiveProps(nextProps) {
-        await this.singleStockPlot(nextProps.userid, "AAPL");
+        await this.singleCryptoPlot(nextProps.userid, "BTC");
     }
     async cashPlot(userId) {
         if (arguments.length !== 1) {
@@ -275,7 +275,7 @@ export class PlotGraph extends Component {
         if (arguments.length !== 2) {
             throw "Please provide a user ID and a crypto ID.";
         }
-        if (typeof userId !== "string" || typeof cryptoname !== "string") {
+        if (typeof userId !== "string" || typeof cryptoName !== "string") {
             throw "The IDs must be strings.";
         }
         let response = (await axios.get("http://localhost:3001/holdings/crypto/" + userId)).data;
@@ -288,7 +288,7 @@ export class PlotGraph extends Component {
         let trans = found.transactions;
         let symbol = found.symbol;
 
-        let data = await axios.get("http://localhost:3001/prices/crypto/" + symbol + "/histoday");
+        let data = (await axios.get("http://localhost:3001/prices/crypto/" + symbol + "/histoday")).data;
         let x = [];
         let y = [];
         let today = new Date();
@@ -302,7 +302,7 @@ export class PlotGraph extends Component {
                 y.unshift(0);
                 continue;
             }
-            if(trans.length > 0 && Date(trans[trans.length-1].date) > today) {
+            if(trans.length > 0 && trans[trans.length-1].date > today / 1000) {
                 if (trans[trans.length-1].type === "add") {
                     y.unshift(y[0] - trans[trans.length-1].qty);
                 }
@@ -316,6 +316,7 @@ export class PlotGraph extends Component {
             }
         }
 
+        console.log(data);
         for (let i=0; i<7; i++) {
             y[6-i] *= data[data.length - 1 - i].close;
         }
@@ -342,7 +343,7 @@ export class PlotGraph extends Component {
 
     render() {
         return (<div className="reactPlot"> <Plot data={this.state.plotData}
-                layout={this.singleStockPlotLayout()} />
+                layout={this.singleCryptoPlotLayout()} />
         </div>)
     }
 
