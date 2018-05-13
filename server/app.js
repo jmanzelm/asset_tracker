@@ -27,17 +27,7 @@ const saltRounds = 16;
 
 configRoutes(app);
 
-const main = async function() {
-
-	let usersList = await users.getAllUsers();
-	let sherlock;
-	if (usersList.length==0){
-		sherlock = await users.addUser("masterdetective123", "$2a$16$7JKSiEmoP3GNDSalogqgPu0sUbwder7CAN/5wnvCWe6xCKAKwlTD.", 50);
-	}
-	else{
-		sherlock = await users.getUserByName("masterdetective123");
-	}
-	console.log("user id: "+sherlock._id);
+const populateDb = async function(user){
 	let cashCollectionSize = await cash.getAllCash().then(function(allCash){
 		return allCash.length;
 	});
@@ -49,14 +39,20 @@ const main = async function() {
 
 	if (cashCollectionSize==0){
 
+<<<<<<< Updated upstream
 		let depositSeries = [
 			{amount:100, date: may7, type:"deposit"},
 			{amount: 25, date: may8, type:"withdrawal"},
+=======
+		let depositSeries = [ 
+			{amount:100000, date: may7, type:"deposit"},
+			{amount: 4500, date: may8, type:"withdrawal"},
+>>>>>>> Stashed changes
 			{amount: 35000, date: may9, type:"deposit"},
 			{amount: 2000, date: may10, type: "withdrawal"},
 			{amount: 250000, date: may11, type: "deposit"}
 		]
-		const sherlockCash = await cash.addTransactionSeries(sherlock._id, depositSeries);
+		const sherlockCash = await cash.addTransactionSeries(user._id, depositSeries);
 	}
 
 	let debtCollectionSize = await debts.getAllDebts().then(function(allDebts){
@@ -80,34 +76,221 @@ const main = async function() {
 					{
 						type: "add",
 						qty: 8000,
-						date: 1407485811
+						date: may8
 					},
 					{
 						type: "add",
 						qty: 8000,
-						date: 1439021811
+						date: may9
 					},
 					{
 						type: "add",
 						qty: 8000,
-						date: 1470644211
+						date: may10
 					},
 					{
 						type: "add",
 						qty: 8000,
-						date: 1502180211
+						date: may11
 					}
 				]
 			}
 		];
+<<<<<<< Updated upstream
 
 		const sherlockDebts = await debts.addTransactionSeries(sherlock._id, creditSeries);
+=======
+			
+		const userDebts = await debts.addTransactionSeries(user._id, creditSeries);
+>>>>>>> Stashed changes
 	}
 
+	let investmentCollectionSize = await investments.getAllInvestments().then(function(allInvestments){
+		return allInvestments.length;
+	});
+	if (investmentCollectionSize==0){
+		let investmentSeries = [
+			{
+				symbol: "AAPL",
+				type: "stock",
+				transactions: [
+					{
+						type: "add",
+						qty: 30,
+						date: may8
+					},
+					{
+						type: "add",
+						qty: 90,
+						date: may9
+					},
+					{
+						type: "subtract",
+						qty: 15,
+						date: may10
+					},
+					{
+						type: "add",
+						qty: 10,
+						date: may11
+					}
+				]
+			},
+			{
+				symbol: "GOOG",
+				type: "stock",
+				transactions: [
+					{
+						type: "add",
+						qty: 13,
+						date: may9
+					},
+					{
+						type: "add",
+						qty: 40,
+						date: may10
+					},
+					{
+						type: "add",
+						qty: 25,
+						date: may10
+					},
+					{
+						type: "subtract",
+						qty: 20,
+						date: may11
+					}
+				]
+			},
+			{
+				symbol: "TSLA",
+				type: "stock",
+				transactions: [
+					{
+						type: "add",
+						qty: 80,
+						date: may9
+					},
+					{
+						type: "subtract",
+						qty: 40,
+						date: may10
+					},
+					{
+						type: "subtract",
+						qty: 10,
+						date: may10
+					},
+					{
+						type: "subtract",
+						qty: 5,
+						date: may11
+					}
+				]
+			},
+			{
+				symbol: "BTC",
+				type:"crypto",
+				transactions: [
+					{
+						type: "add",
+						qty: 5,
+						date: may9
+					},
+					{
+						type: "subtract",
+						qty: 1,
+						date: may10
+					},
+					{
+						type: "subtract",
+						qty: 1,
+						date: may10
+					},
+					{
+						type: "add",
+						qty: 5,
+						date: may11
+					}
+				]
+			},
+			{
+				symbol: "ETH",
+				type:"crypto",
+				transactions: [
+					{
+						type: "add",
+						qty: 23,
+						date: may9
+					},
+					{
+						type: "subtract",
+						qty: 14,
+						date: may10
+					},
+					{
+						type: "subtract",
+						qty: 3,
+						date: may10
+					},
+					{
+						type: "add",
+						qty: 5,
+						date: may11
+					}
+				]
+			},
+			{
+				symbol: "XMR",
+				type:"crypto",
+				transactions: [
+					{
+						type: "add",
+						qty: 40,
+						date: may9
+					},
+					{
+						type: "add",
+						qty: 14,
+						date: may10
+					},
+					{
+						type: "add",
+						qty: 35,
+						date: may10
+					},
+					{
+						type: "add",
+						qty: 5,
+						date: may11
+					}
+				]
+			}
+		];
+		const userInvestments = await investments.addTransactionSeries(user._id, investmentSeries);
+	}
+
+}
+
+const main = async function() {
+
+	let usersList = await users.getAllUsers();
+	let sherlock;
+	if (usersList.length==0){
+		sherlock = await users.addUser("masterdetective123", "$2a$16$7JKSiEmoP3GNDSalogqgPu0sUbwder7CAN/5wnvCWe6xCKAKwlTD.", 50);
+	}
+	else{
+		sherlock = await users.getUserByName("masterdetective123");
+	}
+
+	await populateDb(sherlock);
+
+	console.log("user id: "+sherlock._id);
+	
 	console.log("investments", await investments.getAllInvestments());
 	console.log("cash", await cash.getAllCash());
 	console.log("debts", await debts.getAllDebts());
-	console.log("debtsbyid", sherlock._id, await debts.getDebtByUserId(sherlock._id))
+	console.log("debtsbyid", sherlock._id, await debts.getDebtByUserId(sherlock._id));
 
 
 	// console.log(await investments.getAllInvestments());

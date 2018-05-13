@@ -81,10 +81,14 @@ ModuleA.getCryptoByUserId = async function(id) {
 }
 
 // type is either "stock" or "crypto"
-ModuleA.addInvestment = async function(userId, symbol, type, startingAmount) {
-	if (arguments.length !== 4) {
+ModuleA.addInvestment = async function(userId, attrs) {
+	if (arguments.length !== 2) {
 		throw "Please provide a user ID, symbol, type, and starting amount.";
 	}
+	let symbol = attrs.symbol;
+	let type = attrs.type;
+	let startingAmount = attrs.startingAmount;
+
 	if (typeof userId !== "string" || typeof symbol !== "string" || typeof type !== "string" || typeof startingAmount !== "number"){
 		throw "The user ID, symbol, and type must be strings and starting amount must be a number.";
 	}
@@ -189,4 +193,30 @@ ModuleA.addInvestmentTransaction = async function(id, attrs) {
 	catch(error) {
 		throw error;
 	}
+}
+
+ModuleA.addTransactionSeries = async function(user_id, series){
+	let countPromises = [];
+	let ret;
+	for (var i = 0; i < series.length; i++){
+		let investment = series[i];
+			let attrs = {
+				symbol: investment.symbol, 
+				startingAmount: investment.transactions[0].qty, 
+				date: investment.transactions[0].date,
+				type: investment.type
+			};
+			ret = await this.addInvestment(user_id, attrs);
+		
+			for (var j = 1; j < investment.transactions.length; j++){
+				let attrs = {
+					quantity: investment.transactions[j].qty,
+					date: investment.transactions[j].date,
+					type: investment.transactions[j].type
+				};
+				await this.addInvestmentTransaction(ret._id, attrs);
+			}
+	}
+	
+	return await this.getAllInvestments();
 }
