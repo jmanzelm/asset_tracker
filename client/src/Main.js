@@ -47,7 +47,7 @@ export default class Main extends Component {
 
     render() {
     	let modalLogin = <ModalLogin storeUserData={this.storeUserData}/>
-                
+
         return (
             <div>
            		{modalLogin}
@@ -138,11 +138,11 @@ class FilterTextBox extends Component {
     // }
     handleChange(val) {
         if (val.target.current_text !== this.state.current_text) {
-            this.setState({ 
+            this.setState({
                 current_text: val.target.value,
                 validationState: null
             })
-        }   
+        }
     }
 
     submitModal() {
@@ -168,9 +168,6 @@ class FilterTextBox extends Component {
             this.setState({validationState: "error"})
             return 'error'
         }
-        
-            
-            
         // this.setState({validationState: "error"})
         
         console.log(a);
@@ -193,7 +190,6 @@ class FilterTextBox extends Component {
         <FormControl.Feedback />
         <Button onClick={this.verifyAsset}>Buy or Sell Asset</Button>
         </FormGroup>
-
         {this.state.validationState === "success" &&
             <Modal show={this.state.showAssetAdd}>
             <Modal.Header> <h4>{this.state.current_text.toUpperCase()} </h4></Modal.Header>
@@ -222,7 +218,7 @@ class FilterTextBox extends Component {
                 </Modal.Footer>
             </Modal>
         }
-       
+
         </div>)
     }
 }
