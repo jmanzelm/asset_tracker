@@ -2,17 +2,17 @@ const mongoCollections = require("../config/mongoCollections");
 const investments = mongoCollections.investments;
 const uuidv4 = require("uuid/v4");
 
-function ModuleA() {
+function investmentModule() {
 
 }
 
-module.exports = ModuleA;
+module.exports = investmentModule;
 
-ModuleA.getCollection = function(){
+investmentModule.getCollection = function(){
 	return investments();
 }
 
-ModuleA.getAllInvestments = async function() {
+investmentModule.getAllInvestments = async function() {
 	if (arguments.length !== 0) {
 		throw "No arguments are needed.";
 	}
@@ -26,7 +26,7 @@ ModuleA.getAllInvestments = async function() {
 	}
 }
 
-ModuleA.getInvestmentById = async function(id) {
+investmentModule.getInvestmentById = async function(id) {
 	if (arguments.length !== 1) {
 		throw "Please provide a single ID.";
 	}
@@ -44,7 +44,7 @@ ModuleA.getInvestmentById = async function(id) {
 	}
 }
 
-ModuleA.getStockByUserId = async function(id) {
+investmentModule.getStockByUserId = async function(id) {
 	if (arguments.length !== 1) {
 		throw "Please provide a single ID.";
 	}
@@ -62,7 +62,7 @@ ModuleA.getStockByUserId = async function(id) {
 	}
 }
 
-ModuleA.getCryptoByUserId = async function(id) {
+investmentModule.getCryptoByUserId = async function(id) {
 	if (arguments.length !== 1) {
 		throw "Please provide a single ID.";
 	}
@@ -81,7 +81,7 @@ ModuleA.getCryptoByUserId = async function(id) {
 }
 
 // type is either "stock" or "crypto"
-ModuleA.addInvestment = async function(userId, attrs) {
+investmentModule.addInvestment = async function(userId, attrs) {
 	if (arguments.length !== 2) {
 		throw "Please provide a user ID, symbol, type, and starting amount.";
 	}
@@ -117,7 +117,7 @@ ModuleA.addInvestment = async function(userId, attrs) {
 	}
 }
 
-ModuleA.update = (id, params)=>{
+investmentModule.update = (id, params)=>{
 	getInvestmentById(id).then(function(investmentObj){
 		params.keys.forEach(function(key){
 			investmentObj[key] = params[key];
@@ -133,7 +133,7 @@ ModuleA.update = (id, params)=>{
 	});
 }
 
-ModuleA.deleteInvestment = async function(id) {
+investmentModule.deleteInvestment = async function(id) {
 	if (arguments.length !== 1) {
 		throw "Please provide an investment ID.";
 	}
@@ -154,7 +154,7 @@ ModuleA.deleteInvestment = async function(id) {
 }
 
 // type is either "add" or "subtract"
-ModuleA.addInvestmentTransaction = async function(id, attrs) {
+investmentModule.addInvestmentTransaction = async function(id, attrs) {
 	if (arguments.length !== 2 || !attrs.type || !attrs.quantity) {
 		throw "Please provide an investment ID, quantity, and type.";
 	}
@@ -196,7 +196,7 @@ ModuleA.addInvestmentTransaction = async function(id, attrs) {
 	}
 }
 
-ModuleA.addTransactionSeries = async function(user_id, series){
+investmentModule.addTransactionSeries = async function(user_id, series){
 	let countPromises = [];
 	let ret;
 	for (var i = 0; i < series.length; i++){

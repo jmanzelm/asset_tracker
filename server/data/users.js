@@ -2,15 +2,15 @@ const mongoCollections = require("../config/mongoCollections");
 const users = mongoCollections.users;
 const uuidv4 = require("uuid/v4");
 
-function ModuleA() {
+function userModule() {
 
 }
 
-module.exports = ModuleA;
+module.exports = userModule;
 
 const cash = require("./cash");
 
-ModuleA.getAllUsers = async function() {
+userModule.getAllUsers = async function() {
   if (arguments.length !== 0) {
     throw "No arguments are needed.";
   }
@@ -23,7 +23,7 @@ ModuleA.getAllUsers = async function() {
   }
 }
 
-ModuleA.getUserById = async function(id) {
+userModule.getUserById = async function(id) {
   if (arguments.length !== 1) {
     throw "Please provide a single ID.";
   }
@@ -41,7 +41,7 @@ ModuleA.getUserById = async function(id) {
   }
 }
 
-ModuleA.getUserByName = async function(name) {
+userModule.getUserByName = async function(name) {
   if (arguments.length !== 1) {
     throw "Please provide a single username.";
   }
@@ -59,7 +59,7 @@ ModuleA.getUserByName = async function(name) {
   }
 }
 
-ModuleA.addUser = async function(username, hashedPassword, startingCash) {
+userModule.addUser = async function(username, hashedPassword, startingCash) {
   if (arguments.length !== 3) {
     throw "Please provide a username, hashed password, and starting cash amount.";
   }

@@ -2,17 +2,17 @@ const mongoCollections = require("../config/mongoCollections");
 const debts = mongoCollections.debts;
 const uuidv4 = require("uuid/v4");
 
-function ModuleA() {
+function debtModule() {
 
 }
 
-module.exports = ModuleA;
+module.exports = debtModule;
 
-ModuleA.getCollection = function(){
+debtModule.getCollection = function(){
 	return debts();
 }
 
-ModuleA.getAllDebts = async function() {
+debtModule.getAllDebts = async function() {
 	if (arguments.length !== 0) {
 		throw "No arguments are needed.";
 	}
@@ -25,7 +25,7 @@ ModuleA.getAllDebts = async function() {
 	}
 }
 
-ModuleA.getDebtById = async function(id) {
+debtModule.getDebtById = async function(id) {
 	if (arguments.length !== 1) {
 		throw "Please provide a single ID.";
 	}
@@ -44,7 +44,7 @@ ModuleA.getDebtById = async function(id) {
 	}
 }
 
-ModuleA.getDebtByUserId = async function(id) {
+debtModule.getDebtByUserId = async function(id) {
 	if (arguments.length !== 1) {
 		throw "Please provide a single ID.";
 	}
@@ -63,7 +63,7 @@ ModuleA.getDebtByUserId = async function(id) {
 	}
 }
 
-ModuleA.addDebt = async function(userId, attrs) {
+debtModule.addDebt = async function(userId, attrs) {
 	if (arguments.length !== 2) {
 		throw "Please provide a user ID and {creditor: x, startingAmount: y}";
 	}
@@ -97,7 +97,7 @@ ModuleA.addDebt = async function(userId, attrs) {
 	}
 }
 
-ModuleA.addTransactionSeries = async function(user_id, series){
+debtModule.addTransactionSeries = async function(user_id, series){
 	let countPromises = [];
 	let ret;
 	for (var i = 0; i < series.length; i++){
@@ -122,7 +122,7 @@ ModuleA.addTransactionSeries = async function(user_id, series){
 	return await this.getAllDebts();
 }
 
-ModuleA.update = (id, params)=>{
+debtModule.update = (id, params)=>{
 	getDebtById(id).then(function(debtObj){
 		params.keys.forEach(function(key){
 			debtObj[key] = params[key];
@@ -138,7 +138,7 @@ ModuleA.update = (id, params)=>{
 	});
 }
 
-ModuleA.deleteDebt = async function(id) {
+debtModule.deleteDebt = async function(id) {
 	if (arguments.length !== 1) {
 		throw "Please provide a debt ID.";
 	}
@@ -158,7 +158,7 @@ ModuleA.deleteDebt = async function(id) {
 }
 
 // type is either "add" or "subtract"
-ModuleA.addDebtTransaction = async function(id, attrs) {
+debtModule.addDebtTransaction = async function(id, attrs) {
 	if (arguments.length !== 2) {
 		throw "Please provide a debt ID {quantity: x, type: y, ?date: z}";
 	}
