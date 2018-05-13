@@ -3,6 +3,9 @@
   text-align: left;
   float: left;
 }
+.nav {
+    width: 120%;
+}
 
 .input-modal {
   display: inline;
@@ -30,7 +33,6 @@
 
 .search {
   width: 50%;
-  display: inline-block;
   margin-left: 30%;
   padding-bottom: 30px;
 
@@ -42,14 +44,15 @@
 }
 
 .asset-table {
+  background-color: #AFAFAF;
   display: inline-block;
   margin-left: 10%;
   width: auto !important;
 }
 
 .asset-table th {
-  /*background-color: black;
-  color: white;*/
+  background-color: #521945;
+  color: white;
   font-size: 1.3em;
 }
 
