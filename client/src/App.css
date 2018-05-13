@@ -4,6 +4,30 @@
   float: left;
 }
 
+.input-modal {
+  display: inline;
+  width: 20% !important;
+}
+.input-modal-amount {
+  display: inline;
+  width: 15% !important;
+  margin-right: 10px;
+}
+.input-modal-date {
+  width: 10% !important;
+  display: inline;
+  margin-right: 10px;
+}
+
+.input-modal-action {
+  display: inline;
+  width: 10% !important;
+  margin-left: 5px;
+}
+.input-modal-action-name {
+  margin-left: 10px;
+}
+
 .search {
   width: 50%;
   display: inline-block;
